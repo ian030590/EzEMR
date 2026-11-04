@@ -10,6 +10,8 @@
 
 介面修正：固定工具列取得焦點後的延遲 scroll 事件不再關閉選單（`toolbar.cjs`、`rehab-note.cjs`）；進度追蹤面板間距為 20px（`language.cjs`）；小螢幕分頁可換行，英文標籤不會藏在橫向捲動中（`workspace.cjs`）。
 
+PDF 字體：電腦未安裝 Noto Sans TC、HTML 旁也沒有 `EzEMR-assets/NotoSansTC-VF.ttf` 時，Chromium 的 `document.fonts.load` 會失敗，原本會中斷每次儲存（首次 GitHub Actions 即因此失敗）。現改由系統字體備援繪製 PDF；`rehab-note.cjs` 在首次儲存時模擬字體載入失敗，確認 CSV、PDF 與 TXT 仍會寫入。
+
 新增 `.githooks/pre-push` 與 `.github/workflows/check-i18n.yml`（Windows runner），兩者都執行 `node tests/run-ci.cjs`。`.gitignore` 另排除 HTML 旁的 `Data/`，避免將真實病歷提交到儲存庫。
 
 ## 2026-11-02：內嵌資料與匯入流程的推送檢查

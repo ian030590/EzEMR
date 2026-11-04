@@ -1696,7 +1696,8 @@ async function sessionPDF(c, s, list = sessions) {
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error(ui('無法建立 PDF，瀏覽器不支援 Canvas'));
   const font = getComputedStyle(document.body).fontFamily;
-  await document.fonts.load('24px "Noto Sans TC"');
+  // Noto Sans TC is optional; when it cannot load, the canvas uses the fallback fonts instead of failing the save.
+  await document.fonts.load('24px "Noto Sans TC"').catch(() => {});
   ctx.font = `24px ${font}`;
   const lines = [];
   for (const source of noteText(c, s, list).split(/\r\n|\n|\r/)) {

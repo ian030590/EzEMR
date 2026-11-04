@@ -57,13 +57,16 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     await page.locator('#symWrap input.num').first().fill('4');
     await page.locator('#ac-copm').check();
     await page.locator('#copm-occ-0').fill('閱讀'); await page.locator('#copm-p-0').fill('3'); await page.locator('#copm-s-0').fill('4');
+    // Without Noto Sans TC installed, Chromium rejects document.fonts.load; saving must still write every file.
+    await page.evaluate(() => { window.realFontLoad = document.fonts.load.bind(document.fonts); document.fonts.load = () => Promise.reject(new DOMException('A network error occurred.', 'NetworkError')); });
     await action('save-session').click();
     await page.waitForSelector('.sess');
+    await page.evaluate(() => { document.fonts.load = window.realFontLoad; });
     let fileNames = await page.evaluate(async () => fileNames(await testRoot.getDirectoryHandle('TEST-甲')));
     assert.deepEqual(fileNames.map(n => path.extname(n)).sort(), ['.csv', '.pdf', '.txt']);
     assert.ok((await page.evaluate(async () => fileNames(testRoot))).includes('clients.csv'));
     const firstId = await page.evaluate(() => sessions[0].id);
-    check('Save creates one CSV, PDF and TXT', 'Native browser file handles write a patient directory in OPFS. Root clients.csv holds demographics and templates.');
+    check('Save creates one CSV, PDF and TXT, also without Noto Sans TC installed', 'Native browser file handles write a patient directory in OPFS while the PDF falls back to system fonts. Root clients.csv holds demographics and templates.');
 
     const roundTrip = await page.evaluate(() => {
       const c = clone(cur()), s = clone(sessions[0]);
