@@ -1,0 +1,28 @@
+name: Full CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  full-ci:
+    # Windows matches the desktop environment the app targets, including Chinese system fonts.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: |
+          npm install --prefix .tmp/test-tools --no-save --package-lock=false playwright@1.63.0 acorn@8.19.0
+          node .tmp/test-tools/node_modules/playwright/cli.js install chromium
+          python -m pip install pypdf==6.16.2 PyMuPDF==1.28.2
+      - name: Run full CI
+        run: node tests/run-ci.cjs

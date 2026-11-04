@@ -1,0 +1,3 @@
+#!/bin/sh
+# Runs the full test suite before every push. Any failure blocks the push.
+exec node tests/run-ci.cjs

@@ -1,0 +1,222 @@
+# 驗證紀錄
+
+## 2026-11-04：公開版同步
+
+公開版 `EzEMR.html` 已移除內附個案快照；`rehab-note.cjs`、`workspace.cjs` 與 `imports.cjs` 會確認 HTML 不含 `integratedRecords`。上傳前另以原始快照中的姓名、病歷號、生日與病歷文字，比對所有待上傳檔案，未發現相符內容；比對腳本只輸出命中數量，不輸出原值，也不納入儲存庫。
+
+測試與文件改以目前的 HTML 為準：每次儲存寫入 CSV、PDF 與 TXT；個案工作區分為「復健紀錄／進度追蹤／項目設定」三個分頁，個案名單常駐「篩選個案」欄位。
+
+匯入流程補齊雙語：錯誤、警告、匯入報告與來源標籤改走 `ui()`。來源資料表的工作表名稱、欄位名稱與寫入病歷的來源標記集中於 `SOURCE_WORKBOOK`，兩種語言下都保持原值，因此以任一語言重新匯入時比對一致；`imports.cjs` 驗證畫面標籤隨語言切換、病歷內的來源備註維持原格式。來源評估項目以英文識別名稱搭配 `LABELS` 中文。
+
+介面修正：固定工具列取得焦點後的延遲 scroll 事件不再關閉選單（`toolbar.cjs`、`rehab-note.cjs`）；進度追蹤面板間距為 20px（`language.cjs`）；小螢幕分頁可換行，英文標籤不會藏在橫向捲動中（`workspace.cjs`）。
+
+新增 `.githooks/pre-push` 與 `.github/workflows/check-i18n.yml`（Windows runner），兩者都執行 `node tests/run-ci.cjs`。`.gitignore` 另排除 HTML 旁的 `Data/`，避免將真實病歷提交到儲存庫。
+
+## 2026-11-02：內嵌資料與匯入流程的推送檢查
+
+`check_i18n.cjs` 依腳本類型排除 JSON 資料，內嵌 Excel 元件僅在符合固定 SHA-256 時排除介面掃描。原有漏翻反例仍執行，另驗證 JSON 不會被當成 JavaScript、可執行腳本不會因 `data-type` 被略過，以及修改第三方元件會失敗。匯入用的原始工作表／欄位識別值保留不變，介面文案走 `ui()`，新增內建評估標籤由 `LABELS` 提供雙語。
+
+公開版 HTML 不含內附個案資料，各測試會確認此點。`imports.cjs` 測試空白啟動與直接離線開啟，再以獨立資料夾測試合成資料：中英文 Excel 匯入、原始欄位與病歷保存、日期與數值 0、匯入報告與錯誤、舊版 SOAP 去重、`_archive` 排除，以及缺少 `client.json` 時不寫入資料。語言切換不改寫已儲存的資料與檔名。
+
+`imports.cjs` 與所有既有 `.cjs`／`.py` 測試均由 `run-ci.cjs` 自動發現；pre-push 繼續執行同一入口，任何失敗都會阻止推送。所有合成資料、HTML 測試副本與產物置於忽略的 `.tmp/`。
+
+選單回歸檢查另涵蓋固定工具列取得焦點後的延遲捲動事件；事件對應的頁面位置未變時不關閉選單，實際捲動仍會關閉。寬螢幕的工具列固定在畫面上方，編輯長表單時仍可儲存；窄螢幕的工具列隨頁面捲動。元件雜湊以 LF 正規化，並驗證 LF／CRLF checkout 都可通過。
+
+測試資料均為標記的測試個案。產品名稱統一為 `EzEMR`，主程式為 `EzEMR.html`，是單一 HTML，沒有新增執行期套件。
+
+瀏覽器測試使用 Node.js、Playwright 與 Chromium；原始碼雙語檢查使用 Acorn；`check_exports.py` 使用 pypdf、PyMuPDF。測試依賴不影響 HTML 的使用。以下指令在儲存庫根目錄以 PowerShell 執行。
+
+首次設定測試環境：
+
+```powershell
+npm install --prefix .tmp/test-tools --no-save --package-lock=false playwright@1.63.0 acorn@8.19.0
+$env:PLAYWRIGHT_MODULE = (Resolve-Path .tmp/test-tools/node_modules/playwright).Path
+node .tmp/test-tools/node_modules/playwright/cli.js install chromium
+python -m pip install pypdf==6.16.2 PyMuPDF==1.28.2
+git config --local core.hooksPath .githooks
+```
+
+完整測試入口會自動讀取 `.tmp/test-tools` 的 Playwright，因此使用此安裝位置時不需要手動設定 `PLAYWRIGHT_MODULE`。若使用其他位置，可指定該環境變數；`BROWSER_PATH` 可指定既有 Chromium 執行檔，`PYTHON` 可指定 Python 執行檔。
+
+執行驗證：
+
+```powershell
+node tests/run-ci.cjs
+```
+
+`.githooks/pre-push` 與 GitHub Actions 都使用這個入口，每次執行完整測試，不依變更檔案略過項目。先檢查雙語與 Python 依賴，再執行病歷流程、獨立 PDF／ZIP 解析及其他測試腳本；任一步驟失敗立即結束，保留非零結束碼，Git 會停止推送。新增的 `.cjs` 與 `.py` 測試會自動納入，`run-ci.cjs` 本身不會遞迴執行。
+
+首次執行會下載固定版本的 Excel 測試元件到 `.tmp/xlsx.bundle.js`，之後重複使用；可用 `XLSX_SCRIPT` 指定既有元件。套件或 Chromium 未安裝、Python 依賴缺少，以及元件下載失敗，都會使檢查失敗，不會跳過測試。套件與元件保留在 Git 忽略的 `.tmp/`，供後續推送使用。
+
+`ci-runner.cjs` 以合成步驟驗證非零結束碼、失敗後停止後續步驟及無法啟動執行檔時的錯誤處理，另透過 `git hook run pre-push` 配合不存在的測試 Python 執行檔，確認實際 hook 會回傳失敗；此反例不會連接遠端或推送任何資料。`.gitattributes` 固定 hook 使用 LF，hook 的執行權限也納入 Git。新的 clone 需重新執行一次 `git config --local core.hooksPath .githooks`。
+
+需要個別執行時：
+
+```powershell
+$env:PLAYWRIGHT_MODULE = (Resolve-Path .tmp/test-tools/node_modules/playwright).Path
+node tests/check_i18n.cjs
+node tests/rehab-note.cjs
+python tests/check_exports.py
+node tests/storage.cjs
+node tests/toolbar.cjs
+node tests/language.cjs
+
+# 模板與外觀切換測試；沿用應用程式既有的固定版本 Excel 元件，下載至測試暫存。
+curl.exe -sS -f https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js -o .tmp/xlsx.bundle.js
+node tests/templates.cjs
+```
+
+測試會建立 `.tmp/verification`，匯出解析檢查需在 `rehab-note.cjs` 完成後執行。`.tmp/` 已由 Git 忽略，包含畫面、JSON 結果、CSV、PDF、ZIP、測試套件與下載的 Excel 元件；這些產物不隨儲存庫提供，以下產物路徑指執行對應測試後生成的本機檔案。
+
+2026-11-01 文件與清理驗證：瀏覽器測試入口已改為現有的 `EzEMR.html`。`rehab-note.cjs`、`storage.cjs`、`toolbar.cjs`、`templates.cjs` 與 `check_exports.py` 全數通過；兩份 README 的相對連結與檔案樹也已核對。測試使用既有 Chromium 與固定版本的 Excel 元件，本次完成後清除 `.tmp/`，不保留生成產物。
+
+## 語言切換驗證
+
+`check_i18n.cjs` 解析 HTML 內的 JavaScript，以實際翻譯函式驗證內建文字，並拒絕未經 `ui()`／`ui` 樣板處理的中文、新增的單一語言介面標籤、缺少中文的內建項目與英文 README 的中文字。腳本另以故意漏翻的範例確認檢查會失敗。`.github/workflows/check-i18n.yml` 在推送與 PR 時執行完整 CI，其中包含此檢查及雙語瀏覽器測試；`AGENTS.md` 要求新功能同時增加中英文介面與相應畫面測試。
+
+`language.cjs` 檢查繁體中文／English 切換、語言偏好重載、英文內建文字、無法保存偏好時的提示，以及 320／360／768／1280px 版面。以合成個案驗證切換時保留 SOAP 草稿、中文姓名與病歷原文、活動勾選、缺席選項的儲存值，以及既有 CSV／PDF 檔名。開啟對話框或儲存期間暫停語言切換，避免打斷尚未完成的表單。
+
+## EzEMR 工作區介面
+
+本次重構採用 stageshow 的資訊層級、間距、字級與單一重點色原則，直接改造現有應用程式。主程式維持單一 HTML，沒有加入 React、展示用假控制項或額外執行期依賴。頁首、瀏覽器標題、PDF 抬頭、匯入錯誤與中英文文件統一使用 EzEMR；既有瀏覽器儲存識別、備份格式與病歷檔案命名仍相容。
+
+設計取捨：
+
+- 青綠色只強調選取個案、目前分頁與主要操作，原有的警示色仍表示臨床分數或錯誤狀態。
+- 固定個案側欄與精簡工具列保留操作脈絡；寬螢幕並排呈現紀錄歷程與症狀圖表，窄螢幕改為單欄。
+- 延用 Noto Sans TC 與離線系統字體，透過字級、留白與細分隔線建立層級。
+- 病歷摘要、篩選與紀錄各自分組；SOAP 以字母標記與分隔線分段，浮層陰影只用於選單與對話框。
+- 動態效果限於操作回饋，沿用減少動態效果偏好。
+
+`workspace.cjs` 阻擋外部網路，直接以 `file://` 開啟 `EzEMR.html`，驗證繁體中文與英文的首次儲存設定、空白工作區、個案建立與編輯捷徑、個案數、未填與已填紀錄摘要、時間排序、篩選與摘要的獨立性、鍵盤分頁、明暗模式及 320／768／1280／1440px 版面。寬螢幕的編輯器另確認捲動後仍可使用儲存工具。截圖寫入 `.tmp/verification/workspace-*.png`，均使用合成個案。
+
+`language.cjs` 另檢查新版首次設定、空白工作區、個案摘要與紀錄標題的英文翻譯及中文標籤。`workspace.cjs` 與其他新增 `.cjs` 一樣，由 `run-ci.cjs` 自動探索，透過 `.githooks/pre-push` 與 GitHub Actions 執行，失敗即阻擋推送。原生作業系統資料夾視窗仍不在自動測試範圍。
+
+2026-11-01 雙語更新驗證：原始碼雙語檢查、語言切換、病歷流程、儲存、工具列、模板及獨立 PDF／ZIP 檢查全數通過。英文版的初始頁面、空白 SOAP 表單、個案對話框、評估與復健設定、數值與選單欄位皆檢查內建文字；儲存後切換語言會更新按鈕及缺席紀錄。另檢查缺少翻譯、單語按鈕、英文單語提示與無障礙名稱、僅有英文的評估時機等反例，確認檢查會失敗。GitHub workflow 的 YAML、觸發條件及指令已在本機檢查。
+
+## 病歷流程驗證
+
+- PASS：開啟頁面說明電腦上的本機病歷資料夾；病歷流程沒有傳送資料的網路請求或未捕捉的 JavaScript 錯誤。網頁字型下載在自動化測試中以空樣式回應，驗證離線備援。
+- PASS：新增個案及 SOAP 紀錄，在個案資料夾中寫入一份 CSV、PDF 與 TXT。
+- PASS：編輯同一筆紀錄更新原檔案；重新建立儲存介面與重新載入頁面後，可讀回病歷與 COPM。
+- PASS：不同個案的資料夾、次數、評估與復健歷程保持分開。
+- PASS：CSV 完整還原中文、逗號、引號、換行、空值、零、布林值及巢狀資料；Excel 公式文字經可逆處理。
+- PASS：錯誤 CSV 格式、引號及數值均拒絕讀取；匯入失敗保留現有畫面資料。
+- PASS：模擬第二份檔案寫入失敗，原 CSV 與 PDF 逐位元還原。
+- PASS：個案搜尋、紀錄類型、日期篩選與無結果狀態；錯誤的日期範圍顯示驗證訊息。
+- PASS：症狀選擇器會更新圖表；只顯示療程後紀錄時，COPM 仍顯示與先前基準值的變化。
+- PASS：自訂訓練、EyeDot 次數、恢復時間、評估計畫編輯及結果表仍可操作與保存。
+- PASS：缺席紀錄產生 CSV、PDF 與 TXT；取消刪除保留紀錄，確認刪除移除該筆檔案。
+- PASS：舊 JSON 紀錄可載入並另存 CSV、PDF；原始 JSON 保留，重新讀取不會重複計算。
+- PASS：第二資料夾可複製個案資料與 CSV、PDF；整體 JSON 備份仍會下載。
+- PASS：CSV 匯入按鈕可建立個案與紀錄；無資料夾 API 的瀏覽器模式會下載 ZIP，重新載入後仍有瀏覽器暫存。
+- PASS：Escape 關閉對話框；未儲存病歷有放棄修改確認，Escape 保留草稿。
+- PASS：360、768、1280px 的亮／暗色版面沒有頁面水平溢出；窄螢幕表格在各自容器內捲動。
+- PASS：亮／暗色的主要文字色對比達 4.5:1，輸入框邊界達 3:1；直接以 file:// 開啟 HTML 可執行並使用資料夾 API。
+- PASS：獨立 PDF 解析器及渲染器開啟七頁 A4 中文紀錄；ZIP 通過 CRC 檢查，中文資料夾名稱與 CSV 內容正確。
+
+介面保留日式和紙方向的灰白紙色、靛藍重點與細分隔線；依使用者最新要求，標題、按鈕與表單統一使用 Noto Sans TC。個案名單定位個案，SOAP 字母區隔填寫區，開放列表呈現歷程；保留顯示評分變化的語意狀態色。ENERGY 1／RHYTHM 2／MOTION 1。沒有製作圖像或變更原有 COPM、症狀評分與 EyeDot 的臨床記錄規則。
+
+測試以 Chromium 的原生檔案控制代碼，寫入瀏覽器的 OPFS 資料夾；不會開啟或修改使用者的真實病歷。原生作業系統的選擇資料夾對話框與權限提示仍需使用者實際操作。未進行真實病歷內容或臨床適用性驗證。
+
+## 自訂項目與外觀驗證
+
+`templates.cjs` 直接操作 GUI，使用獨立的合成測試個案。Excel 測試由 Playwright 攔截既有 CDN 請求，使用上述暫存元件；核心流程沒有新增連線需求。可用 `XLSX_SCRIPT` 指定另一份相同版本的本機元件路徑。
+
+- PASS：初次跟隨系統深淺色；未連接病歷資料夾也能手動切換，重新載入後保留選擇。
+- PASS：中文操作介面、英文症狀欄名；切換外觀保留 SOAP 草稿。
+- PASS：從未儲存的病歷新增評估，使用文字、數值、長文字、選單四種類型；驗證單位、數值範圍、停用欄位及原草稿。
+- PASS：從內建復健模板新增項目與活動；模擬磁碟寫入失敗，表單與已儲存設定維持完整，可重試。
+- PASS：自訂數值 0、選單與多行文字可由磁碟與 CSV 完整讀回。
+- PASS：改名、移除欄位與停用後，歷史病歷全文不變；新紀錄使用目前設定。
+- PASS：重新載入後保留模板與歷史定義；複製項目取得新的識別碼，停用項目可再次啟用。
+- PASS：實際產生並讀取 Excel 活頁簿，驗證自訂評估、復健結果與 SOAP 表單中的名稱及數值 0；JSON 備份包含模板。
+- PASS：在全新的瀏覽器儲存區匯入 CSV、還原 JSON，再次載入仍保留模板與結果。
+- PASS：新增個案可複用另一個案的項目定義，復健紀錄數量為 0。
+- PASS：舊版無定義快照的病歷，修改既有標準模板、停用及重新讀取磁碟後，歷史病歷全文不變。
+- PASS：CSV 拒絕錯誤的模板時機、空選單與不安全的項目識別碼。
+- PASS：亮暗色、360／768／1280px 的設定頁及編輯對話框無水平溢出；Tab 保留在對話框內，Escape 可關閉；禁止瀏覽器儲存時仍可切換外觀並顯示中文提示。
+
+具體執行結果保存在 `.tmp/verification/browser-results.json` 與 `.tmp/verification/template-results.json`。畫面證據為 `desktop-editor.png`、`mobile-editor.png` 及 `templates-{light,dark}-{360,1280}.png`。
+
+## CSV 總表與本機資料夾驗證
+
+`storage.cjs` 使用原生 OPFS 測試本機資料夾的檔案讀寫。HTML 與病歷存在同一個模擬本機資料夾，未使用真實病歷。
+
+- PASS：使用預設位置時不立即建立資料夾；第一次儲存才呼叫位置選擇並在 HTML 旁建立 `Data/clients.csv`，HTML 檔案不變，重新開啟同一 OPFS 資料夾可讀回個案。
+- PASS：`clients.csv` 一位個案一列，保存所有基本資料、手術史、模板及額外欄位；中文、多行、引號、零、布林值與公式樣式文字完整還原。檔案及下載都驗證 UTF-8 BOM。
+- PASS：總表匯出按鈕下載 `clients.csv`；匯入總表後可讀回個案。重複個案、不合法資料夾路徑及損壞總表會拒絕，不靜默覆寫。
+- PASS：舊版 `client.json` 在儲存時轉入 CSV 總表，原始 JSON 保留；損壞的總表不會被靜默覆寫。
+- PASS：在選定的本機資料夾儲存並讀回 SOAP 的 CSV 與 PDF，期間沒有傳送病歷的網路請求。
+- PASS：可透過「儲存位置」指定另一個資料夾，讓 HTML 與 `clients.csv` 直接放在同一層；「重新讀取」會載入外部修改後的同一份 CSV。
+- PASS：Noto Sans TC 是標題、按鈕及搜尋欄計算樣式的第一個字體；Google Fonts stylesheet URL 與回退字體均已檢查。
+- PASS：儲存設定與 Escape、亮暗色 360／768／1360px 均可操作且無水平溢出或未捕捉的瀏覽器錯誤。既有寫入失敗還原與 CSV／PDF 測試仍通過。
+
+執行結果在 `.tmp/verification/storage-results.json`；總表示例為 `.tmp/verification/clients.csv`，畫面為 `washi-storage-light.png`、`washi-roster-light.png`、`washi-roster-dark.png`。測試未執行 Google 字型下載或原生權限視窗；字型來源無法連線時已驗證病歷仍可操作。自動化重新載入 OPFS 時直接取得同一目錄，不測試作業系統控制代碼權限還原。
+
+## 選單與工具列驗證
+
+沿用現有和紙紙色、靛藍、Noto Sans TC 與細分隔線，將基本操作改為桌面應用程式的選單列及工具列。ENERGY 1／RHYTHM 2／MOTION 1。文件、磁碟與匯入匯出圖示分別對應新增、儲存及資料方向；下拉箭頭表示可以展開選單。
+
+`toolbar.cjs` 使用獨立 OPFS 測試資料，結果位於 `.tmp/verification/toolbar-results.json`；亮暗色桌面及手機畫面為 `toolbar-{light,dark}-{1280,360}.png`。
+
+- PASS：標題列沒有操作按鈕；個案及編輯標題只顯示內容與儲存提示，常用操作位於固定工具列。
+- PASS：無個案或未編輯時停用相關操作；檔案、個案、檢視與匯出一次只開啟一個選單，點外側、Escape 及 Tab 均可關閉。
+- PASS：選單實測上下左右鍵、Home／End、Enter、Escape、Tab；工具列方向鍵略過停用項目，對話框焦點仍正常。
+- PASS：從個案選單新增及編輯個案；Ctrl+S 產生 CSV／PDF；從檔案選單儲存失敗後保留草稿、圖示與快捷鍵文字。取消時的放棄確認可用 Escape 保留草稿。
+- PASS：⌘S 可重試儲存；儲存期間再次按快捷鍵不會重複寫入。工具列匯入確實開啟檔案選擇器並匯入 CSV，匯出選單下載總表。Ctrl+O 取消開啟資料夾後保留個案。
+- PASS：亮暗色各測 320、360、768、1280px，四個選單均在視窗內、無水平溢出，工具列點擊範圍至少 44px，捲動後仍能看見儲存。
+- PASS：既有病歷、模板與儲存測試通過，包含 Excel、JSON 備份、CSV 匯入、寫入失敗還原及未儲存提醒；獨立解析器仍可開啟七頁 A4 PDF，ZIP 通過 CRC 檢查。
+
+未測試真實 Windows／macOS 檔案對話框與權限視窗；此處實作的是 HTML 內的應用程式選單與工具列。快捷鍵由瀏覽器鍵盤事件驗證，未使用真實病歷。
+
+## Antislop 交付檢查
+
+採用修改時持續檢視（使用者本次選擇），保留 japanese-style-ppt-skill 的紙色與細線方向，字型依最新指示統一為 Noto Sans TC。ENERGY 1／RHYTHM 2／MOTION 1。以下證據以實際瀏覽器測試、來源檢視及畫面檢視為準；原生權限視窗與真實行動裝置鍵盤未納入自動化驗證。
+
+| 檢查 | 結果與證據 |
+| --- | --- |
+| R-01 色彩目的 | PASS：#2C3E50 靛藍來自指定和紙風格，用於儲存與選取重點；無漸層或發光背景。 |
+| R-02 文案 | PASS：介面、病歷與 SOAP 表單使用具體中文操作文字；症狀欄名維持英文，來源沒有破折號字元。 |
+| R-03 響應式 | PASS：亮暗色各測 360、768、1280px；設定頁及對話框均檢查頁面與容器寬度。 |
+| R-04 圖示 | PASS：工具列文件、磁碟與匯入匯出圖示表示實際操作；加號表示新增、叉號表示移除，均搭配中文名稱；下拉箭頭表示展開選單。 |
+| R-05 內容結構 | PASS：個案、SOAP、追蹤及項目設定皆依病歷工作區分，未新增行銷區塊。 |
+| R-06 字體 | PASS：依使用者最新要求，標題與表單皆優先使用 Noto Sans TC，透過字重區分層次，等寬數值便於比較。 |
+| R-07 背景 | PASS：純色病歷工作區，沒有裝飾網格。 |
+| R-08 箭頭 | PASS：工具列箭頭表示資料匯入匯出及展開選單；追蹤表箭頭表示前後評分，均有實際用途。 |
+| R-09 狀態標記 | PASS：「本次應評估」「已停用」均由實際評估時機或項目狀態產生。 |
+| R-10 毛玻璃 | PASS：未使用透明模糊面板。 |
+| R-11 圓角 | PASS：開放面板與列表無外框圓角；輸入框、按鈕及狀態使用 2px 小圓角，移除膠囊形狀。 |
+| R-12 陰影 | PASS：移除編輯列浮動陰影，僅保留選取個案及評分時點的內側狀態線。 |
+| R-13 發光 | PASS：來源無發光效果。 |
+| R-14 重複卡片 | PASS：項目設定使用列表，重複列是同一種可編輯臨床項目。 |
+| R-15 操作名稱 | PASS：「新增評估項目」「新增復健項目」「儲存項目」對應實際 GUI 操作測試。 |
+| R-16 行銷措辭 | PASS：新文案只描述填寫、儲存與管理，不含行銷宣稱。 |
+| R-17 數字 | PASS：顯示的個案數、紀錄數、症狀及結果均來自現有儲存資料；測試值已標記為測試個案。 |
+| R-18 見證 | PASS：未新增評論、人物或客戶見證。 |
+| R-19 動態 | PASS：僅保留操作狀態的短轉場，遵守 reduced-motion。 |
+| R-20 識別性 | PASS：沿用病歷名單與 SOAP 字母區分、症狀時點及評估時機，服務復健記錄用途。 |
+| R-21 主題 | PASS：初次跟隨系統，手動亮暗色切換及重載保存均通過；不依賴已連接的資料夾。 |
+| R-22 插圖 | PASS：未新增插圖。 |
+| R-23 視覺資產 | PASS：保留文字品牌；新增的儲存位置與總表操作均來自使用者要求，沒有生成視覺資產。 |
+| R-24 導覽 | PASS：病歷、進度追蹤、項目設定皆切換至實際內容；測試直接操作三個頁籤。 |
+| R-25 對比 | PASS：亮暗色文字色組由測試計算達 4.5:1；輸入框邊界達 3:1。 |
+| R-26 可操作性 | PASS：新增、編輯、複製、停用、再次啟用、移除欄位及儲存均有實際點擊測試；儲存設定、選取本機資料夾、重新讀取及總表匯入匯出皆測試。 |
+| R-27 狀態 | PASS：空資料、讀取中與寫入失敗均有中文提示；失敗時保留表單並提供重試。 |
+| R-28 FAQ | PASS：未新增 FAQ。 |
+| R-29 配色 | PASS：紙色、中性色與單一靛藍重點；紅、綠、棕僅保留於病歷狀態與評分比較，皆搭配文字或數值。 |
+| R-30 原創性 | PASS：沿用現有復健病歷工具，沒有套用他站版型。 |
+| R-31 設計理由 | PASS：紙色與靛藍呼應指定和紙風格；Noto Sans TC 依使用者指示統一中文字型；開放列表便於掃讀歷程；細線與留白區隔名單、病歷及操作。 |
+| R-32 鍵盤 | PASS：模板對話框實測 Tab／Shift+Tab 循環與 Escape；選單及工具列實測方向鍵、Home／End、Enter、Escape、Tab，Ctrl+S／⌘S 儲存與 Ctrl+O 開啟；來源保留可見 focus-visible 邊框。 |
+| R-33 原始碼 | PASS：所有功能直接修改 HTML 內的來源；沒有外掛來源改寫腳本。 |
+| R-34 主題一致性 | PASS：新欄位、對話框及設定頁使用共用 CSS 變數，亮暗色多尺寸畫面已檢視。 |
+| R-35 執行證據 | PASS：執行既有與新增的 Playwright 流程；以獨立 PDF 解析器及 ZIP CRC 檢查匯出。 |
+| R-36 誠實性 | PASS：沒有新增安全、合規、效能或臨床成效宣稱。 |
+| R-37 方向 | PASS：依使用者指定的日式和紙風格；修改介面前已宣告 ENERGY 1／RHYTHM 2／MOTION 1。 |
+| R-38 資料 | PASS：不產生看似真實的新病歷；測試僅使用合成且已標記的個案。 |
+| Liveliness | PASS：字重與 SOAP 字母建立閱讀層次；儲存位置以目錄說明呈現、名單為窄欄、病歷為開放長表單；靛藍定位主要動作，以細線與留白形成閱讀節奏。 |
+| C-1 意圖 | PASS：配色、字體、列表與間距的理由已記錄於 R-31。 |
+| C-2 完整性 | PASS：本機資料夾可從選取、儲存、重新讀取到刪除，並驗證錯誤重試；既有模板與匯出流程回歸通過。 |
+| C-3 內容 | PASS：新增功能直接服務指定本機資料夾與完整個案 CSV 的要求。 |
+| C-4 韌性 | PASS：涵蓋雙主題、多尺寸、鍵盤、儲存失敗、禁用瀏覽器儲存與舊版病歷；真實裝置鍵盤仍需實機確認。 |
+| C-5 證據 | PASS：結果由記錄檔、匯出檔與畫面證據支持，不以臆測代替。 |

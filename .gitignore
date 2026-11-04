@@ -1,0 +1,4 @@
+.tmp/
+# Local record folders and browser logs must never be committed.
+/Data/
+debug.log
