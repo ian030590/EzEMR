@@ -55,11 +55,13 @@ PDF 字體：電腦未安裝 Noto Sans TC、HTML 旁也沒有 `EzEMR-assets/Noto
 
 ## 2026-11-02：內嵌資料與匯入流程的推送檢查
 
-`check_i18n.cjs` 依腳本類型排除 JSON 資料，內嵌 Excel 元件僅在符合固定 SHA-256 時排除介面掃描。原有漏翻反例仍執行，另驗證 JSON 不會被當成 JavaScript、可執行腳本不會因 `data-type` 被略過，以及修改第三方元件會失敗。匯入用的原始工作表／欄位識別值保留不變，介面文案走 `ui()`，新增內建評估標籤由 `LABELS` 提供雙語。
+`check_i18n.cjs` 依腳本類型排除 JSON 資料；HTML 內嵌 SheetJS Community Edition 0.20.3（Apache-2.0）讀取 Excel 匯入檔，以及 xlsx-js-style 1.2.0 產生含樣式的 Excel 匯出檔，兩者僅在符合各自固定 SHA-256 時排除介面掃描。原有漏翻反例仍執行，另驗證 JSON 不會被當成 JavaScript、可執行腳本不會因 `data-type` 被略過，以及修改任一第三方元件會失敗；讀取元件的初始化腳本仍須通過介面掃描。匯入用的原始工作表／欄位識別值保留不變，介面文案走 `ui()`，新增內建評估標籤由 `LABELS` 提供雙語。
 
 公開版 HTML 不含內附個案資料，各測試會確認此點。`imports.cjs` 測試空白啟動與直接離線開啟，再以獨立資料夾測試合成資料：中英文 Excel 匯入、原始欄位與病歷保存、日期與數值 0、匯入報告與錯誤、舊版 SOAP 去重、`_archive` 排除，以及缺少 `client.json` 時不寫入資料。語言切換不改寫已儲存的資料與檔名。
 
 `imports.cjs` 與所有既有 `.cjs`／`.py` 測試均由 `run-ci.cjs` 自動發現；pre-push 繼續執行同一入口，任何失敗都會阻止推送。所有合成資料、HTML 測試副本與產物置於忽略的 `.tmp/`。
+
+`excel-libraries.cjs` 驗證讀取／匯出版本分離、舊讀取 API 拒絕執行、XLSB 匯入，以及總表與 SOAP 匯出檔的字型、填色、換行與 SOAP 框線；另以雙語驗證讀取元件缺失時的錯誤且不觸發 CDN 備援。使用 `xlsx.core.min.js`，因 `xlsx.mini.min.js` 讀取合成 XLSB 時出現 `parse_sty_bin is not defined`。
 
 選單回歸檢查另涵蓋固定工具列取得焦點後的延遲捲動事件；事件對應的頁面位置未變時不關閉選單，實際捲動仍會關閉。寬螢幕的工具列固定在畫面上方，編輯長表單時仍可儲存；窄螢幕的工具列隨頁面捲動。元件雜湊以 LF 正規化，並驗證 LF／CRLF checkout 都可通過。
 

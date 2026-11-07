@@ -33,6 +33,11 @@ function validate(html) {
       assert.equal(createHash('sha256').update(source.trim().replace(/\r\n?/g, '\n')).digest('hex'), '0c796fb94a895613dd6d34289ea25df17531f47bd2f89e0f809a829b0459aa67', 'Embedded Excel library changed; review its source and update the pinned hash');
       continue;
     }
+    if (/\bid\s*=\s*["']excelReaderLibrary["']/i.test(attributes)) {
+      // SheetJS CE 0.20.3 xlsx.core.min.js; raw SHA-256: 197255b0c278588117e45c14c1b25398562864cd9ffa9752c4b4d29f6d9bfd27.
+      assert.equal(createHash('sha256').update(source.trim().replace(/\r\n?/g, '\n')).digest('hex'), '19d35a5c9abf6a4bead732e7c50fd4856bee273b567cd977e0dc9d26363aaaea', 'Embedded Excel reader changed; review its source and update the pinned hash');
+      continue;
+    }
     scripts.push({ source, ast: parse(source, { ecmaVersion: 'latest', locations: true }) });
   }
   const definitions = new Map();
@@ -154,5 +159,7 @@ assert.equal(validate(html.replace(/<\/body>(\s*<\/html>\s*)$/, '<script type="a
 assert.throws(() => validate(html.replace(/<\/body>(\s*<\/html>\s*)$/, '<script type="text/javascript">document.title = "新增個案";</script></body>$1')), undefined, 'Typed JavaScript must still be checked');
 assert.throws(() => validate(html.replace(/<\/body>(\s*<\/html>\s*)$/, '<script data-type="application/json">document.title = "新增個案";</script></body>$1')), undefined, 'Data attributes must not exempt executable scripts');
 assert.throws(() => validate(html.replace('<script id="excelLibrary">', '<script id="excelLibrary">document.title = "新增個案";')), undefined, 'Modified vendor scripts must not bypass the gate');
+assert.throws(() => validate(html.replace('<script id="excelReaderLibrary">', '<script id="excelReaderLibrary">document.title = "新增個案";')), undefined, 'Modified reader scripts must not bypass the gate');
+assert.throws(() => validate(html.replace('<script id="excelReaderInit">', '<script id="excelReaderInit">document.title = "新增個案";')), undefined, 'Reader initialization must remain subject to UI scanning');
 assert.throws(() => validate(html.replace("session: '每次復健'", "session: 'English-only timing'")), undefined, 'Localization gate accepted an English-only canonical label');
 console.log(`PASS: ${count} localization fragments, built-in label pairs and English README; gate rejects missing translations and raw one-language UI`);

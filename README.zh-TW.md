@@ -209,7 +209,7 @@ Excel 匯入需要包含「評估及復能收案名單」、「評估紀錄」�
 
 ## 離線使用與瀏覽器儲存
 
-HTML 已內嵌 Excel 元件，病歷編輯、CSV／PDF 儲存、支援格式的 Excel 匯入及 Excel 匯出均可離線使用。字體使用本機或系統檔案。程式仍保留 jsDelivr 備援，僅在 `window.XLSX` 無法使用時嘗試下載 Excel 元件。
+HTML 已內嵌 SheetJS Community Edition 0.20.3（Apache-2.0）讀取 Excel 匯入檔，以及 xlsx-js-style 1.2.0 產生含樣式的 Excel 匯出檔，兩者均以 SHA-256 固定驗證。病歷編輯、CSV／PDF 儲存、支援格式的 Excel 匯入及 Excel 匯出均可離線使用。字體使用本機或系統檔案。程式仍保留 jsDelivr 備援，僅在 `window.XLSX` 無法使用時嘗試下載匯出元件。
 
 瀏覽器不支援資料夾存取時，改用瀏覽器儲存。每次儲存病歷會下載 ZIP，內含以病歷號命名的資料夾與該次 CSV、PDF；未填病歷號時以姓名命名。請自行解壓縮並合併到病歷資料夾，此模式不會直接更新磁碟上的固定資料夾。
 
@@ -227,7 +227,7 @@ EzEMR 以 [MIT 授權](LICENSE)釋出。
 .githooks/pre-push     每次推送前執行完整 CI
 .github/workflows/     推送與 PR 時自動執行完整 CI
 AGENTS.md              開發與推送規則
-EzEMR.html             主程式，內嵌 Excel 元件
+EzEMR.html             主程式，內嵌 Excel 匯入／匯出元件
 LICENSE                MIT 授權
 README.md              英文說明
 README.zh-TW.md        繁體中文說明
@@ -243,6 +243,7 @@ tests/                 瀏覽器測試與 PDF／ZIP 檢查
   language.cjs         語言切換與資料保留測試
   score-imports.cjs    OcuTrain 與 UFOV 分數匯入、測驗設定與測驗紀錄的雙語測試
   imports.cjs          空白啟動、離線 Excel 與舊版 SOAP 匯入的雙語測試
+  excel-libraries.cjs  Excel 讀取元件隔離、XLSB 匯入與含樣式匯出的雙語測試
   workspace.cjs        直接開啟檔案、個案摘要、篩選、鍵盤分頁與版面檢查
   check_i18n.cjs       原始碼翻譯與英文文件檢查
   check_exports.py     獨立 PDF 與 ZIP 驗證
@@ -264,4 +265,4 @@ git config --local core.hooksPath .githooks
 
 若 `EzEMR.html` 內嵌了個案資料，測試會失敗。測試在獨立瀏覽器環境建立合成個案；`imports.cjs` 另直接從磁碟開啟公開版 HTML，再使用獨立資料夾測試合成 Excel 與舊版 SOAP 匯入。雙語檢查包含匯入報告、錯誤、來源標籤、日期、重複紀錄與封存排除。原生作業系統資料夾對話框與臨床適用性不在自動化驗證範圍內。
 
-翻譯檢查會排除不可執行的 JSON 資料，並以固定 SHA-256 雜湊驗證內嵌 Excel 元件。應用程式腳本、匯入訊息、無障礙名稱及內建評估項目的雙語標籤仍須通過翻譯檢查。來源資料表的工作表名稱與欄位名稱屬於資料識別值，兩種語言下都保持不變。反例測試確認漏翻介面或修改第三方元件仍會失敗。
+翻譯檢查會排除不可執行的 JSON 資料，並以固定 SHA-256 雜湊驗證兩個內嵌 Excel 元件。應用程式腳本、匯入訊息、無障礙名稱及內建評估項目的雙語標籤仍須通過翻譯檢查。來源資料表的工作表名稱與欄位名稱屬於資料識別值，兩種語言下都保持不變。反例測試確認漏翻介面或修改第三方元件仍會失敗。

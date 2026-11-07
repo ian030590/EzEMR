@@ -209,7 +209,7 @@ Editing an old record creates CSV, PDF, and TXT files and retains the original J
 
 ## Offline use and browser storage
 
-The HTML embeds the Excel library, so record editing, CSV/PDF saving, supported Excel import, and Excel export work offline. Fonts use local or system files. The app retains a jsDelivr fallback for loading the Excel library if `window.XLSX` is unavailable.
+The HTML embeds SheetJS Community Edition 0.20.3 (Apache-2.0) for reading Excel imports and xlsx-js-style 1.2.0 for styled Excel export, both pinned by SHA-256. Record editing, CSV/PDF saving, supported Excel import, and Excel export work offline. Fonts use local or system files. The app retains a jsDelivr fallback for loading the export library if `window.XLSX` is unavailable.
 
 Browsers without folder access use browser storage instead. Each saved session then downloads a ZIP containing its CSV and PDF inside a folder named after the medical record number, or the client name if no number is provided. Extract and merge these files into your record folders manually; this mode does not update a fixed folder on disk.
 
@@ -227,7 +227,7 @@ EzEMR is released under the [MIT License](LICENSE).
 .githooks/pre-push     Runs full CI before every push
 .github/workflows/     Full CI on pushes and pull requests
 AGENTS.md              Development and push rules
-EzEMR.html             Application and embedded Excel library
+EzEMR.html             Application and embedded Excel import/export libraries
 LICENSE                MIT License
 README.md              English documentation
 README.zh-TW.md        Traditional Chinese documentation
@@ -243,6 +243,7 @@ tests/                 Browser tests and PDF/ZIP checks
   language.cjs         Language switching and data preservation tests
   score-imports.cjs    OcuTrain and UFOV score imports, test settings, and test records in both languages
   imports.cjs          Empty startup, offline Excel and legacy SOAP imports in both languages
+  excel-libraries.cjs  Excel reader isolation, XLSB imports and styled exports in both languages
   workspace.cjs        Offline file opening, client summaries, filters, keyboard tabs, and layout checks
   check_i18n.cjs       Source translation and English documentation gate
   check_exports.py     Independent PDF and ZIP validation
@@ -264,4 +265,4 @@ Every interface feature must include both Traditional Chinese and English. The t
 
 The tests fail if client records are embedded in `EzEMR.html`. They create synthetic clients in isolated browser contexts. `imports.cjs` also opens the published HTML directly from disk, then uses separate folders for synthetic Excel and legacy SOAP imports. Its bilingual checks cover import reports, errors, source labels, dates, duplicate records, and archive exclusion. Native operating-system folder dialogs and clinical suitability are outside automated coverage.
 
-The translation gate excludes non-executable JSON data and checks the embedded Excel library against a pinned SHA-256 hash. Application scripts, import messages, accessible names, and built-in assessment label pairs remain subject to translation checks. Sheet names and column headers of the source workbook are data identifiers and stay unchanged in both languages. Regression probes confirm that untranslated UI and modified vendor scripts still fail the gate.
+The translation gate excludes non-executable JSON data and checks both embedded Excel libraries against pinned SHA-256 hashes. Application scripts, import messages, accessible names, and built-in assessment label pairs remain subject to translation checks. Sheet names and column headers of the source workbook are data identifiers and stay unchanged in both languages. Regression probes confirm that untranslated UI and modified vendor scripts still fail the gate.
