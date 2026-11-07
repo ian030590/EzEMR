@@ -108,6 +108,41 @@ const output = path.join(root, '.tmp', 'verification');
     await checkEnglish('#planEdit'); await checkEnglish('#trainingEdit');
     await action('new-session').click();
     await checkEnglish('#soapForm');
+    // Clinical flow: mode-specific lists, the legacy empty choice, PEO labels and both themes.
+    for (const locale of ['zh-TW', 'en']) {
+      await choose(locale);
+      await page.evaluate(() => { editing = collectSession(); delete editing.mode; renderEditor(); });
+      assert.equal(await page.locator('#s-mode option:checked').innerText(), locale === 'en' ? 'Not specified' : '未指定');
+      assert.deepEqual(await page.locator('.soap-sec .sec-title > h3').allTextContents(), locale === 'en'
+        ? ['Subjective', 'Assessment', 'PEO clinical reasoning', 'Intervention and plan'] : ['主觀描述', '評估', 'PEO 臨床推理', '介入與計畫']);
+      assert.deepEqual(await page.locator('#assessList > section > h3').allTextContents(), locale === 'en' ? ['Visual function', 'Functional vision'] : ['視覺功能', '功能性視覺']);
+      await page.locator('#ac-va').check(); await page.locator('#ac-self_report').check();
+      await page.locator('#ac-copm').check();
+      await page.locator('#adaptationPicks [data-strategy="workstation_setup"]').check();
+      for (const mode of ['', 'inperson', 'telerehab']) {
+        await page.locator('#s-mode').selectOption(mode);
+        assert.equal(await page.locator('#adaptationPicks [data-strategy="workstation_setup"]').isChecked(), true);
+        if (locale === 'en') await checkEnglish('#soapForm');
+        for (const theme of ['light', 'dark']) {
+          await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+          for (const width of [320, 360, 768, 1280]) {
+            await page.setViewportSize({ width, height: 900 });
+            assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${locale} ${mode || 'unspecified'} ${theme} editor at ${width}px`);
+            const sizes = await page.locator('#s-mode, #s-person, #s-environment, #s-occupation, #adaptationPicks .pick, #compensationPicks .pick, #assessList .pick, #as-va input, #as-va select, #as-self_report input, #as-self_report textarea').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height })));
+            assert.ok(sizes.every(size => size.width >= 44 && size.height >= 44), 'Clinical flow controls retain 44px touch targets');
+            if (mode === 'telerehab' && width === 360) {
+              for (const [section, name] of [[1, 'assessment-groups'], [2, 'peo'], [3, 'intervention']]) await page.locator('.soap-sec').nth(section).screenshot({ path: path.join(output, `language-${locale}-${name}-${theme}-360.png`) });
+            }
+          }
+          if (mode === 'telerehab') await page.screenshot({ path: path.join(output, `language-${locale}-clinical-${theme}-1280.png`), fullPage: true });
+        }
+      }
+    }
+    await page.locator('#adaptationPicks [data-strategy="workstation_setup"]').uncheck();
+    for (const id of ['va', 'self_report', 'copm']) await page.locator('#ac-' + id).uncheck();
+    await page.locator('#s-mode').selectOption('inperson');
+    await page.evaluate(() => document.documentElement.dataset.theme = 'light');
+    console.log('PASS: Bilingual PEO/intervention sections, unspecified/in-person/telerehab modes and retained cross-mode strategies fit 320/360/768/1280px in light and dark themes');
     // A training test record added by hand: its card, result boxes and folded settings are in English.
     await page.locator('#tx-ocular-on').check();
     await page.locator('#tx-ocular-run-item').selectOption('fixation'); await action('run-add').click();
@@ -206,6 +241,7 @@ const output = path.join(root, '.tmp', 'verification');
 
     await action('new-session').click();
     await page.locator('#s-visit').selectOption('absent');
+    assert.equal(await page.locator('#s-mode').isVisible(), true, 'Service mode follows the visible basic information for absent visits');
     const reason = await page.evaluate(() => ABSENCE_REASONS[0]);
     await page.locator('#abs-reason').selectOption(reason);
     await choose('zh-TW'); await choose('en');

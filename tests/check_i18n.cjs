@@ -111,7 +111,7 @@ function validate(html) {
         if (['ABSENCE_REASONS', 'NOTIFIED'].includes(owner) || owner === 'EYES' && parent?.type === 'ArrayExpression' && parent.elements[1] === node) {
           assert.ok(han.test(node.value), `${location}: ${owner} display choices need canonical Chinese text and its English translation`);
         }
-        if (builtins.has(owner) && !key && !['id', 'k', 'timing', 'type'].includes(parent?.key?.name) && /[A-Za-z]/.test(node.value)) {
+        if (builtins.has(owner) && !key && !['id', 'k', 'timing', 'type', 'category'].includes(parent?.key?.name) && /[A-Za-z]/.test(node.value)) {
           assert.ok(Object.hasOwn(labels, node.value) || shared.has(node.value), `${location}: built-in item needs a Chinese LABELS entry: ${node.value}`);
         }
         if ((localized || uiSink(node, parent)) && !node.value.includes('<')) sharedText(node.value, location);

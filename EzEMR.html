@@ -508,6 +508,38 @@ if (window.XLSX) XLSX.read = XLSX.readFile = XLSX.readFileSync = () => { throw n
 let language = 'zh-TW';
 try { if (localStorage.getItem('ezrehab-language') === 'en') language = 'en'; } catch (_) {}
 const UI_EN = {
+  "視覺功能": "Visual function",
+  "功能性視覺": "Functional vision",
+  "分類": "Category",
+  "評估分類必須為視覺功能或功能性視覺。": "Assessment category must be visual function or functional vision.",
+  "服務型態": "Service mode",
+  "   服務型態：": "   Service mode: ",
+  "面對面": "In-person",
+  "遠距復健": "Telerehab",
+  "未指定": "Not specified",
+  "服務型態格式錯誤": "Invalid service mode",
+  "PEO 架構欄位格式錯誤": "Invalid PEO framework fields",
+  "介入策略欄位格式錯誤": "Invalid intervention strategy fields",
+  "評估": "Assessment",
+  "PEO 臨床推理": "PEO clinical reasoning",
+  "依據評估結果進行介入規劃": "Assessment findings guide intervention planning",
+  "個人": "Person",
+  "環境": "Environment",
+  "作業": "Occupation",
+  "視覺功能、症狀、個人因素": "Visual function, symptoms, personal factors",
+  "居家、工作、數位環境、照明與設備": "Home, work, digital environments, lighting and equipment",
+  "日常作業表現、參與需求、COPM 目標": "Daily task performance, participation needs, COPM goals",
+  "臨床判斷與介入規劃": "Clinical judgement and intervention planning",
+  "介入與計畫": "Intervention and plan",
+  "以 PEO 架構為指引": "Guided by the PEO Framework",
+  "復能": "Remediation",
+  "調適": "Adaptation",
+  "代償": "Compensation",
+  "調適備註": "Adaptation notes",
+  "代償備註": "Compensation notes",
+  "O：評估": "O: Assessment",
+  "A：PEO 臨床推理": "A: PEO clinical reasoning",
+  "P：介入與計畫": "P: Intervention and plan",
   "Excel 匯入請使用內嵌的新版讀取元件。": "Use the embedded updated reader for Excel imports.",
   "Excel 匯入元件無法使用，請重新開啟完整的 EzEMR.html。": "The Excel import component is unavailable. Reopen the complete EzEMR.html file.",
   "目前顯示病歷副本。連接病歷資料夾後可讀取最新檔案並直接儲存。": "You are viewing a copy of the records. Connect the record folder to read the latest files and save changes directly.",
@@ -784,7 +816,7 @@ const UI_EN = {
   "建立個案": "Create client",
   "建立第一位個案": "Create the first client",
   "後": "after",
-  "後續計畫": "Plan",
+  "後續計畫": "Next steps",
   "恢復後": "After recovery",
   "恢復時間": "Recovery time",
   "恢復時間：": "Recovery time: ",
@@ -1463,14 +1495,38 @@ const RUN_ITEMS = { ocular: ['pursuit', 'fixation', 'saccade', 'vor'], periph: [
 const RUN_ACTS = { pursuit: 'Smooth pursuit tracking', fixation: 'Fixation', saccade: 'Saccades', vor: 'Gaze stabilisation (VOR)',
   ufov_speed: 'UFOV subtest 1 – processing speed', ufov_divided: 'UFOV subtest 2 – divided attention', ufov_selective: 'UFOV subtest 3 – selective attention' };
 const DEFAULT_PLAN = [
-  { id: 'copm', domain: 'Occupational performance & satisfaction', name: 'COPM', timing: 'bp', copm: true,
+  { id: 'copm', category: 'functional', domain: 'Occupational performance & satisfaction', name: 'COPM', timing: 'bp', copm: true,
     outcome: 'Performance and satisfaction ratings for the same priority occupations; change scores' },
   ...DEVICE_ITEMS.slice(0, 4),
   { id: 'npc', domain: 'Basic visual function – convergence', name: 'Clinical convergence assessment (NPC)', timing: 'milestone',
     fields: ['NPC break (cm)', 'NPC recovery (cm)', 'Positive fusional vergence (Δ)', 'Binocular eye-tracking measures'], outcome: 'NPC, positive fusional vergence and selected binocular eye-tracking measures' },
   ...DEVICE_ITEMS.slice(4),
-  { id: 'func', domain: 'Functional vision (work related)', name: 'Work-related functional vision task', timing: 'milestone',
-    fields: ['Task / measure', 'Result'], outcome: '' }
+  { id: 'func', category: 'functional', domain: 'Functional vision (work related)', name: 'Work-related functional vision task', timing: 'milestone',
+    fields: ['Task / measure', 'Result'], outcome: '' },
+  ...[{ id: 'record_review', name: 'Medical record review' }, { id: 'optometry_record', name: 'Optometry record' }, { id: 'ot_record', name: 'OT assessment record' }].map(item => ({ ...item, category: 'visual', domain: 'Visual function', timing: 'milestone',
+    fields: [{ id: 'source_date', label: 'Source / date', type: 'text' }, { id: 'summary', label: 'Summary', type: 'textarea' }] })),
+  ...[{ id: 'va', name: 'Visual acuity' }, { id: 'near_va', name: 'Near visual acuity' }].map((item, i) => ({ ...item, category: 'visual', domain: 'Visual function', timing: 'assessment',
+    fields: ['OD', 'OS', 'OU'].map(eye => ({ id: eye.toLowerCase(), label: eye, type: 'text' })).concat([
+      { id: 'notation', label: 'Chart / notation', type: 'text' },
+      { id: 'correction', label: 'Correction', type: 'select', options: ['Uncorrected', 'Habitual', 'Best corrected'] },
+      ...(i ? [{ id: 'distance_cm', label: 'Test distance (cm)', type: 'number', min: 0 }] : [])]) })),
+  { id: 'refraction', category: 'visual', domain: 'Visual function', name: 'Refraction', timing: 'assessment',
+    fields: ['OD', 'OS', 'Add', 'Source'].map(label => ({ id: label.toLowerCase(), label, type: 'text' })) },
+  { id: 'vf', category: 'visual', domain: 'Visual function', name: 'Visual field', timing: 'assessment',
+    fields: [{ id: 'method', label: 'Test / method', type: 'text' }, ...['OD', 'OS'].map(eye => ({ id: eye.toLowerCase(), label: eye, type: 'text' })),
+      { id: 'summary', label: 'Summary', type: 'textarea' }] },
+  ...[{ id: 'cs', name: 'Contrast sensitivity' }, { id: 'color', name: 'Color vision' }].map(item => ({ ...item, category: 'visual', domain: 'Visual function', timing: 'assessment',
+    fields: [...['OU', 'OD', 'OS'].map(eye => ({ id: eye.toLowerCase(), label: eye, type: 'text' })), { id: 'test', label: 'Test type (as recorded)', type: 'text' }] })),
+  { id: 'stereo', category: 'visual', domain: 'Visual function', name: 'Stereopsis', timing: 'assessment',
+    fields: [{ id: 'arcsec', label: 'Result (arcsec)', type: 'number', min: 0 }, { id: 'test', label: 'Test type (as recorded)', type: 'text' }] },
+  { id: 'self_report', category: 'functional', domain: 'Functional vision', name: 'Self-report questionnaire', timing: 'milestone',
+    fields: [{ id: 'questionnaire', label: 'Questionnaire', type: 'text' }, { id: 'score', label: 'Score', type: 'text' }, { id: 'findings', label: 'Key findings', type: 'textarea' }] },
+  { id: 'ot_assessment', category: 'functional', domain: 'Functional vision', name: 'OT assessment', timing: 'assessment',
+    fields: [{ id: 'method', label: 'Tool / method', type: 'text' }, { id: 'findings', label: 'Findings', type: 'textarea' }] },
+  { id: 'daily_task', category: 'functional', domain: 'Functional vision', name: 'Daily task performance', timing: 'assessment',
+    fields: [{ id: 'task', label: 'Task / measure', type: 'text' }, { id: 'performance', label: 'Performance / observation', type: 'textarea' }] },
+  { id: 'participation', category: 'functional', domain: 'Functional vision', name: 'Participation needs', timing: 'assessment',
+    fields: [{ id: 'needs', label: 'Needs and roles', type: 'textarea' }, { id: 'priority', label: 'Priority', type: 'text' }] }
 ];
 const OLD_DEFAULT_NAMES = ['VOMS (Vestibular/Ocular Motor Screening)', 'Near point of convergence (NPC)', 'King-Devick test', 'DEM (Developmental Eye Movement)'];
 
@@ -1486,6 +1542,28 @@ const TRAIN = [
 ];
 const BLOCK_SUGGEST = ['Saccade task (eye tracker)', 'Fixation task (eye tracker)', 'Smooth-pursuit task (eye tracker)', 'Peripheral-stimulus task', 'Convergence (NPC) testing', 'UFOV', 'Work-related functional vision task', ...TRAIN.map(t => t.label)];
 const LABELS = {
+  'Visual function': '視覺功能', 'Functional vision': '功能性視覺',
+  'Medical record review': '病歷資料', 'Optometry record': '視光紀錄', 'OT assessment record': '職能治療評估紀錄',
+  'Visual acuity': '視力', 'Near visual acuity': '近距離視力', 'Refraction': '屈光', 'Visual field': '視野',
+  'Contrast sensitivity': '對比敏感度', 'Color vision': '色覺', 'Stereopsis': '立體視',
+  'Self-report questionnaire': '自填問卷', 'OT assessment': '職能治療評估', 'Daily task performance': '日常作業表現', 'Participation needs': '參與需求',
+  'Source / date': '來源／日期', 'Summary': '摘要', 'Chart / notation': '視力表／記法', 'Correction': '矯正狀態',
+  'Uncorrected': '未矯正', 'Habitual': '慣用矯正', 'Best corrected': '最佳矯正', 'Test distance (cm)': '測驗距離（cm）',
+  'Add': '近用附加度數', 'Source': '來源', 'Test / method': '測驗／方法', 'Result (arcsec)': '結果（角秒）',
+  'Questionnaire': '問卷', 'Score': '分數', 'Key findings': '主要發現', 'Tool / method': '工具／方法', 'Findings': '評估發現',
+  'Performance / observation': '表現／觀察', 'Needs and roles': '需求與角色', 'Priority': '優先順序',
+  'Workstation setup': '工作站設置',
+  'Environmental modification': '環境調整',
+  'Task setup adjustment': '作業任務型態調整',
+  'Scanning strategies': '掃視搜尋策略',
+  'Head-turning strategies': '頭部動態調整',
+  'Pacing and rest breaks': '活動節律與休息安排',
+  'Home/work environment consultation': '居家／工作環境諮詢',
+  'Remote task modification': '遠距作業任務調整',
+  'Digital support tools': '數位輔具工具應用',
+  'Self-management strategies': '自我管理策略',
+  'Pacing and fatigue management': '活動節律與任務管理',
+  'Stepwise task strategies': '分階段作業策略',
   'Occupational performance & satisfaction': '職能表現與滿意度',
   'Smooth pursuit (OcuTrain PURSUIT)': '平滑追視（OcuTrain PURSUIT）', 'Fixation (OcuTrain FIXATION)': '凝視（OcuTrain FIXATION）',
   'Saccade (OcuTrain SACCADE)': '跳視（OcuTrain SACCADE）', 'Vestibulo-ocular reflex (OcuTrain VOR)': '前庭眼反射（OcuTrain VOR）',
@@ -1824,6 +1902,7 @@ function validateItems(items, kind) {
     if (!id(key) || used.has(key) || typeof name !== 'string' || !name.trim()) throw new Error(ui('項目名稱或識別碼格式錯誤'));
     used.add(key);
     if (kind === 'assessment' && (!Object.hasOwn(TIMING, item.timing || 'assessment') || (item.copm && key !== 'copm'))) throw new Error(ui('評估時機或 COPM 模板格式錯誤'));
+    if (kind === 'assessment' && item.category !== undefined && !['visual', 'functional'].includes(item.category)) throw new Error(ui('評估分類必須為視覺功能或功能性視覺。'));
     if (kind === 'training' && (item.acts != null && (!Array.isArray(item.acts) || item.acts.some(a => typeof a !== 'string')))) throw new Error(ui('復健活動清單格式錯誤'));
     if (item.fields != null && !Array.isArray(item.fields)) throw new Error(ui('結果欄位格式錯誤'));
     const fieldIds = new Set();
@@ -1836,6 +1915,23 @@ function validateItems(items, kind) {
     }
   }
 }
+// Strategy labels use the same bilingual LABELS catalog as the built-in training items.
+const INTERVENTIONS = {
+  inperson: {
+    adaptation: { workstation_setup: 'Workstation setup', environment_mod: 'Environmental modification', task_setup: 'Task setup adjustment' },
+    compensation: { scanning: 'Scanning strategies', head_turning: 'Head-turning strategies', pacing_rest: 'Pacing and rest breaks' }
+  },
+  telerehab: {
+    adaptation: { env_consult: 'Home/work environment consultation', remote_task: 'Remote task modification', digital_tools: 'Digital support tools' },
+    compensation: { self_management: 'Self-management strategies', pacing_fatigue: 'Pacing and fatigue management', stepwise: 'Stepwise task strategies' }
+  }
+};
+function serviceModeLabel(mode) { return mode === 'inperson' ? ui('面對面') : mode === 'telerehab' ? ui('遠距復健') : ui('未指定'); }
+function approachLabel(approach) { return approach === 'adaptation' ? ui('調適') : ui('代償'); }
+function strategyLabel(approach, id) {
+  for (const catalog of Object.values(INTERVENTIONS)) if (Object.hasOwn(catalog[approach], id)) return labelText(catalog[approach][id]);
+  return id;
+}
 function validateRecord(c, s) {
   const id = value => typeof value === 'string' && /^[A-Za-z0-9_-]{1,120}$/.test(value) && !['__proto__', 'constructor', 'prototype'].includes(value);
   const object = value => value && typeof value === 'object' && !Array.isArray(value);
@@ -1847,6 +1943,15 @@ function validateRecord(c, s) {
   if (!object(s) || !id(s.id) || typeof s.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s.date) ||
     !VISITS.some(v => v.k === s.visit) || !Array.isArray(s.sym) || !object(s.assess) || !object(s.training)) throw new Error(ui('復健紀錄缺少有效的日期、類型或評估資料'));
   if ([...Object.keys(s.assess), ...Object.keys(s.training)].some(key => !id(key))) throw new Error(ui('評估或復健項目識別碼格式錯誤'));
+  if (s.mode != null && !['inperson', 'telerehab'].includes(s.mode)) throw new Error(ui('服務型態格式錯誤'));
+  if (s.peo != null && (!object(s.peo) || ['person', 'environment', 'occupation'].some(key => s.peo[key] !== undefined && typeof s.peo[key] !== 'string'))) throw new Error(ui('PEO 架構欄位格式錯誤'));
+  if (s.interventions != null) {
+    if (!object(s.interventions)) throw new Error(ui('介入策略欄位格式錯誤'));
+    for (const key of ['adaptation', 'compensation']) {
+      const d = s.interventions[key];
+      if (d != null && (!object(d) || !Array.isArray(d.picks) || d.picks.some(pick => !id(pick)) || (d.notes !== undefined && typeof d.notes !== 'string'))) throw new Error(ui('介入策略欄位格式錯誤'));
+    }
+  }
   if (s.assessmentPlan != null) validateItems(s.assessmentPlan, 'assessment');
   if (s.trainingPlan != null) validateItems(s.trainingPlan, 'training');
   for (const key of ['subjective', 'objective', 'feedback', 'otherTx', 'assessment', 'plan', 'clinician', 'nextDate']) if (!optionalText(s[key])) throw new Error(ui('病歷文字欄位格式錯誤'));
@@ -2495,7 +2600,8 @@ document.addEventListener('keydown', e => {
 function normalizePlan(plan) {
   if (!Array.isArray(plan)) return clone(DEFAULT_PLAN);
   if (plan.every(p => typeof p === 'string')) {
-    if (OLD_DEFAULT_NAMES.some(n => plan.includes(n))) return clone(DEFAULT_PLAN);
+    // Preserve the pre-grouping battery when converting an old name-only default template.
+    if (OLD_DEFAULT_NAMES.some(n => plan.includes(n))) return clone(DEFAULT_PLAN.filter(p => p.copm || p.id === 'func' || p.id === 'npc' || deviceItem(p.id))).map(({ category, ...p }) => p);
     return plan.map(p => ({ id: uid('p'), domain: '', name: p, timing: 'assessment', fields: ['Result'] }));
   }
   return plan.map(p => typeof p === 'string' ? { id: uid('p'), domain: '', name: p, timing: 'assessment', fields: ['Result'] } : p.copm ? { ...p, timing: 'bp' } : p);
@@ -2503,6 +2609,9 @@ function normalizePlan(plan) {
 const FIELD_TYPES = { text: '文字', number: '數值', textarea: '長文字', select: '選單' };
 const trainingPlan = c => Array.isArray(c.trainingPlan) ? c.trainingPlan : TRAIN;
 const itemKey = (item, kind) => kind === 'assessment' ? item.id : item.k;
+const assessmentCategory = item => item.copm || item.id === 'copm' ? 'functional'
+  : item.category || (['func', 'self_report', 'ot_assessment', 'daily_task', 'participation'].includes(item.id) ? 'functional' : 'visual');
+const assessmentCategoryLabel = category => category === 'functional' ? ui('功能性視覺') : ui('視覺功能');
 const hasAssessmentData = a => !!(a && (a.done || a.notes || a.copm?.length || Object.keys(a.values || {}).length));
 const hasTrainingData = d => !!(d && (d.on || d.acts?.length || d.eyedot?.length || d.program || d.dur != null || d.level || d.perf || d.diff != null || d.notes || Object.keys(d.values || {}).length || Object.keys(d.actScores || {}).length || d.runs?.length));
 // Items without an explicit choice stay in the initial assessment, as before this setting existed.
@@ -2814,7 +2923,10 @@ function renderOutcomes() {
       </tbody></table></div></section>`);
   }
   const allAssessments = new Map([...c.plan, ...asc.flatMap(s => assessmentItems(c, s))].map(item => [item.id, item]));
-  for (const item of allAssessments.values()) {
+  for (const category of ['visual', 'functional']) {
+  const items = [...allAssessments.values()].filter(item => assessmentCategory(item) === category && asc.some(s => s.assess?.[item.id]?.done && (!item.copm || COPM_VISITS.includes(s.visit))));
+  if (items.length) parts.push(`<div class="section-heading"><h3>${esc(assessmentCategoryLabel(category))}</h3></div>`);
+  for (const item of items) {
     const rows = asc.filter(s => s.assess?.[item.id]?.done);
     if (!rows.length) continue;
     if (item.copm) {
@@ -2835,6 +2947,7 @@ function renderOutcomes() {
         ${rows.map(s => { const a = s.assess[item.id]; return `<tr><td>${fmtDate(s.date)}</td><td>${visitLabel(s.visit)}</td>${fields.map(f => `<td>${esc(shownValue(f, a.values?.[f.id]))}</td>`).join('')}${settings ? `<td style="text-align:left;font-family:var(--f-body)">${esc(settingSummary(def(s), a.values))}</td>` : ''}<td style="text-align:left;font-family:var(--f-body)">${esc(a.notes || '')}</td></tr>`; }).join('')}
         </tbody></table></div></section>`);
     }
+  }
   }
   const allTraining = new Map(asc.flatMap(s => trainingItems(c, s)).map(item => [item.k, item]));
   for (const item of allTraining.values()) {
@@ -2911,6 +3024,7 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
   if (fromEditor) editing = collectSession();
   const creating = !old || duplicate, newKey = creating ? uid(assessment ? 'p' : 't') : key;
   let draft = old ? clone(old) : assessment ? { name: '', domain: '', timing: 'assessment', fields: [{ id: uid('f'), label: ui('結果'), type: 'text' }] } : { label: '', acts: [], fields: [] };
+  if (assessment) draft.category = assessmentCategory(draft);
   draft[assessment ? 'id' : 'k'] = newKey;
   if (duplicate) { draft[assessment ? 'name' : 'label'] = labelText(draft.name || draft.label) + ui('（副本）'); draft.active = true; }
   draft.fields = fieldsFor(draft);
@@ -2922,7 +3036,7 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
   const form = m.querySelector('form');
   const read = () => {
     draft[assessment ? 'name' : 'label'] = $('#item-name').value.trim();
-    if (assessment) { draft.domain = $('#item-domain').value.trim(); draft.timing = draft.copm ? 'bp' : $('#item-timing').value; draft.outcome = $('#item-outcome').value.trim(); }
+    if (assessment) { draft.category = draft.copm ? 'functional' : $('#item-category').value; draft.domain = $('#item-domain').value.trim(); draft.timing = draft.copm ? 'bp' : $('#item-timing').value; draft.outcome = $('#item-outcome').value.trim(); }
     else draft.acts = [...new Set($('#item-acts').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean))];
     draft.fields = [...form.querySelectorAll('.field-editor')].map((row, i) => {
       const get = suffix => $('#item-field-' + i + '-' + suffix)?.value || '';
@@ -2935,7 +3049,8 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
   const draw = () => {
     form.innerHTML = ui`${creating && !duplicate ? ui`<label class="f" for="item-base">從模板開始<select id="item-base"><option value="">空白模板</option>${seeds.map((item, i) => `<option value="${i}" ${base === String(i) ? 'selected' : ''}>${esc(labelText(item.name || item.label))}</option>`).join('')}</select></label>` : ''}
       <label class="f" for="item-name">項目名稱<input type="text" id="item-name" value="${val(labelText(draft.name || draft.label))}" maxlength="180" required></label>
-      ${assessment ? ui`<div class="grid"><label class="f" for="item-domain">評估領域<input type="text" id="item-domain" value="${val(labelText(draft.domain))}"></label>
+      ${assessment ? ui`<label class="f" for="item-category">分類<select id="item-category" aria-label="分類" ${draft.copm ? 'disabled' : ''}>${['visual', 'functional'].map(category => `<option value="${category}" ${assessmentCategory(draft) === category ? 'selected' : ''}>${esc(assessmentCategoryLabel(category))}</option>`).join('')}</select></label>
+        <div class="grid"><label class="f" for="item-domain">評估領域<input type="text" id="item-domain" value="${val(labelText(draft.domain))}"></label>
         <label class="f" for="item-timing">評估時機<select id="item-timing" ${draft.copm ? 'disabled' : ''}>${Object.entries(TIMING).map(([k, text]) => `<option value="${k}" ${draft.timing === k ? 'selected' : ''}>${ui(text)}</option>`).join('')}</select></label></div>
         <label class="f" for="item-outcome">填寫說明<input type="text" id="item-outcome" value="${val(labelText(draft.outcome))}"></label>`
         : ui`<label class="f" for="item-acts">可選活動（每行一項）<textarea id="item-acts">${esc((draft.acts || []).map(labelText).join('\n'))}</textarea></label><p class="note" style="margin:0">已包含設備、時間、設定、表現、難度與觀察。下方可增加其他欄位。</p>`}
@@ -2954,6 +3069,7 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
     if (e.target.id === 'item-base') {
       base = e.target.value;
       draft = base === '' ? (assessment ? { name: '', timing: 'assessment', fields: [{ id: uid('f'), label: ui('結果'), type: 'text' }] } : { label: '', acts: [], fields: [] }) : clone(seeds[Number(base)]);
+      if (assessment) draft.category = assessmentCategory(draft);
       draft[assessment ? 'id' : 'k'] = newKey; draft.fields = fieldsFor(draft).map(f => ({ ...f, id: uid('f') })); draw(); $('#item-name').focus();
     } else if (e.target.hasAttribute('data-field-type')) { read(); draw(); $('#item-field-' + e.target.closest('.field-editor').dataset.i + '-type').focus(); }
   });
@@ -2996,7 +3112,7 @@ function blankSession() {
   const nums = sessions.map(s => +s.num || 0);
   const last = byDate(sessions).slice(-1)[0];
   const visit = sessions.length ? 'treatment' : 'baseline';
-  return { id: null, date: today(), num: (nums.length ? Math.max(...nums) : 0) + 1, visit, clinician: last?.clinician || '', duration: null,
+  return { id: null, date: today(), num: (nums.length ? Math.max(...nums) : 0) + 1, visit, mode: 'inperson', clinician: last?.clinician || '', duration: null,
     subjective: '', feedback: '',
     sym: shapeSym([], visit),
     assess: {}, training: {}, otherTx: '', tolerance: null, assessment: '', plan: '', nextDate: '' };
@@ -3059,16 +3175,16 @@ function pickGroups(groups) {
     ? `<div class="pick-label" id="${g.id}">${esc(g.title)}</div><div class="pick-group" role="group" aria-labelledby="${g.id}">${g.items.join('')}</div>`
     : `<div class="pick-group" role="group" aria-label="${esc(g.label)}">${g.items.join('')}</div>`).join('');
 }
-function assessHTML(c, s) {
-  const shown = assessmentItems(c, s).filter(p => (p.active !== false || hasAssessmentData(s.assess?.[p.id])) && (!p.copm || COPM_VISITS.includes(s.visit)));
-  if (!shown.length) return ui('<span class="muted">本次沒有可填寫的評估項目，可按「新增評估項目」建立。COPM 僅在基準與療程後評估顯示。</span>');
+function assessHTML(c, s, category) {
+  const shown = assessmentItems(c, s).filter(p => assessmentCategory(p) === category && (p.active !== false || hasAssessmentData(s.assess?.[p.id])) && (!p.copm || COPM_VISITS.includes(s.visit)));
+  if (!shown.length) return '';
   const prevCopm = (() => { for (const x of byDate(sessions).reverse()) { if (x.id !== s.id && x.assess?.copm?.copm?.some(r => r.occ)) return x.assess.copm.copm; } return null; })();
   const planned = shown.filter(p => isPlanned(p, s.visit)), others = shown.filter(p => !isPlanned(p, s.visit));
   const chip = p => `<label class="pick"><input type="checkbox" id="ac-${p.id}" ${s.assess?.[p.id]?.done ? 'checked' : ''}>${esc(labelText(p.name))}</label>`;
   const picks = planned.length
-    ? pickGroups([{ id: 'assessPlanned', title: s.visit === 'baseline' ? ui('初次評估項目') : ui('本次應評估'), items: planned.map(chip) },
-      { id: 'assessOther', title: ui('其他項目'), items: others.map(chip) }])
-    : pickGroups([{ label: ui('評估項目'), items: others.map(chip) }]);
+    ? pickGroups([{ id: 'assessPlanned-' + category, title: s.visit === 'baseline' ? ui('初次評估項目') : ui('本次應評估'), items: planned.map(chip) },
+      { id: 'assessOther-' + category, title: ui('其他項目'), items: others.map(chip) }])
+    : pickGroups([{ label: assessmentCategoryLabel(category), items: others.map(chip) }]);
   return picks + '<div class="picked">' + [...planned, ...others].map(p => {
     const a = s.assess?.[p.id] || {};
     const detail = [p.domain, p.outcome].filter(Boolean).map(labelText).join(' · ');
@@ -3099,8 +3215,21 @@ function updateCopm() {
   box.innerHTML = ui`<span class="chip mono">表現平均 ${a.perf ?? '-'}${ch(a.perf, b?.perf)}</span><span class="chip mono">滿意度平均 ${a.sat ?? '-'}${ch(a.sat, b?.sat)}</span>`;
 }
 
+function interventionPicks(approach) {
+  return [...document.querySelectorAll(`#${approach}Picks input:checked`)].map(input => input.dataset.strategy);
+}
+function interventionHTML(mode, approach, picks = []) {
+  const currentMode = mode || 'inperson', catalog = INTERVENTIONS[currentMode][approach];
+  const ids = [...new Set([...Object.keys(catalog), ...picks])];
+  return pickGroups([{ label: approachLabel(approach), items: ids.map(id => {
+    const otherMode = Object.keys(INTERVENTIONS).find(key => key !== currentMode && Object.hasOwn(INTERVENTIONS[key][approach], id));
+    const label = strategyLabel(approach, id) + (otherMode ? ` (${serviceModeLabel(otherMode)})` : '');
+    return `<label class="pick"><input type="checkbox" data-strategy="${esc(id)}" ${picks.includes(id) ? 'checked' : ''}>${esc(label)}</label>`;
+  }) }]);
+}
 function renderEditor() {
   const c = cur(), s = editing;
+  const visualAssess = assessHTML(c, s, 'visual'), functionalAssess = assessHTML(c, s, 'functional');
   // 0–10 ratings use the same number boxes as the symptom table; an empty box means not rated.
   const rate = (id, v, label) => `<label class="f" for="${id}">${label}<input type="number" min="0" max="10" step="1" inputmode="numeric" id="${id}" value="${val(v)}"></label>`;
   s.training = s.training || {};
@@ -3149,6 +3278,7 @@ function renderEditor() {
         <label class="f" for="s-date">復健日期<input type="date" id="s-date" value="${val(s.date)}" required></label>
         <label class="f" for="s-num">復健次數<input type="number" min="1" id="s-num" value="${val(s.num)}"></label>
         <label class="f" for="s-visit">紀錄類型<select id="s-visit">${VISITS.map(v => `<option value="${v.k}" ${s.visit === v.k ? 'selected' : ''}>${ui(v.label)}</option>`).join('')}</select></label>
+        <label class="f" for="s-mode">服務型態<select id="s-mode" aria-label="服務型態">${s.mode == null ? ui('<option value="" selected>未指定</option>') : ''}<option value="inperson" ${s.mode === 'inperson' ? 'selected' : ''}>面對面</option><option value="telerehab" ${s.mode === 'telerehab' ? 'selected' : ''}>遠距復健</option></select></label>
         <label class="f" for="s-clin">治療師<input type="text" id="s-clin" value="${val(s.clinician)}"></label>
         <label class="f" for="s-dur">復健時間（分鐘）<input type="number" min="0" step="any" id="s-dur" value="${val(s.duration)}"></label>
       </div>
@@ -3171,11 +3301,18 @@ function renderEditor() {
       </div></section>
 
       <section class="soap-sec"><div class="letter">O</div><div class="sec-body">
-        <div class="sec-title"><h3>客觀紀錄</h3></div>
+        <div class="sec-title"><h3>評估</h3></div>
         <label class="f" for="s-obj">觀察與客觀描述<textarea id="s-obj" style="min-height:80px">${val(s.objective)}</textarea></label>
 
         <div class="sub" style="border-top:0;padding-top:0">
-          <div class="spread"><h3 style="font-size:1rem">症狀評分（NRS，0 至 10）</h3>
+          <div class="row" style="justify-content:flex-end"><button type="button" class="btn small" data-action="plan-add" data-editor="true">＋ 新增評估項目</button></div>
+          <p class="note" style="margin:0">勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。</p>
+        </div>
+        <div id="assessList">
+        <section class="sub" style="border-top:0;padding-top:0" id="assess-visual" aria-labelledby="assess-visual-h">
+          <h3 id="assess-visual-h">視覺功能</h3>
+          <div class="sub" style="border-top:0;padding-top:0">
+          <div class="spread"><h4>症狀評分（NRS，0 至 10）</h4>
             <div class="row"><button type="button" class="btn small" data-action="sym-rec" id="addRec">＋ 新增恢復後評分</button></div></div>
           <p class="note" style="margin:0">各症狀分別評估「現在」的感受，0 分表示沒有症狀，10 分表示能想像最嚴重的程度。每次復健前後評分；評估時另在追視、凝視、跳視測驗前評分。需要時可加入恢復後評分。比首次增加至少 2 分時，欄位會標紅並顯示提示。</p>
           <details class="script"><summary>給個案的評分說明</summary><div class="body">
@@ -3186,32 +3323,47 @@ function renderEditor() {
           </div></details>
           <div class="scroll" id="symWrap" tabindex="0" role="region" aria-label="${ui('症狀評分表，可左右捲動')}">${symTableHTML()}</div>
           <div class="row" id="symSummary"></div>
+          </div>
+          ${visualAssess}
+        </section>
+        <section class="sub" id="assess-functional" aria-labelledby="assess-functional-h">
+          <h3 id="assess-functional-h">功能性視覺</h3>
+          ${functionalAssess}
+        </section>
+        <div class="sub" style="border-top:0;padding-top:0">
+          ${!visualAssess && !functionalAssess ? ui('<span class="muted">本次沒有可填寫的評估項目，可按「新增評估項目」建立。COPM 僅在基準與療程後評估顯示。</span>') : ''}
         </div>
-
-        <div class="sub">
-          <div class="spread"><h3 style="font-size:1rem">評估項目</h3><button type="button" class="btn small" data-action="plan-add" data-editor="true">＋ 新增評估項目</button></div>
-          <p class="note" style="margin:0">勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。</p>
-          <div class="sub" style="border-top:0;padding-top:0" id="assessList">${assessHTML(c, s)}</div>
         </div>
+      </div></section>
 
-        <div class="sub">
+      <section class="soap-sec"><div class="letter">A</div><div class="sec-body">
+        <div class="sec-title"><h3>PEO 臨床推理</h3><span class="note">依據評估結果進行介入規劃</span></div>
+        <div class="grid">
+          <label class="f" for="s-person">個人<textarea id="s-person" placeholder="視覺功能、症狀、個人因素">${val(s.peo?.person)}</textarea></label>
+          <label class="f" for="s-environment">環境<textarea id="s-environment" placeholder="居家、工作、數位環境、照明與設備">${val(s.peo?.environment)}</textarea></label>
+          <label class="f" for="s-occupation">作業<textarea id="s-occupation" placeholder="日常作業表現、參與需求、COPM 目標">${val(s.peo?.occupation)}</textarea></label>
+        </div>
+        <label class="f" for="s-ass">臨床判斷與介入規劃<textarea id="s-ass">${val(s.assessment)}</textarea></label>
+      </div></section>
+
+      <section class="soap-sec"><div class="letter">P</div><div class="sec-body">
+        <div class="sec-title"><h3>介入與計畫</h3><span class="note">以 PEO 架構為指引</span></div>
+        <h4>${ui('復能')}</h4>
+
+        <div class="sub" style="border-top:0;padding-top:0">
           <div class="spread"><h3 style="font-size:1rem">復健項目</h3><button type="button" class="btn small" data-action="training-add" data-editor="true">＋ 新增復健項目</button></div>
           <p class="note" style="margin:0">勾選本次進行的項目，再勾選做過的活動，每個活動填一個分數。</p>
           ${txPicks}
           <div class="picked">${txBlocks}</div>
           <label class="f" for="s-otx">其他治療／居家計畫<textarea id="s-otx" style="min-height:60px">${val(s.otherTx)}</textarea></label>
-          <div class="grid">${rate('s-tol', s.tolerance, ui('個案自評整體耐受度（0 分最差，10 分最佳）'))}</div>
         </div>
-      </div></section>
-
-      <section class="soap-sec"><div class="letter">A</div><div class="sec-body">
-        <div class="sec-title"><h3>臨床評估</h3><span class="note">臨床判斷與目標達成情形</span></div>
-        <textarea id="s-ass" aria-label="臨床評估">${val(s.assessment)}</textarea>
-      </div></section>
-
-      <section class="soap-sec"><div class="letter">P</div><div class="sec-body">
-        <div class="sec-title"><h3>後續計畫</h3><span class="note">訓練調整、居家活動、下次追蹤</span></div>
-        <textarea id="s-plan" aria-label="後續計畫">${val(s.plan)}</textarea>
+        ${['adaptation', 'compensation'].map(approach => ui`<div class="sub">
+          <h4>${esc(approachLabel(approach))}</h4>
+          <div id="${approach}Picks">${interventionHTML(s.mode, approach, s.interventions?.[approach]?.picks)}</div>
+          <label class="f" for="s-${approach}-notes">${approach === 'adaptation' ? ui('調適備註') : ui('代償備註')}<textarea id="s-${approach}-notes">${val(s.interventions?.[approach]?.notes)}</textarea></label>
+        </div>`).join('')}
+        <div class="grid">${rate('s-tol', s.tolerance, ui('個案自評整體耐受度（0 分最差，10 分最佳）'))}</div>
+        <label class="f" for="s-plan">後續計畫<textarea id="s-plan">${val(s.plan)}</textarea></label>
         <div class="grid"><label class="f" for="s-next">下次復健日期<input type="date" id="s-next" value="${val(s.nextDate)}"></label></div>
       </div></section>
       </div>
@@ -3229,6 +3381,12 @@ function renderEditor() {
   form.addEventListener('change', e => {
     dirty = true;
     const t = e.target;
+    if (t.id === 's-mode') {
+      for (const approach of ['adaptation', 'compensation']) {
+        const picks = interventionPicks(approach);
+        $('#' + approach + 'Picks').innerHTML = interventionHTML(t.value, approach, picks);
+      }
+    }
     if (t.id.startsWith('ac-')) setSectionEnabled($('#as-' + t.id.slice(3)), t.checked);
     const m = t.id.match(/^tx-([A-Za-z0-9_-]+)-on$/);
     if (m) setSectionEnabled($('#tx-' + m[1]), t.checked);
@@ -3345,6 +3503,9 @@ function collectSession() {
   const c = cur();
   const s = clone(editing);
   s.date = $('#s-date').value; s.num = numOrNull($('#s-num').value); s.visit = $('#s-visit').value;
+  if ($('#s-mode').value) s.mode = $('#s-mode').value; else delete s.mode;
+  s.peo = { person: $('#s-person').value, environment: $('#s-environment').value, occupation: $('#s-occupation').value };
+  s.interventions = Object.fromEntries(['adaptation', 'compensation'].map(approach => [approach, { picks: interventionPicks(approach), notes: $('#s-' + approach + '-notes').value }]));
   s.clinician = $('#s-clin').value.trim(); s.duration = numOrNull($('#s-dur').value);
   s.subjective = $('#s-subj').value; s.objective = $('#s-obj').value; s.feedback = $('#s-fb').value;
   s.sym = readSym();
@@ -3396,6 +3557,7 @@ function noteText(c, s, list = sessions) {
   const L = [];
   L.push(ui`復健病歷：${c.name}${c.ref ? '（' + c.ref + '）' : ''}`);
   L.push(ui`日期：${s.date || '-'}   次數：${s.num ?? '-'}   類型：${visitLabel(s.visit)}   治療師：${s.clinician || '-'}${s.duration != null ? ui('   時間：') + s.duration + ui(' 分鐘') : ''}`);
+  L[L.length - 1] += ui('   服務型態：') + serviceModeLabel(s.mode);
   if (c.dx) L.push(ui`診斷：${c.dx}`);
   if (c.medicalHistory) L.push(ui('醫療史：') + c.medicalHistory);
   if (c.sourceMedical?.length) L.push(ui('病歷來源：'), ...c.sourceMedical.map(r => sourceLabel(r)));
@@ -3409,7 +3571,7 @@ function noteText(c, s, list = sessions) {
   }
   L.push('', ui('S：主觀描述'), s.subjective || '-');
   if (s.feedback) L.push(ui('個案回饋：') + s.feedback);
-  L.push('', ui('O：客觀紀錄'));
+  L.push('', ui('O：評估'));
   if (s.objective) L.push(s.objective);
   const rows = s.sym || [];
   if (rows.length) {
@@ -3422,9 +3584,11 @@ function noteText(c, s, list = sessions) {
     }
   }
   const done = assessmentItems(c, s).filter(p => s.assess?.[p.id]?.done);
-  if (done.length) {
-    L.push('', ui('評估項目：'));
-    for (const p of done) {
+  for (const category of ['visual', 'functional']) {
+    const items = done.filter(p => assessmentCategory(p) === category);
+    if (!items.length) continue;
+    L.push('', assessmentCategoryLabel(category) + ui('：'));
+    for (const p of items) {
       const a = s.assess[p.id];
       L.push(`  [x] ${labelText(p.name)}${p.domain ? '：' + labelText(p.domain) : ''}`);
       if (p.copm) {
@@ -3437,9 +3601,12 @@ function noteText(c, s, list = sessions) {
       if (a.notes) L.push(ui`      備註：${a.notes}`);
     }
   }
+  L.push('', ui('A：PEO 臨床推理'));
+  for (const [key, label] of [['person', ui('個人')], ['environment', ui('環境')], ['occupation', ui('作業')]]) if (s.peo?.[key]) L.push(label + ui('：') + s.peo[key]);
+  L.push(ui('臨床判斷與介入規劃'), s.assessment || '-', '', ui('P：介入與計畫'));
   const tx = trainingItems(c, s).filter(t => s.training?.[t.k]?.on);
   if (tx.length || s.otherTx) {
-    L.push('', ui('復健項目：'));
+    L.push('', ui('復能'), ui('復健項目：'));
     tx.forEach(t => {
       const d = s.training[t.k];
       L.push(`  • ${labelText(t.label)}${d.dur != null ? '：' + d.dur + ui(' 分鐘') : ''}`);
@@ -3455,8 +3622,16 @@ function noteText(c, s, list = sessions) {
     });
     if (s.otherTx) L.push(ui('  其他治療／居家計畫：') + s.otherTx);
   }
+  for (const approach of ['adaptation', 'compensation']) {
+    const d = s.interventions?.[approach];
+    if (d?.picks?.length || d?.notes) {
+      L.push('', approachLabel(approach));
+      (d.picks || []).forEach(id => L.push('  [x] ' + strategyLabel(approach, id)));
+      if (d.notes) L.push(ui('備註') + ui('：') + d.notes);
+    }
+  }
   if (s.tolerance != null) L.push(ui`個案自評整體耐受度：${s.tolerance}/10`);
-  L.push('', ui('A：臨床評估'), s.assessment || '-', '', ui('P：後續計畫'), s.plan || '-');
+  L.push('', ui('後續計畫'), s.plan || '-');
   if (s.nextDate) L.push(ui('下次復健：') + s.nextDate);
   if (s.sourceRecords?.length) L.push('', ui('資料來源：'), ...s.sourceRecords.map(r => sourceLabel(r)));
   if (c.sourceRoster?.length) L.push('', ui('收案資料（依來源保留）：'), ...c.sourceRoster.flatMap(r => [sourceLabel(r), ...Object.entries(r.fields).filter(([, v]) => v != null && v !== '').map(([k, v]) => `${k}：${v}`)]));
@@ -3577,7 +3752,9 @@ async function loadExample() {
   const row = (kind, arr, extra) => Object.assign({ id: uid('r'), kind, scores: Object.fromEntries(SK.map((k, i) => [k, arr[i]])) }, extra || {});
   const occ = ['Computer work > 1 h', 'Reading reports', 'Driving to work', 'Grocery shopping', 'Reading to children'];
   const copm = (p, s) => occ.map((o, i) => ({ occ: o, perf: p[i], sat: s[i] }));
-  const base = { clinician: 'A. Clinician', duration: 60, otherTx: '', nextDate: '' };
+  const base = { clinician: 'A. Clinician', mode: 'inperson', duration: 60, otherTx: '', nextDate: '',
+    peo: { person: 'Visual fatigue with sustained screen use', environment: 'Office screen and desk lighting', occupation: 'Reading reports and returning to computer work' },
+    interventions: { adaptation: { picks: ['workstation_setup', 'environment_mod'], notes: 'Adjust screen height and reduce glare.' }, compensation: { picks: ['pacing_rest'], notes: 'Schedule short breaks during screen work.' } } };
   const s1 = Object.assign({ id: uid('s'), num: 1, date: '2026-09-01', visit: 'baseline', ...base,
     subjective: 'Eye strain and headache after 30 min of screen work. Avoids driving on highways. Off work part-time.', feedback: 'Saccade task made eyes tired; peripheral task was hard to keep fixation.',
     sym: [row('pre', [4, 2, 1, 3, 0]), row('sub', [4, 2, 1, 3, 0], { test: 'pursuit' }), row('sub', [5, 3, 2, 4, 1], { test: 'fixation' }), row('sub', [7, 4, 3, 5, 2], { test: 'saccade' }), row('end', [6, 3, 2, 5, 1]), row('rec', [4, 2, 1, 3, 0], { recMin: 20 })],
@@ -3599,6 +3776,8 @@ async function loadExample() {
       periph: { on: true, acts: ['Peripheral light board'], actScores: { 'Peripheral light board': '38 hits / 60 s' }, program: 'Light board', dur: 10, level: '60 s trials, static', perf: '', diff: 5, notes: '' } },
     tolerance: 6, assessment: 'Tolerating graded training; symptom rise settles by session end.', plan: 'Progress oculomotor level when difficulty ≤ 5.' });
   const s3 = Object.assign({ id: uid('s'), num: 3, date: '2026-09-22', visit: 'treatment', ...base, duration: 45,
+    mode: 'telerehab', peo: { person: 'Mild fatigue late in the day', environment: 'Home workstation with video consultation', occupation: 'Working six hours with planned breaks' },
+    interventions: { adaptation: { picks: ['env_consult', 'digital_tools'], notes: 'Review home lighting and display settings remotely.' }, compensation: { picks: ['self_management', 'pacing_fatigue', 'stepwise'], notes: 'Split reports into shorter tasks and monitor fatigue.' } },
     subjective: 'Working 6 h with breaks. Mild headache late afternoon.', feedback: 'Search tasks were easy; attention with distractors was harder.',
     sym: [row('pre', [2, 1, 0, 1, 0]), row('end', [2, 1, 1, 2, 0])],
     assess: {}, training: { attn: { on: true, acts: ['Selective attention', 'Divided attention'], actScores: { 'Selective attention': 'RT 540 ms', 'Divided attention': 'RT 610 ms' }, program: 'Attention tasks', dur: 12, level: 'Moderate distractors', perf: '', diff: 6, notes: '' },
@@ -3629,7 +3808,7 @@ function excelCellValue(value) {
   return String(value);
 }
 function buildWorkbook(list) {
-  const S = { 'Clients': [], 'Attendance 缺席': [], 'Eye surgery history': [], 'Data collection plan': [], 'SOAP notes': [], 'Symptoms': [], 'Assessments': [], 'COPM': [], 'Training': [], 'Training results': [], 'EyeDot Trainer': [], 'Source roster': [], 'Source records': [] };
+  const S = { 'Clients': [], 'Attendance 缺席': [], 'Eye surgery history': [], 'Data collection plan': [], 'SOAP notes': [], 'Symptoms': [], 'Assessments': [], 'COPM': [], 'Training': [], 'Training results': [], 'EyeDot Trainer': [], 'Source roster': [], 'Source records': [], 'Interventions': [] };
   const blank = v => v == null ? '' : v;
   const asNum = v => v == null || v === '' ? '' : (isNaN(+v) ? v : +v);
   for (const { c, ss } of list) {
@@ -3643,13 +3822,13 @@ function buildWorkbook(list) {
       'Attendance rate %': attendance(asc).rate ?? '', 'First session': asc[0]?.date || '', 'Last session': asc[asc.length - 1]?.date || '' });
     asc.filter(s => s.visit === 'absent').forEach(s => S['Attendance 缺席'].push({ ...id, 'Date': s.date || '', 'Reason 原因': s.absence?.reason || '',
       'Notified 通知': s.absence?.notified || '', 'Rescheduled to 改約': s.nextDate || '', 'Contact / follow-up 聯絡紀錄': s.absence?.contact || '' }));
-    for (const p of c.plan || []) S['Data collection plan'].push({ ...id, 'Domain': labelText(p.domain), 'Instrument / assessment': labelText(p.name), 'Timing': ui(TIMING[p.timing] || ''), 'Outcomes recorded': p.copm ? ui('職能活動表現與滿意度（1 至 10）') : fieldsFor(p).map(fieldLabel).join(ui('、')), 'Enabled': p.active !== false });
+    for (const p of c.plan || []) S['Data collection plan'].push({ ...id, 'Domain': labelText(p.domain), 'Instrument / assessment': labelText(p.name), 'Timing': ui(TIMING[p.timing] || ''), 'Outcomes recorded': p.copm ? ui('職能活動表現與滿意度（1 至 10）') : fieldsFor(p).map(fieldLabel).join(ui('、')), 'Enabled': p.active !== false, 'Category': assessmentCategoryLabel(assessmentCategory(p)) });
     for (const s of asc) {
       const sid = { ...id, 'Date': s.date || '', 'Session no.': blank(s.num), 'Visit': visitLabel(s.visit) };
       for (const r of s.sourceRecords || []) for (const [field, value] of Object.entries(r.fields || { file: r.file })) S['Source records'].push({ ...sid, Source: sourceLabel(r), Field: field, Value: value ?? '' });
       const pre = rowTotal(firstRated(s.sym)), end = rowTotal(findRow(s, 'end')), rec = findRow(s, 'rec');
       const note = noteText(c, s, ss).split('\n');
-      const oStart = note.indexOf(ui('O：客觀紀錄')), aStart = note.indexOf(ui('A：臨床評估'));
+      const oStart = note.indexOf(ui('O：評估')), aStart = note.indexOf(ui('A：PEO 臨床推理'));
       const objective = oStart >= 0 && aStart > oStart ? note.slice(oStart + 1, aStart).join('\n').trim() : '';
       const subjective = [s.subjective, s.feedback ? 'Client feedback: ' + s.feedback : ''].filter(Boolean).join('\n');
       S['SOAP notes'].push({ ...sid, 'Attendance': s.visit === 'absent' ? ui('缺席 Did not attend') : ui('出席 Attended'), 'Clinician': s.clinician || '', 'Length (min)': blank(s.duration),
@@ -3658,7 +3837,13 @@ function buildWorkbook(list) {
         'After session total': blank(end), 'Change (after session − before session)': pre != null && end != null ? end - pre : '',
         'Recovery time (min)': blank(rec?.recMin), 'Session tolerance (0–10)': blank(s.tolerance),
         'Training': trainingItems(c, s).filter(t => s.training?.[t.k]?.on).map(t => labelText(t.label)).join(ui('、')),
-        'Other treatment / home program': s.otherTx || '' });
+        'Other treatment / home program': s.otherTx || '', 'Service mode': serviceModeLabel(s.mode),
+        'PEO – Person': s.peo?.person || '', 'PEO – Environment': s.peo?.environment || '', 'PEO – Occupation': s.peo?.occupation || '',
+        'Adaptation': (s.interventions?.adaptation?.picks || []).map(id => strategyLabel('adaptation', id)).join(ui('、')), 'Adaptation notes': s.interventions?.adaptation?.notes || '',
+        'Compensation': (s.interventions?.compensation?.picks || []).map(id => strategyLabel('compensation', id)).join(ui('、')), 'Compensation notes': s.interventions?.compensation?.notes || '' });
+      for (const approach of ['adaptation', 'compensation']) for (const strategy of s.interventions?.[approach]?.picks || []) {
+        S['Interventions'].push({ ...sid, 'Service mode': serviceModeLabel(s.mode), 'Approach': approachLabel(approach), 'Strategy ID': strategy, 'Strategy label': strategyLabel(approach, strategy) });
+      }
       const base = firstRated(s.sym), bt = rowTotal(base);
       for (const r of s.sym || []) {
         const t = rowTotal(r);
@@ -3677,8 +3862,8 @@ function buildWorkbook(list) {
             'Change in performance vs baseline': av.perf != null && bl?.perf != null ? Math.round((av.perf - bl.perf) * 10) / 10 : '',
             'Change in satisfaction vs baseline': av.sat != null && bl?.sat != null ? Math.round((av.sat - bl.sat) * 10) / 10 : '' });
         } else {
-          resultEntries(p, a.values).forEach(([label, value]) => S['Assessments'].push({ ...sid, 'Domain': labelText(p.domain), 'Instrument / assessment': labelText(p.name), 'Measure': label, 'Value': asNum(value) }));
-          if (a.notes) S['Assessments'].push({ ...sid, 'Domain': labelText(p.domain), 'Instrument / assessment': labelText(p.name), 'Measure': ui('備註'), 'Value': a.notes });
+          resultEntries(p, a.values).forEach(([label, value]) => S['Assessments'].push({ ...sid, 'Domain': labelText(p.domain), 'Instrument / assessment': labelText(p.name), 'Measure': label, 'Value': asNum(value), 'Category': assessmentCategoryLabel(assessmentCategory(p)) }));
+          if (a.notes) S['Assessments'].push({ ...sid, 'Domain': labelText(p.domain), 'Instrument / assessment': labelText(p.name), 'Measure': ui('備註'), 'Value': a.notes, 'Category': assessmentCategoryLabel(assessmentCategory(p)) });
         }
       }
       for (const t of trainingItems(c, s)) {
@@ -3700,7 +3885,7 @@ function buildWorkbook(list) {
     const keys = Object.keys(rows[0] || { 'No records': '' });
     ws['!cols'] = keys.map(k => ({ wch: Math.min(50, Math.max(k.length, ...rows.map(r => String(r[k] ?? '').length)) + 2) }));
     if (rows.length) ws['!autofilter'] = { ref: ws['!ref'] };
-    const wide = new Set(['S – Subjective', 'O – Objective', 'A – Assessment', 'P – Plan', 'Observations', 'Notes', 'Other treatment / home program']);
+    const wide = new Set(['S – Subjective', 'O – Objective', 'A – Assessment', 'P – Plan', 'Observations', 'Notes', 'Other treatment / home program', 'PEO – Person', 'PEO – Environment', 'PEO – Occupation', 'Adaptation', 'Adaptation notes', 'Compensation', 'Compensation notes']);
     ws['!cols'] = keys.map((k, i) => wide.has(k) ? { wch: k === 'O – Objective' ? 90 : 60 } : ws['!cols'][i]);
     const range = XLSX.utils.decode_range(ws['!ref']);
     for (let R = range.s.r; R <= range.e.r; R++) for (let C = range.s.c; C <= range.e.c; C++) {
@@ -3764,6 +3949,7 @@ function soapFormSheet(c, s, list = sessions) {
   { const es = eyeSurgerySummary(c, '\n') || ui('未記錄'); add([ui('眼科手術史'), es], 'kv', [[1, W - 1]], Math.max(18, es.split('\n').length * 15 + 4)); }
   kv(ui('復健日期'), s.date || '', ui('復健次數'), s.num ?? '');
   kv(ui('紀錄類型'), visitLabel(s.visit), ui('治療師'), s.clinician || '');
+  add([ui('服務型態'), serviceModeLabel(s.mode)], 'kv', [[1, W - 1]]);
   kv(ui('復健時間（分鐘）'), s.duration ?? '', ui('下次復健'), s.nextDate || '');
   gap();
 
@@ -3781,7 +3967,7 @@ function soapFormSheet(c, s, list = sessions) {
   if (s.feedback) { add([ui('個案對本次復健的回饋')], 'sub', [[0, W - 1]]); text(s.feedback); }
   gap();
 
-  add([ui('O：客觀紀錄')], 'section', [[0, W - 1]], 20);
+  add([ui('O：評估')], 'section', [[0, W - 1]], 20);
   if (s.objective) text(s.objective);
   const sym = s.sym || [];
   if (sym.length) {
@@ -3795,9 +3981,11 @@ function soapFormSheet(c, s, list = sessions) {
     }
   }
   const done = assessmentItems(c, s).filter(p => s.assess?.[p.id]?.done);
-  if (done.length) {
-    add([ui('評估項目')], 'sub', [[0, W - 1]]);
-    for (const p of done) {
+  for (const category of ['visual', 'functional']) {
+    const items = done.filter(p => assessmentCategory(p) === category);
+    if (!items.length) continue;
+    add([assessmentCategoryLabel(category)], 'sub', [[0, W - 1]]);
+    for (const p of items) {
       const a = s.assess[p.id];
       if (p.copm) {
         add([`${labelText(p.name)}：${labelText(p.domain)}`, '', '', '', ui('表現（1 至 10）'), '', ui('滿意度（1 至 10）'), ''], 'th', [[0, 3], [4, 5], [6, 7]]);
@@ -3812,8 +4000,16 @@ function soapFormSheet(c, s, list = sessions) {
       }
     }
   }
+  gap();
+  add([ui('A：PEO 臨床推理')], 'section', [[0, W - 1]], 20);
+  for (const [key, label] of [['person', ui('個人')], ['environment', ui('環境')], ['occupation', ui('作業')]]) if (s.peo?.[key]) { add([label], 'sub', [[0, W - 1]]); text(s.peo[key]); }
+  add([ui('臨床判斷與介入規劃')], 'sub', [[0, W - 1]]);
+  text(s.assessment);
+  gap();
+  add([ui('P：介入與計畫')], 'section', [[0, W - 1]], 20);
   const tx = trainingItems(c, s).filter(t => s.training?.[t.k]?.on);
   if (tx.length || s.otherTx) {
+    add([ui('復能')], 'sub', [[0, W - 1]]);
     add([ui('復健項目')], 'sub', [[0, W - 1]]);
     if (tx.length) add([ui('類別'), ui('活動'), '', ui('程式／設備'), ui('時間（分鐘）'), ui('級別／設定'), ui('表現'), ui('個案自評難度（0 至 10）')], 'th', [[1, 2]], 32);
     for (const t of tx) {
@@ -3835,13 +4031,17 @@ function soapFormSheet(c, s, list = sessions) {
     }
     if (s.otherTx) { add([ui('其他治療／居家計畫')], 'sub', [[0, W - 1]]); text(s.otherTx); }
   }
+  for (const approach of ['adaptation', 'compensation']) {
+    const d = s.interventions?.[approach];
+    if (d?.picks?.length || d?.notes) {
+      add([approachLabel(approach)], 'sub', [[0, W - 1]]);
+      (d.picks || []).forEach(id => text('[x] ' + strategyLabel(approach, id)));
+      if (d.notes) { add([ui('備註')], 'sub', [[0, W - 1]]); text(d.notes); }
+    }
+  }
   if (s.tolerance != null) add([ui('個案自評整體耐受度（0 至 10）'), s.tolerance], 'kv', [[1, W - 1]]);
   gap();
-
-  add([ui('A：臨床評估')], 'section', [[0, W - 1]], 20);
-  text(s.assessment);
-  gap();
-  add([ui('P：後續計畫')], 'section', [[0, W - 1]], 20);
+  add([ui('後續計畫')], 'sub', [[0, W - 1]]);
   text(s.plan);
   if (s.nextDate) add([ui('下次復健'), s.nextDate], 'kv', [[1, W - 1]]);
   }

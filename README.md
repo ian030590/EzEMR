@@ -62,14 +62,32 @@ The client summary shows the total record count, the latest record date, and the
 
 Under **View**, the initial appearance follows the system setting; manual changes are remembered in the current browser. The light appearance uses white work surfaces, a pale gray background, teal accents, and thin separators. The dark appearance uses the same visual hierarchy. Noto Sans TC uses an installed font or the optional local file `EzEMR-assets/NotoSansTC-VF.ttf`, with system fonts as a fallback.
 
+## Clinical reasoning and record structure
+
+The editor follows the clinic's assessment-to-intervention flow while keeping SOAP: **S Subjective**, **O Assessment** (observations, symptom NRS, assessments), **A PEO clinical reasoning**, and **P Intervention and plan**. Person, Environment, and Occupation findings guide clinical judgement and intervention planning. P contains **Remediation** (the existing rehabilitation items, activity scores, test runs, EyeDot, and other treatment/home program), **Adaptation**, **Compensation**, tolerance, next steps, and the next session date.
+
+Choose **In-person** or **Telerehab** in the basic information. New records default to In-person; older records without a mode show **Not specified** until you choose one. Adaptation and Compensation each have mode-specific checkboxes and notes. Changing mode retains checked strategies from the other mode, marked with that mode's name, and preserves the rest of the draft. Remediation uses the existing training items rather than a separate checklist.
+
+Sessions store `mode` as `inperson`, `telerehab`, or an unset value; `peo` contains optional string fields `person`, `environment`, and `occupation`. `interventions.adaptation` and `interventions.compensation` each hold `picks` (stable ASCII strategy IDs) and optional `notes`. Missing new fields stay missing when an old record is loaded; saving in the editor can add these fields, with mode remaining unset unless selected. Unknown valid strategy IDs remain readable as their original IDs. Language switching changes labels only, preserving clinical text and stored values.
+
+The existing local-folder CSV schema serializes these nested fields without additional columns; CSV reload and full JSON backups retain them. TXT, PDF, and the SOAP form workbook follow the same clinical flow. The Excel **SOAP notes** sheet appends service mode, PEO, adaptation, and compensation columns after the existing columns. Its **Interventions** sheet provides one row per checked strategy with client, session, mode, approach, strategy ID, and translated label for quantitative reporting.
+
 ## Customize assessments and rehabilitation items
 
 Select a client and open **Item settings**:
 
 1. Choose **Add assessment** or **Add rehabilitation item**, then start with a built-in or blank template.
-2. Enter a name. For assessments, configure the domain, instructions, and assessment timing. For rehabilitation items, enter activities, one per line.
+2. Enter a name. For assessments, configure the category, domain, instructions, and assessment timing. COPM stays in Functional vision. For rehabilitation items, enter activities, one per line.
 3. Add result fields using text, number, long text, or dropdown types. Numbers support units, minimums, maximums, and steps; dropdown options use one option per line.
 4. Choose **Save item**. The item can now be selected in the SOAP form. You can also add items from an open SOAP form without losing its draft.
+
+### Assessment groups
+
+O starts with observations, then **Visual function** (symptom NRS first) and **Functional vision**. Each group has its own assessment picks and due/other lists. TXT/PDF, the SOAP form workbook, and progress tracking use the same two groups; the Excel **Assessments** and **Data collection plan** sheets append a translated **Category** column.
+
+The standard template adds Medical record review, Optometry record, OT assessment record, Visual acuity, Refraction, Near visual acuity, Visual field, Contrast sensitivity, Color vision, and Stereopsis to Visual function. Functional vision includes Self-report questionnaire, OT assessment, Daily task performance, Participation needs, and the existing COPM and Work-related functional vision task. Record reviews and the questionnaire use milestone timing; the other new items use assessment timing. All start included in initial assessments, following the existing default.
+
+Existing clients keep their stored templates. To add a new built-in item, open **Item settings → Add assessment → Start from template**, choose the item, and save. Its category is carried into the new item and can be changed in the item dialog. Category IDs are `visual` or `functional`; older items without a category default to Visual function, except COPM, the work-related functional task, and the new functional items. Language changes do not alter stored definitions, results, or local-folder CSV filenames or schema.
 
 ### Initial assessment items
 
