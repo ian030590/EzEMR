@@ -65,12 +65,58 @@ const ordered = (text, terms) => {
         await page.locator('#cForm [type="submit"]').click(); await page.waitForSelector('.client-summary');
         const plan = await page.evaluate(() => { validateItems(cur().plan, 'assessment'); return cur().plan; });
         assert.equal(plan.length, 24);
+        assert.ok(plan.every(item => item.initial === false));
         for (const [id, [category, timing, fields]] of Object.entries(expected)) {
           const item = plan.find(p => p.id === id); assert.ok(item, id);
           assert.equal(item.category, category, id); assert.equal(item.timing, timing, id);
-          assert.deepEqual(item.fields.map(f => f.id), fields, id); assert.notEqual(item.initial, false);
+          assert.deepEqual(item.fields.map(f => f.id), fields, id); assert.equal(item.initial, false);
         }
         assert.equal(plan.find(p => p.id === 'copm').name, 'COPM');
+        await page.locator('#tab-plan').click();
+        assert.equal(await page.locator('#initialHeading').innerText(), en ? 'Initial assessment items' : '初次評估項目');
+        assert.equal(await page.locator('#initialPicks input').count(), 24);
+        assert.equal(await page.locator('#initialPicks input:checked').count(), 0);
+        assert.deepEqual(await page.evaluate(async () => (await store.listClients())[0].plan), plan);
+        await action('new-session').click();
+        assert.equal(await page.locator('#s-visit').inputValue(), 'baseline');
+        for (const visit of ['baseline', 'post', 'followup', 'treatment']) {
+          await page.locator('#s-visit').selectOption(visit);
+          assert.deepEqual(await page.locator('#assessList > section > h3').allTextContents(), groups);
+          assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 0, `${visit}: no empty planned headings`);
+          assert.equal(await page.locator('#assessList .pick-label').count(), 0);
+          assert.equal(await page.locator('#assessList .pick-group:empty').count(), 0);
+          assert.equal(await page.locator('#assessList .as:visible').count(), 0);
+          assert.equal(await page.locator('#assess-visual #symWrap').count(), 1);
+          assert.equal(await page.evaluate(() => !!(document.querySelector('#symWrap').compareDocumentPosition(document.querySelector('#assess-visual .pick')) & Node.DOCUMENT_POSITION_FOLLOWING)), true);
+          for (const [i, category] of ['visual', 'functional'].entries()) {
+            const ids = plan.filter(p => (category === 'functional') === ['copm', 'func', 'self_report', 'ot_assessment', 'daily_task', 'participation'].includes(p.id)
+              && (p.id !== 'copm' || ['baseline', 'post'].includes(visit))).map(p => 'ac-' + p.id);
+            assert.deepEqual(await page.locator(`#assess-${category} .pick input`).evaluateAll(nodes => nodes.map(n => n.id)), ids);
+            assert.equal(await page.locator(`#assess-${category} .pick input:disabled`).count(), 0);
+            assert.equal(await page.locator(`#assess-${category} .pick-group`).getAttribute('aria-label'), groups[i]);
+            const id = category === 'visual' ? 'va' : 'daily_task';
+            await page.locator('#ac-' + id).focus(); await page.keyboard.press('Space');
+            assert.equal(await page.locator('#ac-' + id).isChecked(), true);
+            assert.equal(await page.locator('#as-' + id).isVisible(), true);
+            await page.keyboard.press('Space');
+            assert.equal(await page.locator('#as-' + id).isVisible(), false);
+          }
+        }
+        await page.locator('#s-visit').selectOption('baseline');
+        for (const colorScheme of ['light', 'dark']) {
+          await page.emulateMedia({ colorScheme });
+          for (const width of [320, 1280]) {
+            await page.setViewportSize({ width, height: 900 });
+            assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${locale}: empty initial battery at ${width}px in ${colorScheme}`);
+            await page.screenshot({ path: path.join(output, `${locale}-no-initial-${colorScheme}-${width}.png`), fullPage: true });
+          }
+        }
+        check(`${locale}: all 24 new-client initial choices are false on disk and unticked in settings; all four visit types keep both O groups, NRS first, no empty picks, available items and keyboard tick-to-open; light/dark layouts fit 320/1280px`);
+        await discard(); await page.locator('#tab-plan').click();
+        for (const item of plan) {
+          await page.locator(`[data-initial="${item.id}"]`).check();
+          await page.waitForFunction(id => !savingItems && cur().plan.find(p => p.id === id).initial === true, item.id);
+        }
         await action('new-session').click();
         assert.deepEqual(await page.locator('#assessList > section > h3').allTextContents(), groups);
         const assessmentSection = page.locator('.soap-sec').nth(1);
@@ -170,6 +216,49 @@ const ordered = (text, terms) => {
         assert.deepEqual(await page.evaluate(() => sessions[0]), saved.s); assert.deepEqual(await page.evaluate(() => cur()), saved.c);
         check(`${locale}: serialized Excel appends translated Category columns without reordering existing columns, SOAP form and outcomes show both groups, and real JSON backup/import preserves exact shapes`);
 
+        await page.locator('#tab-plan').click();
+        for (const id of ['va', 'self_report']) {
+          await page.locator(`[data-initial="${id}"]`).uncheck();
+          await page.waitForFunction(id => !savingItems && cur().plan.find(p => p.id === id).initial === false, id);
+        }
+        const templateSource = await page.evaluate(() => clone(cur()));
+        await action('new-client').click();
+        await page.locator('#cf-name').fill('Synthetic copied choices'); await page.locator('#cf-ref').fill('TEST-COPIED-CHOICES');
+        await page.locator('#cf-template-source').selectOption(templateSource.id);
+        await page.locator('#cForm [type="submit"]').click(); await page.waitForSelector('#cForm', { state: 'detached' });
+        assert.notEqual(await page.evaluate(() => curId), templateSource.id);
+        assert.deepEqual(await page.evaluate(() => cur().plan), templateSource.plan);
+        assert.deepEqual(await page.evaluate(async () => (await store.listClients()).find(c => c.id === curId).plan), templateSource.plan);
+        await page.locator('#tab-plan').click();
+        assert.equal(await page.locator('#initialPicks input:checked').count(), 22);
+        for (const id of ['va', 'self_report']) assert.equal(await page.locator(`[data-initial="${id}"]`).isChecked(), false);
+        check(`${locale}: a client created using another client copies all initial choices unchanged, including both exclusions, on screen and disk`);
+
+        await connect('group-no-initial-choice');
+        const noChoice = await page.evaluate(async () => {
+          const client = { id: 'no_initial_choice', name: 'Synthetic stored template without choices', ref: 'TEST-NO-CHOICE', dob: '', doi: '', dx: '', referral: '', eyeSurgery: null, plan: clone(DEFAULT_PLAN), created: '' };
+          await store.saveClient(client);
+          return { client, csv: await (await (await groupRoot.getFileHandle('clients.csv')).getFile()).text() };
+        });
+        await page.reload(); await ready(); await connect('group-no-initial-choice');
+        assert.deepEqual(await page.evaluate(() => cur()), noChoice.client);
+        assert.ok((await page.evaluate(() => cur().plan)).every(item => !Object.hasOwn(item, 'initial')));
+        await page.locator('#tab-plan').click();
+        assert.equal(await page.locator('#initialPicks input:checked').count(), 24);
+        await action('new-session').click();
+        for (const category of ['visual', 'functional']) {
+          assert.equal(await page.locator(`#assessPlanned-${category}`).innerText(), en ? 'Initial assessment items' : '初次評估項目');
+          assert.deepEqual(await page.locator(`[aria-labelledby="assessPlanned-${category}"] input`).evaluateAll(nodes => nodes.map(n => n.id)),
+            await page.locator(`#assess-${category} .pick input`).evaluateAll(nodes => nodes.map(n => n.id)));
+        }
+        assert.equal(await page.locator('[id^="assessOther-"]').count(), 0);
+        await discard();
+        assert.equal(await page.evaluate(async () => (await (await groupRoot.getFileHandle('clients.csv')).getFile()).text()), noChoice.csv);
+        const defaultRules = await page.evaluate(() => [normalizePlan(null), normalizePlan(['Custom old assessment']), normalizePlan(OLD_DEFAULT_NAMES)]
+          .map(plan => plan.every(item => isInitial(item) && !Object.hasOwn(item, 'initial'))));
+        assert.deepEqual(defaultRules, [true, true, true]);
+        check(`${locale}: stored plans without initial fields stay included and their roster bytes survive loading unchanged; non-array, name-only and old defaults retain inclusion`);
+
         await connect('group-legacy');
         const legacy = await page.evaluate(async ids => {
           const plan = clone(DEFAULT_PLAN.filter(p => !ids.includes(p.id))); plan.forEach(p => { delete p.category; });
@@ -206,8 +295,10 @@ const ordered = (text, terms) => {
         assert.equal(await page.locator('#item-category').inputValue(), 'functional');
         await page.locator('#itemForm [type="submit"]').click(); await page.waitForSelector('#itemForm', { state: 'detached' });
         const added = await page.evaluate(() => cur().plan.at(-1)); assert.equal(added.category, 'functional');
+        assert.equal(Object.hasOwn(added, 'initial'), false, 'Items added later from the unchanged standard seeds keep implicit inclusion');
         assert.equal(await page.locator('#assess-functional #ac-' + added.id).isChecked(), true);
         await discard(); await page.locator('#tab-plan').click();
+        assert.equal(await page.locator(`[data-initial="${added.id}"]`).isChecked(), true);
         await page.locator('[data-action="item-edit"][data-id="custom_group"]').click();
         await page.locator('#item-category').focus(); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Tab');
         assert.equal(await page.locator('#item-category').inputValue(), 'functional');
@@ -225,6 +316,22 @@ const ordered = (text, terms) => {
         await page.evaluate(() => { cur().plan = [clone(DEFAULT_PLAN.find(p => p.id === 'va'))]; renderEditor(); });
         assert.equal(await page.locator('#assess-functional .pick').count(), 0); assert.equal(await page.locator('#assessList .muted').count(), 0);
         check(`${locale}: existing Add assessment dialog offers all new seeds, carries categories and retains the editor draft; keyboard category edit moves custom items; COPM stays functional; empty groups render gracefully`);
+
+        await connect('group-demo'); await action('example').click(); await page.waitForSelector('.sess');
+        const demo = await page.evaluate(() => ({ plan: cur().plan, baseline: sessions.find(s => s.visit === 'baseline') }));
+        const demoInitial = ['copm', 'pursuit', 'fixation', 'saccade', 'npc', 'ufov_divided'];
+        assert.deepEqual(demo.plan.filter(item => item.initial === true).map(item => item.id), demoInitial);
+        assert.ok(demo.plan.every(item => item.initial === (demo.baseline.assess[item.id]?.done === true)));
+        assert.equal(demo.plan.filter(item => item.initial === false).length, 18);
+        await page.locator(`[data-action="open-session"][data-id="${demo.baseline.id}"]`).click();
+        for (const category of ['visual', 'functional']) {
+          assert.equal(await page.locator(`#assessPlanned-${category}`).innerText(), en ? 'Initial assessment items' : '初次評估項目');
+          assert.deepEqual(await page.locator(`[aria-labelledby="assessPlanned-${category}"] input`).evaluateAll(nodes => nodes.map(n => n.id)),
+            demo.plan.filter(item => demoInitial.includes(item.id) && (category === 'functional') === (item.id === 'copm')).map(item => 'ac-' + item.id));
+        }
+        await discard(); await page.locator('#tab-plan').click();
+        assert.equal(await page.locator('#initialPicks input:checked').count(), 6);
+        check(`${locale}: demo initial battery exactly matches its six completed baseline assessments; the other 18 items are explicitly excluded and both baseline initial groups remain visible`);
         assert.deepEqual(errors, []);
       } finally { await context.close(); }
     }

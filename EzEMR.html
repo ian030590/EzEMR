@@ -2597,6 +2597,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
+const newClientPlan = () => clone(DEFAULT_PLAN).map(item => ({ ...item, initial: false }));
 function normalizePlan(plan) {
   if (!Array.isArray(plan)) return clone(DEFAULT_PLAN);
   if (plan.every(p => typeof p === 'string')) {
@@ -3733,7 +3734,7 @@ function clientForm(c) {
     const ref = $('#cf-ref').value.trim(); if (!ref) { $('#cf-ref').focus(); return; }
     if (clients.some(other => other.id !== c.id && safeName(other.ref || other.name).toLocaleLowerCase() === safeName(ref).toLocaleLowerCase())) { toast(ui('此病歷號已被使用，請輸入不同的病歷號。')); $('#cf-ref').focus(); return; }
     const source = isNew ? clients.find(other => other.id === $('#cf-template-source').value) : null;
-    const obj = isNew ? { id: uid('c'), plan: clone(source ? source.plan : DEFAULT_PLAN), trainingPlan: clone(source ? trainingPlan(source) : TRAIN), created: today() } : clone(c);
+    const obj = isNew ? { id: uid('c'), plan: source ? clone(source.plan) : newClientPlan(), trainingPlan: clone(source ? trainingPlan(source) : TRAIN), created: today() } : clone(c);
     Object.assign(obj, { name, ref: $('#cf-ref').value.trim(), dob: $('#cf-dob').value, doi: $('#cf-doi').value, dx: $('#cf-dx').value.trim(), medicalHistory: $('#cf-history').value.trim(), referral: $('#cf-referral').value.trim(),
       eyeSurgery: $('#es-none').checked ? { none: true, list: [] } : { none: false, list: readEs().filter(r => r.proc) } });
     const submit = $('#cForm button[type="submit"]'); submit.disabled = true;
@@ -3793,6 +3794,7 @@ async function loadExample() {
       ufov_divided: { done: true, values: { final_threshold_rt_ms: 90, accuracy_rate_percent: 88, central_accuracy_percent: 96, peripheral_accuracy_percent: 88, mean_response_time_ms: 515, stop_condition: 'Adaptive 80%', contrast_percent: 100, target_visual_angle_deg: 10, vehicle_visual_angle_deg: 2, viewing_distance_cm: 60 }, notes: '' },
       npc: { done: true, values: { 'NPC break (cm)': '6', 'NPC recovery (cm)': '8', 'Positive fusional vergence (Δ)': 'x/20/12' }, notes: '' } },
     training: {}, tolerance: 9, assessment: 'Clinically meaningful COPM gains; improved saccadic accuracy, peripheral detection and NPC.', plan: 'Discharge with home program. Follow-up in 3 months.' });
+  c.plan.forEach(item => { item.initial = s1.assess[item.id]?.done === true; });
   await safe(() => store.saveClient(c), ui('無法建立範例個案'));
   for (const s of [s1, s2, s3, s4]) await safe(() => store.saveSession(c.id, s), ui('無法建立範例紀錄'));
   clients.push(c); clients.sort((a, b) => a.name.localeCompare(b.name)); curId = c.id; view = 'sessions';
@@ -4167,7 +4169,7 @@ async function readAssessmentWorkbook(file) {
     if (b && b.client.name !== name) throw new Error(ui('個案編號 {0} 對應不同姓名，已停止匯入。', ref));
     if (!b) {
       if (!/^[A-Za-z0-9_-]+$/.test(ref) || !name.trim()) throw new Error(ui('個案編號或姓名無效：{0}', ref));
-      b = { client: { id: 'c_import_' + ref, ref, name, dob: '', doi: '', dx: '', referral: '', plan: clone(DEFAULT_PLAN), created: today() }, sessions: [] };
+      b = { client: { id: 'c_import_' + ref, ref, name, dob: '', doi: '', dx: '', referral: '', plan: newClientPlan(), created: today() }, sessions: [] };
       bundles.push(b);
     }
     return b;
@@ -4212,7 +4214,7 @@ async function readAssessmentWorkbook(file) {
       for (const item of SOURCE_ASSESSMENTS) {
         const values = Object.fromEntries(item.fields.filter(f => present(raw[f.id])).map(f => [f.id, raw[f.id]]));
         if (!Object.keys(values).length) continue;
-        if (!b.client.plan.some(p => p.id === item.id)) b.client.plan.push(clone(item));
+        if (!b.client.plan.some(p => p.id === item.id)) b.client.plan.push({ ...clone(item), initial: false });
         s.assess[item.id] = { done: true, notes: sourceLabel(record, false), values };
       }
     }

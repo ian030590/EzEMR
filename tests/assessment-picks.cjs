@@ -56,7 +56,12 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     await page.locator('#tab-plan').click();
     assert.equal(await page.locator('#initialHeading').innerText(), '初次評估項目');
     assert.equal(await page.locator('#initialPicks input').count(), 24);
-    assert.equal(await page.locator('#initialPicks input:checked').count(), 24);
+    assert.equal(await page.locator('#initialPicks input:checked').count(), 0);
+    assert.equal(await page.evaluate(() => cur().plan.every(p => p.initial === false)), true);
+    for (const id of await page.evaluate(() => cur().plan.map(p => p.id))) {
+      await page.locator(`[data-initial="${id}"]`).check();
+      await page.waitForFunction(id => !savingItems && cur().plan.find(p => p.id === id).initial === true, id);
+    }
     await page.locator('[data-initial="ufov_speed"]').uncheck();
     await page.waitForFunction(() => cur().plan.find(p => p.id === 'ufov_speed').initial === false);
     assert.equal(await page.locator('.toast').innerText(), '已移出初次評估項目。');
@@ -64,7 +69,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     await page.locator('[data-initial="npc"]').click();
     await page.waitForFunction(() => !savingItems && /模擬寫入失敗/.test(document.querySelector('.toast')?.textContent || ''));
     assert.equal(await page.locator('[data-initial="npc"]').isChecked(), true);
-    assert.equal(await page.evaluate(() => cur().plan.find(p => p.id === 'npc').initial), undefined);
+    assert.equal(await page.evaluate(() => cur().plan.find(p => p.id === 'npc').initial), true);
     await page.evaluate(() => { store.saveClient = realSaveClient; });
     await page.reload(); await ready(); await connect();
     await page.locator('#tab-plan').click();
