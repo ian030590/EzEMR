@@ -121,7 +121,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     await page.locator(`#tx-${training.k}-a0`).check();
     await page.locator(`#tx-${training.k}-program`).fill('<設備名稱>');
     await page.locator(`#tx-${training.k}-dur`).fill('0');
-    await page.locator(`#tx-${training.k}-diff`).focus(); await page.keyboard.press('End'); await page.keyboard.press('Home');
+    await page.locator(`#tx-${training.k}-diff`).fill('0');
     await page.locator(`#tf-${training.k}-0`).fill('0'); await page.locator(`#tf-${training.k}-1`).selectOption('中央');
     await action('save-session').click(); await page.waitForSelector('.sess');
     const original = await page.evaluate(async () => {
@@ -223,7 +223,9 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     check('A new client can reuse another client’s assessment and rehabilitation definitions without copying clinical results');
 
     const legacyBefore = await page.evaluate(async () => {
-      const client = { id: 'legacy-templates', name: '舊版模板測試', ref: 'TEST-LEGACY-TEMPLATES', plan: clone(DEFAULT_PLAN) };
+      // A client created before the OcuTrain items, still carrying the earlier saccade task definition.
+      const oldSaccade = { id: 'sacc', domain: 'Saccadic control', name: 'Eye tracker – structured saccade task (computer based)', timing: 'assessment', fields: ['Gaze-shift latency (ms)', 'Accuracy (%)', 'Task errors (n)'] };
+      const client = { id: 'legacy-templates', name: '舊版模板測試', ref: 'TEST-LEGACY-TEMPLATES', plan: [...clone(DEFAULT_PLAN), oldSaccade] };
       const session = { id: 'legacy-note', date: '2026-10-30', num: 1, visit: 'assessment', sym: [], assess: { sacc: { done: true, values: { 'Accuracy (%)': '87', 'Task errors (n)': '0' } } }, training: { ocular: { on: true, acts: ['Smooth pursuit tracking'], dur: 5 } } };
       await store.saveClient(client); await store.saveSession(client.id, session);
       await loadClients(); curId = client.id; await loadSessions(); view = 'plan'; renderClients(); renderMain();

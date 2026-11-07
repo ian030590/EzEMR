@@ -8,7 +8,7 @@ const { parse } = require(require.resolve('acorn', { paths: [__dirname, path.joi
 
 const canonical = new Set(['SYMS', 'TP_LABEL', 'SUBTESTS', 'ABSENCE_REASONS', 'NOTIFIED', 'TIMING', 'VISITS', 'FIELD_TYPES', 'EYES']);
 const builtins = new Set(['DEFAULT_PLAN', 'TRAIN', 'EYE_PROCS', 'ED_MODES', 'ED_DUR', 'ED_DOT']);
-const shared = new Set(['CSV + PDF', 'CSV', 'PDF', 'JSON', 'HTML', 'Excel', 'Data', 'SOAP', 'COPM', 'UFOV', 'NPC', 'NRS', 'OU', 'OD', 'OS', 'EyeDot Trainer', 'EyeDot ×', 'English', 'EzEMR', 'Ctrl+S', 'Ctrl+O', 'Ctrl+C', 'S', 'O', 'A', 'P']);
+const shared = new Set(['CSV + PDF', 'CSV', 'PDF', 'JSON', 'HTML', 'Excel', 'Data', 'SOAP', 'COPM', 'UFOV', 'NPC', 'NRS', 'OU', 'OD', 'OS', 'EyeDot Trainer', 'EyeDot ×', 'OcuTrain', 'Tobii', 'WebGazer', 'English', 'EzEMR', 'Ctrl+S', 'Ctrl+O', 'Ctrl+C', 'S', 'O', 'A', 'P']);
 const han = /\p{Script=Han}/u;
 const uiAttributes = new Set(['title', 'aria-label', 'placeholder']);
 
@@ -54,6 +54,14 @@ function validate(html) {
   for (const item of sourceItems) for (const label of [item.name, item.domain, ...item.fields.map(field => field.label)]) {
     assert.ok(Object.hasOwn(labels, label) || shared.has(label), `Source assessment needs a Chinese LABELS entry: ${label}`);
   }
+  // Built-in items are assembled from helpers, so check the evaluated plan: names, domains, notes, field labels and select options.
+  const planSource = ['numField', 'asSetting', 'OT_OPTIONS', 'otResults', 'otSettings', 'completedTargets', 'ufovFields', 'UFOV_OUTCOME', 'DEVICE_ITEMS', 'DEFAULT_PLAN', 'TRAIN', 'RUN_ACTS'].map(key => definitions.get(key).text).join('\n');
+  const built = vm.runInNewContext(`${planSource}\n({ plan: DEFAULT_PLAN, train: TRAIN, runActs: RUN_ACTS })`);
+  const builtLabels = [
+    ...built.plan.flatMap(item => [item.name, item.domain, item.outcome, ...(item.fields || []).flatMap(field => typeof field === 'string' ? [field] : [field.label, ...(field.options || [])])]),
+    ...built.train.flatMap(item => [item.label, ...(item.acts || [])]), ...Object.values(built.runActs)
+  ].filter(Boolean);
+  for (const label of builtLabels) assert.ok(Object.hasOwn(labels, label) || shared.has(label), `Built-in item needs a Chinese LABELS entry: ${label}`);
   const translatorSource = ['UI_EN', 'uiPattern', 'ui'].map(key => definitions.get(key).text).join('\n');
   const translate = vm.runInNewContext(`${translatorSource}\nui`, { language: 'en' });
   assert.equal(translate('第 {0} 次', '姓名 {0}'), 'Session 姓名 {0}', 'Translation must preserve interpolated client content');

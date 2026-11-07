@@ -17,11 +17,13 @@ EzEMR supports English and Traditional Chinese. The application entry file is `E
 - Manage client details, diagnoses, referral reasons, and eye surgery history; filter the client list by name, medical record number, or diagnosis.
 - Work in three tabs for each client: **Rehabilitation records**, **Progress tracking**, and **Item settings**.
 - Record SOAP notes, baseline assessments, treatment sessions, post-rehabilitation assessments, follow-ups, and absences.
+- Choose each client's initial assessment items, then tick the assessments and training items actually done in a record; only ticked items open for entry and are saved. Each training activity has its own score.
 - Track Eye fatigue, Blurred vision, Dizziness, Headache, and Nausea, with symptom charts and filters by record type and date.
 - Compare COPM results with the corresponding baseline and record EyeDot Trainer activities.
 - Customize assessment and rehabilitation templates for each client without editing code.
 - Save each session as CSV, PDF, and a plain-text copy of the note; export Excel workbooks, the client roster, and full JSON backups.
 - Import supported assessment and rehabilitation Excel workbooks or legacy SOAP JSON folders, retaining source details.
+- Import score files from OcuTrain and the peripheral visual field (UFOV) training program. Each OcuTrain module and each UFOV subtest is its own item with its own score and test settings.
 - Switch between light and dark appearance, with keyboard menus and shortcuts.
 - Choose English or Traditional Chinese without changing the language of your own notes and custom item names.
 
@@ -31,7 +33,7 @@ EzEMR supports English and Traditional Chinese. The application entry file is `E
 2. Select **English** in the language selector. Traditional Chinese is the default, and the browser remembers your choice. Switching languages preserves the current SOAP draft.
 3. The first screen asks where to keep your records. For a new collection, choose **Use a Data folder beside the HTML**. When first saving a client, select the folder containing the HTML and allow file editing; the app creates `Data` inside that folder. For existing records, choose **Open an existing record folder** and select the folder containing `clients.csv`. You can change this later under **File → Storage location...**.
 4. Choose **New client** and enter the name, medical record number, and other details. To look around first, choose **Load example client (demonstration data)** on the welcome screen.
-5. Select the client, then choose **New record** from the toolbar. Fill in the SOAP note, symptom scores, assessment results, and training results.
+5. Select the client, then choose **New record** from the toolbar. Fill in the SOAP note and symptom scores. Under **Assessments** and **Rehabilitation items**, tick what was done this visit to open its fields, then enter the results.
 6. Choose **Save**, or press `Ctrl+S` / `⌘S`. The session CSV, PDF, and TXT files are written to that client's folder.
 7. When reopening the HTML, the app reconnects to the previously selected record folder if the browser still grants access. Otherwise, the first screen offers to reconnect that folder or choose another one.
 
@@ -45,7 +47,7 @@ The browser requires you to select and authorize a folder. It cannot infer the H
 
 | Control | Purpose |
 | --- | --- |
-| File | Save, import CSV/Excel/backups or a legacy SOAP folder, choose a storage location, open or reload a record folder, and configure a second copy folder. |
+| File | Save, import CSV/Excel/backups/test score files or a legacy SOAP folder, choose a storage location, open or reload a record folder, and configure a second copy folder. |
 | Client | Create or edit clients and add rehabilitation records. |
 | View | Switch between light and dark appearance. |
 | Toolbar | Add a record, save, import, and open the export menu. Copy-note and cancel actions appear while editing. |
@@ -69,7 +71,41 @@ Select a client and open **Item settings**:
 3. Add result fields using text, number, long text, or dropdown types. Numbers support units, minimums, maximums, and steps; dropdown options use one option per line.
 4. Choose **Save item**. The item can now be selected in the SOAP form. You can also add items from an open SOAP form without losing its draft.
 
-Rehabilitation items share fields for activity, program/equipment, duration, level/settings, performance, perceived difficulty, and observations. Custom result fields follow those shared fields. COPM retains its dedicated table, assessment timing, and baseline comparison.
+### Initial assessment items
+
+**Initial assessment items** at the top of **Item settings** lists the client's enabled assessments as tick boxes. Tick the items to test at the initial (baseline) assessment; each change is saved immediately. Items you have not changed stay included, so existing clients keep their previous behavior.
+
+In a record, the assessment section shows the items as tick boxes, following the outpatient form in NTUHLowvision:
+
+- **Baseline assessment** records list the initial assessment items first, then **Other items**.
+- **Post-rehabilitation** and **Follow-up** assessments list the initial items due by their assessment timing as **Due this visit**; the rest appear under **Other items**.
+- Treatment visits list all available assessments without a due group. COPM appears only at baseline and post-rehabilitation assessments.
+
+Ticking an item opens its result fields; unticking closes it and keeps what you typed until you leave the record. Only ticked items are saved, so an untested item never appears in the note, PDF, Excel export, or progress tracking. Results already saved in an older record for an unticked item are kept.
+
+### Rehabilitation items and activity scores
+
+Rehabilitation items work the same way: tick the items done this visit to open them. Inside an item, tick each activity performed; every ticked activity gets its own score box, for example `85%`, `12 reps`, or `40 s`. Shared fields for program/equipment, duration, level/settings, perceived difficulty (0 to 10), and observations follow, then any custom result fields. An item without an activity list has a single **Performance** box instead. Older records that used the shared performance box keep it as **Overall performance**.
+
+Activity scores appear in the note, PDF, and TXT (`Selective attention: 92%`), as rows in the Excel **Training results** sheet, and as one column per activity in **Progress tracking**, where ✓ marks an activity done without a score. Perceived difficulty and overall session tolerance use 0 to 10 number boxes; an empty box means not rated, and values outside 0 to 10 block saving. COPM retains its dedicated table, assessment timing, and baseline comparison.
+
+### Computerized visual tests (OcuTrain and UFOV)
+
+The built-in computerized tests follow the modules of OcuTrain and the subtests of the peripheral visual field training program. Each module or subtest is a separate item, so smooth pursuit and fixation are never recorded together:
+
+| Item | Main score | Other results | Test settings |
+| --- | --- | --- | --- |
+| Smooth pursuit (OcuTrain PURSUIT) | Gaze accuracy rate (%) | Completed targets, on-target time, valid gaze time, test duration, diplopia onset by direction | Test mode, stimulus type and size, movement speed, target spans, directions, hit threshold, viewing distance, eye tracker |
+| Fixation (OcuTrain FIXATION) | Gaze accuracy rate (%) | Same as smooth pursuit | As smooth pursuit, plus edge hold time |
+| Saccade (OcuTrain SACCADE) | Gaze accuracy rate (%) | Mean time to first fixation (TFF), TFF targets, and the results above | Test mode, stimulus, target dwell time, spans, directions, threshold, distance, eye tracker |
+| Vestibulo-ocular reflex (OcuTrain VOR) | Gaze accuracy rate (%) | On-target time, valid gaze time, test duration, diplopia | VOR multiplier, VOR direction, stimulus size, threshold, distance, eye tracker |
+| UFOV subtests 1 to 3 (processing speed, divided attention, selective attention) | Threshold at 80% correct (ms) | Overall accuracy, mean response time, formal and correct trials, fastest correct duration; subtests 2 and 3 add central and peripheral accuracy and accuracy by direction | Stop condition, contrast, vehicle size, viewing distance, refresh rate; subtests 2 and 3 add peripheral eccentricity and enabled directions |
+
+The main score comes first. Test settings sit in a folded **Test settings** section under the results; its heading shows how many settings are filled. Field identifiers match the keys in the programs' exported files, so imported values land in the same boxes. The note, PDF, and progress tracking show the settings as one summary line.
+
+Training records can hold test runs too. When **Computer-based oculomotor training** or **Peripheral awareness** is ticked, **Test records** lists one card per run. Choose the module or subtest and **Add test record** to enter a run by hand. Each card has its own results and settings, so a pursuit run and a fixation run done in the same visit stay separate. Runs appear in the note and PDF, as rows in the Excel **Training results** sheet, and in progress tracking under their own heading.
+
+Existing clients keep the items in their stored templates. Older items such as the combined fixation and pursuit items stay available, and their saved results are unchanged. Add the new items from **Item settings**, or let a score import add them.
 
 Items can be edited, duplicated, disabled, and re-enabled. Saved records retain their original item names and field definitions, so later template changes do not rewrite historical results. For legacy records without saved definitions, the app preserves the original templates from client data when settings are first changed.
 
@@ -137,10 +173,27 @@ If you use a second copy folder, configure it again in the destination browser.
 
 ## Import, export, and backups
 
-- Use **Import**, or the import command under **File**, to import multiple CSV files produced by this app, a client roster, a single full JSON backup, or supported `.xlsb` / `.xlsx` source workbooks. Import Excel, CSV, and JSON separately.
+- Use **Import**, or the import command under **File**, to import multiple CSV files produced by this app, a client roster, a single full JSON backup, supported `.xlsb` / `.xlsx` source workbooks, or test score files. Import Excel, CSV, JSON, and test score files separately.
 - Use **Export → Export client roster CSV** to download `clients.csv`, **Export client Excel** / **Export all clients Excel** for workbooks, or **Back up all data (JSON)** for a complete data backup.
 - Custom assessments, rehabilitation items, and result fields are included in progress tracking, CSV, PDF, Excel, and full backups. COPM comparisons still use the corresponding baseline in the full history when the visible list is filtered to post-rehabilitation records.
 - In folder mode, **File → Set copy folder** can maintain a second local copy. Existing records are copied when connected; later writes, renames, and deletions are mirrored. Keep separate JSON backups when you need a copy unaffected by later deletions.
+
+### Test score files
+
+Select a client first, then choose **Import** and pick one or more score files. The files are recognized by their contents, not their names:
+
+- OcuTrain JSON exports, including files that hold several runs, and OcuTrain CSV exports with `# Key: Value` header lines. Pursuit, fixation, saccade, and VOR runs are supported.
+- The statistics CSV of the peripheral visual field (UFOV) training program: one row per parameter, keyed by codes such as `subtest_code`, `test_mode`, and `final_threshold_rt_ms`.
+
+A preview lists one card per test run, with its date and time, item, test mode, main score, file name, and an **Import as** choice: **Assessment**, **Rehabilitation training**, or **Do not import**. The defaults are:
+
+- OcuTrain runs in Evaluation mode go to assessments; Predictable and Random runs go to rehabilitation training.
+- UFOV runs go to assessments when the client has an assessment record on the same date, and to rehabilitation training otherwise.
+- Runs that were not completed, UFOV practice or instruction runs, and runs already imported are set to **Do not import**. You can change any choice before importing.
+
+An assessment run fills the item's boxes in the record of that date. A training run is added as a test record under the matching training item, and its main score becomes that activity's score. If no record exists for the date, the import creates an assessment or treatment record. Existing results are never overwritten: a run whose values differ from results already saved is skipped and reported. The same run exported as both JSON and CSV is listed once.
+
+The import stops if a file's subject ID matches the medical record number of a different client. A UFOV raw-score CSV contains only per-trial rows, and the UFOV JSON export does not record the test mode, so both are listed as notes and not imported; import the statistics CSV of the same run instead. A diplopia questionnaire saved with a run fills that run's diplopia field; a file holding only a questionnaire is not imported. Each imported run keeps its file name, subject ID, test date and time, and import key in the record's source details.
 
 ### Source workbooks and legacy SOAP folders
 
@@ -186,7 +239,9 @@ tests/                 Browser tests and PDF/ZIP checks
   storage.cjs          Client roster and folder tests
   toolbar.cjs          Menu, toolbar, and shortcut tests
   templates.cjs        Custom item and appearance tests
+  assessment-picks.cjs Initial assessment items, tick-to-open sections, and per-activity scores in both languages
   language.cjs         Language switching and data preservation tests
+  score-imports.cjs    OcuTrain and UFOV score imports, test settings, and test records in both languages
   imports.cjs          Empty startup, offline Excel and legacy SOAP imports in both languages
   workspace.cjs        Offline file opening, client summaries, filters, keyboard tabs, and layout checks
   check_i18n.cjs       Source translation and English documentation gate
@@ -201,7 +256,7 @@ After installing the test dependencies, enable the Git hook once per checkout:
 git config --local core.hooksPath .githooks
 ```
 
-Every `git push` then runs `node tests/run-ci.cjs`. The same command runs in GitHub Actions on pushes and pull requests. It checks translations, record workflows, storage, menus, templates, language switching, imports, layouts, PDF/ZIP exports, and runner failure handling. Any failure stops the remaining steps and blocks the local push. New `.cjs` and `.py` test scripts in `tests/` are included automatically. The pinned Excel test component is downloaded on first use and reused from `.tmp/`.
+Every `git push` then runs `node tests/run-ci.cjs`. The same command runs in GitHub Actions on pushes and pull requests. It checks translations, record workflows, storage, menus, templates, language switching, imports, test score imports, layouts, PDF/ZIP exports, and runner failure handling. Any failure stops the remaining steps and blocks the local push. New `.cjs` and `.py` test scripts in `tests/` are included automatically. The pinned Excel test component is downloaded on first use and reused from `.tmp/`.
 
 Every interface feature must include both Traditional Chinese and English. The translation gate rejects untranslated source text, new one-language labels, incomplete built-in label pairs, and Chinese text in this English README. New feature screens and states must also be covered by the bilingual browser tests, as required by [AGENTS.md](AGENTS.md).
 

@@ -108,6 +108,18 @@ const output = path.join(root, '.tmp', 'verification');
     await checkEnglish('#planEdit'); await checkEnglish('#trainingEdit');
     await action('new-session').click();
     await checkEnglish('#soapForm');
+    // A training test record added by hand: its card, result boxes and folded settings are in English.
+    await page.locator('#tx-ocular-on').check();
+    await page.locator('#tx-ocular-run-item').selectOption('fixation'); await action('run-add').click();
+    const settings = page.locator('#tx-ocular-runs details.settings');
+    await settings.locator('summary').click();
+    assert.equal(await settings.locator('summary').innerText(), 'Test settings');
+    assert.match(await page.locator('#tx-ocular-runs .run h5').innerText(), /^Fixation \(OcuTrain FIXATION\)/);
+    assert.deepEqual(await settings.locator('select').first().locator('option').allTextContents(), ['Please select', 'Evaluation', 'Predictable', 'Random']);
+    await checkEnglish('#tx-ocular');
+    await page.locator('#tx-ocular-runs [data-action="run-del"]').click();
+    assert.equal(await page.locator('#tx-ocular-runs .run').count(), 0);
+    await page.locator('#tx-ocular-on').uncheck();
     await action('plan-add').click(); await checkEnglish('.modal');
     await page.locator('#item-field-0-type').selectOption('number'); await checkEnglish('.modal');
     for (const width of [320, 768, 1280]) {

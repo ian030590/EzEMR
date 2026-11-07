@@ -214,7 +214,6 @@ table.out td:first-child, table.out th:first-child { text-align: left; padding-l
 .chip.good { background: var(--good-soft); color: var(--good); border-color: transparent; }
 .chip.acc { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
 .chip.pre { background: var(--pre-soft); color: var(--pre); border-color: transparent; }
-.chip.due { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
 details.script { border: 1px solid var(--line); border-radius: var(--r); background: var(--sunk); }
 details.script summary { cursor: pointer; padding: 10px 12px; font-weight: 600; font-size: var(--text-label); }
 details.script .body { padding: 0 14px 16px; display: flex; flex-direction: column; gap: 12px; font-size: 1rem; }
@@ -228,33 +227,47 @@ details.script dd { margin: 0; }
 .client-summary > details.script > .body > p { margin: 0; }
 @media (max-width: 560px) { details.script dl { grid-template-columns: minmax(0, 1fr); } details.script dd { margin-bottom: 6px; } }
 
-.checklist { display: flex; flex-direction: column; gap: 8px; }
-.group-h { font-size: var(--text-small); color: var(--muted); font-weight: 600; margin-top: 4px; }
-.as { border: 1px solid var(--line); border-radius: var(--r); }
-.as.on { border-color: var(--accent); }
-.as-head { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; cursor: pointer; }
-.as-head input { margin-top: 3px; }
-.as-head .t { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
-.as-head .t b { font-weight: 600; }
-.as-head .t span { font-size: var(--text-small); color: var(--muted); }
-.as-body { padding: 0 12px 12px 39px; display: flex; flex-direction: column; gap: 10px; }
-@media (max-width: 560px) { .as-body { padding-left: 12px; } }
+/* Pick what was done from the chips; only picked items open their fields. */
+.pick-label { font-size: var(--text-small); color: var(--muted); font-weight: 600; }
+.pick-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.pick { display: inline-flex; gap: 8px; align-items: center; border: 1px solid var(--control-line); border-radius: 6px; min-height: 44px; padding: 8px 12px; font-size: var(--text-label); font-weight: 500; cursor: pointer; background: var(--surface); overflow-wrap: anywhere; }
+.pick:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.picked { display: flex; flex-direction: column; gap: 10px; }
+.picked:not(:has(> :not([hidden]))) { display: none; }
+.as, .tx { border: 1px solid var(--accent); border-radius: var(--r); min-width: 0; }
+.as-head { display: flex; flex-direction: column; gap: 1px; padding: 10px 12px 4px; }
+.as-head b, .tx-head { font-weight: 600; font-size: 1rem; margin: 0; }
+.as-head span { font-size: var(--text-small); color: var(--muted); }
+.tx-head { padding: 10px 12px 4px; }
+.as-body, .tx-body { padding: 6px 12px 12px; display: flex; flex-direction: column; gap: 10px; }
 .copm { display: grid; grid-template-columns: minmax(0, 1fr) 6.5em 6.5em; gap: 6px 8px; align-items: center; }
 .copm .h { font-size: var(--text-small); color: var(--muted); font-weight: 600; }
 input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent); flex: none; }
 
-.tx { border: 1px solid var(--line); border-radius: var(--r); padding: 0; margin: 0; min-width: 0; }
-.tx.on { border-color: var(--accent); }
-.tx-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; font-weight: 600; }
-.tx-body { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 10px; }
 .acts { display: flex; flex-wrap: wrap; gap: 6px; }
 .act { display: inline-flex; gap: 8px; align-items: center; border: 1px solid var(--control-line); border-radius: 6px; min-height: 44px; padding: 6px 12px; font-size: var(--text-label); cursor: pointer; background: var(--sunk); }
 .act:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); }
 .act input { width: 14px; height: 14px; }
-.rate { display: flex; align-items: center; gap: 8px; }
-.rate input[type="range"] { flex: 1; accent-color: var(--accent); min-width: 0; }
-.rate input[type="range"] { min-height: 44px; }
-.rate output { min-width: 2.2em; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.act-score-box { display: flex; flex-direction: column; gap: 6px; }
+.act-score-box:not(:has(.act-scores > :not([hidden]))) { display: none; }
+.act-scores { display: grid; gap: 10px 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); }
+/* Test settings fold under the results; each imported or typed test run is its own card. */
+.grid > details.settings { grid-column: 1 / -1; border: 1px solid var(--line); border-radius: var(--r); background: var(--sunk); min-width: 0; }
+details.settings > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; padding: 8px 12px; font-weight: 600; font-size: var(--text-label); }
+details.settings > .grid { padding: 4px 12px 12px; }
+.runs { display: flex; flex-direction: column; gap: 10px; }
+.run { border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.run-head { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
+.run-head h5 { margin: 0; font-size: 1rem; font-weight: 600; overflow-wrap: anywhere; }
+.run-head .note { display: block; font-weight: 400; overflow-wrap: anywhere; }
+/* Score import preview: one card per test run, stacking on narrow screens. */
+.import-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.import-row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-end; justify-content: space-between; border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; }
+.import-info { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; }
+.import-title { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.import-score { font-weight: 600; font-variant-numeric: tabular-nums; }
+.import-status { font-size: var(--text-small); font-weight: 600; }
+.import-row > .f { flex: 0 1 180px; min-width: 0; }
 table.sym.ed { min-width: 1120px; }
 table.sym.ed select { width: auto; padding: 4px 6px; }
 table.sym.ed select:disabled { opacity: .45; }
@@ -406,7 +419,7 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
       <button class="tool-button save" id="toolbarSave" data-action="save-session" data-needs="draft" disabled title="儲存 CSV 與 PDF（Ctrl+S／⌘S）" aria-keyshortcuts="Control+S Meta+S"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l3 3v15H4z M8 3v6h8V3 M8 21v-8h8v8"/></svg><span data-label>儲存</span></button>
     </div>
     <div class="tool-group">
-      <button class="tool-button" data-action="import-records" title="匯入 CSV、評估復能 Excel 或 JSON 備份"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12 M8 11l4 4 4-4 M4 15v6h16v-6"/></svg>匯入</button>
+      <button class="tool-button" data-action="import-records" title="匯入 CSV、評估復能 Excel、JSON 備份或測驗分數檔"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12 M8 11l4 4 4-4 M4 15v6h16v-6"/></svg>匯入</button>
       <button class="tool-button menu-trigger" id="exportMenuButton" aria-haspopup="menu" aria-expanded="false" aria-controls="exportMenu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3 M8 7l4-4 4 4 M4 15v6h16v-6"/></svg>匯出<span class="menu-caret" aria-hidden="true">▾</span></button>
     </div>
     <div class="tool-group" id="draftTools" hidden>
@@ -421,7 +434,7 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
   <button role="menuitem" tabindex="-1" data-action="new-session" data-needs="client" disabled>新增復健紀錄</button>
   <hr role="separator">
   <button role="menuitem" tabindex="-1" data-action="save-session" data-needs="draft" disabled><span data-label>儲存 CSV 與 PDF</span><kbd data-shortcut="S">Ctrl+S</kbd></button>
-  <button role="menuitem" tabindex="-1" data-action="import-records">匯入 CSV／評估復能 Excel／備份…</button>
+  <button role="menuitem" tabindex="-1" data-action="import-records">匯入 CSV／評估復能 Excel／備份／測驗分數…</button>
   <button role="menuitem" tabindex="-1" data-action="import-soap-folder">匯入舊版 SOAP 資料夾…</button>
   <hr role="separator">
   <button role="menuitem" tabindex="-1" data-action="storage-settings">儲存位置…</button>
@@ -722,6 +735,20 @@ const UI_EN = {
   "的項目設定": "item settings",
   "空白模板": "Blank template",
   "表現": "Performance",
+  "整體表現": "Overall performance",
+  "初次評估項目": "Initial assessment items",
+  "其他項目": "Other items",
+  "本次復健項目": "Rehabilitation items this visit",
+  "各活動表現（一項一個分數）": "Activity performance (one score per activity)",
+  "例：85%、12 次、40 秒": "e.g. 85%, 12 reps, 40 s",
+  "{0}的表現": "{0} performance",
+  "勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。": "Tick the items tested this visit to open their fields. Unticked items are not saved. Change the initial assessment items under Item settings.",
+  "勾選本次進行的項目，再勾選做過的活動，每個活動填一個分數。": "Tick the items done this visit, then tick each activity performed and enter one score for it.",
+  "活動欄顯示該次的分數；✓ 表示有做但未填分數。": "Activity columns show that visit's score; ✓ means the activity was done but no score was entered.",
+  "勾選初次評估（基準評估）要施測的項目。填寫基準評估時，這些項目列在最前面；療程後與追蹤評估只列出其中依評估時機應再評估的項目。實際施測後，再於病歷中勾選並填寫。": "Tick the items to test at the initial (baseline) assessment. Baseline records list these items first; post-rehabilitation and follow-up assessments list only those due again by their timing. Once an item has been tested, tick it in the record and fill it in.",
+  "尚無啟用的評估項目。": "No assessments are enabled.",
+  "已列入初次評估項目。": "Added to the initial assessment items.",
+  "已移出初次評估項目。": "Removed from the initial assessment items.",
   "表現 1 至 10": "Performance 1 to 10",
   "表現：": "Performance: ",
   "表現（1 至 10）": "Performance (1 to 10)",
@@ -1197,8 +1224,8 @@ const UI_EN = {
   "第 {0} 項職能活動": "Priority occupation {0}",
   "第 {0} 項活動表現": "Performance for activity {0}",
   "第 {0} 項活動滿意度": "Satisfaction for activity {0}",
-  "匯入 CSV、評估復能 Excel 或 JSON 備份": "Import CSV, assessment and rehabilitation Excel, or JSON backup",
-  "匯入 CSV／評估復能 Excel／備份…": "Import CSV / assessment and rehabilitation Excel / backup...",
+  "匯入 CSV、評估復能 Excel、JSON 備份或測驗分數檔": "Import CSV, assessment and rehabilitation Excel, JSON backup, or test score files",
+  "匯入 CSV／評估復能 Excel／備份／測驗分數…": "Import CSV / assessment and rehabilitation Excel / backup / test scores...",
   "匯入舊版 SOAP 資料夾…": "Import legacy SOAP folder...",
   "症狀圖表，可左右捲動": "Symptom chart, scroll horizontally",
   "症狀評分表，可左右捲動": "Symptom ratings, scroll horizontally",
@@ -1233,7 +1260,45 @@ const UI_EN = {
   "正在儲存資料，請等候完成後再匯入。": "Saving is in progress. Import again after it finishes.",
   "正在整合 {0} 位個案，產生 CSV 與 PDF…": "Merging {0} clients and creating CSV and PDF files...",
   "已整合 {0} 位個案。": "Merged {0} clients.",
-  "請分別匯入 Excel、CSV 或 JSON 備份。": "Import Excel, CSV and JSON backups separately."
+  "請分別匯入 Excel、CSV 或 JSON 備份。": "Import Excel, CSV and JSON backups separately.",
+  "測驗設定（已填 {0} 項）": "Test settings ({0} filled)",
+  "測驗設定": "Test settings",
+  "；": "; ",
+  "測驗紀錄（每次測驗一筆，各自記錄設定）": "Test records (one per test run, each with its own settings)",
+  "尚無測驗紀錄。可匯入 OcuTrain 或周邊視野訓練的分數檔，或在下方新增。": "No test records yet. Import score files from OcuTrain or the peripheral field training program, or add one below.",
+  "測驗紀錄項目": "Test record item",
+  "新增測驗紀錄": "Add test record",
+  "來源：": "Source: ",
+  "移除{0}測驗紀錄": "Remove the {0} test record",
+  "測驗紀錄：": "Test record: ",
+  "測驗紀錄": "Test record",
+  "（復健測驗紀錄）": " (rehabilitation test records)",
+  "復健時的每次測驗，各自顯示當次設定。": "Each test run during rehabilitation, shown with the settings used that time.",
+  "無法辨識 OcuTrain 模組：{0}": "Unrecognized OcuTrain module: {0}",
+  "缺少測驗日期。": "The test date is missing.",
+  "無法辨識周邊視野訓練的子測驗：{0}": "Unrecognized peripheral field training subtest: {0}",
+  "匯入測驗分數": "Import test scores",
+  "匯入到 {0}。檔案中的受試者代號：{1}": "Importing into {0}. Subject IDs in the files: {1}",
+  "「評估」寫入同名的評估項目；「復健訓練」寫入復健項目的測驗紀錄，並把主要分數填入對應活動。該日沒有紀錄時會新增一筆。": "\"Assessment\" fills in the assessment item of the same name. \"Rehabilitation training\" adds a test record under the rehabilitation item and puts the main score on the matching activity. A new record is created when that day has none.",
+  "匯入為": "Import as",
+  "復健訓練": "Rehabilitation training",
+  "不匯入": "Do not import",
+  "（{0}）": " ({0})",
+  "請先選擇要匯入測驗分數的個案。": "Select the client to import the test scores into first.",
+  "{0}：原始分數檔只有逐題資料，請匯入同一次的統計成績 CSV。": "{0}: the raw score file has only per-trial data; import the statistics CSV from the same run.",
+  "{0}：此 JSON 沒有記錄測驗模式與正式題，請匯入同一次的統計成績 CSV。": "{0}: this JSON does not record the test mode or which trials were formal; import the statistics CSV from the same run.",
+  "{0}：只有複視問卷，沒有測驗分數，未匯入。": "{0}: contains only the diplopia questionnaire and no test scores; not imported.",
+  "{0} 與 {1} 是同一次測驗，只列出一筆。": "{0} and {1} are the same test run; it is listed once.",
+  "沒有可匯入的測驗分數。": "There are no test scores to import.",
+  "受試者代號 {0} 屬於個案 {1}，請先開啟該個案再匯入。": "Subject ID {0} belongs to client {1}. Open that client before importing.",
+  "已匯入過，預設不匯入。": "Already imported; set to not import.",
+  "測驗未完成（{0}），預設不匯入。": "Test not completed ({0}); set to not import.",
+  "不是正式紀錄（{0}），預設不匯入。": "Not a formal run ({0}); set to not import.",
+  "沒有匯入任何測驗分數。": "No test scores were imported.",
+  "已新增 {0} 的{1}紀錄。": "Added a new record on {0} ({1}).",
+  "{0} {1}：已有不同的結果，未覆蓋（{2}）。": "{0} {1}: different results are already recorded and were not overwritten ({2}).",
+  "已匯入 {0} 筆測驗分數。": "Imported {0} test scores.",
+  "測驗分數檔請與 EzEMR 的 CSV 或 JSON 備份分開匯入。": "Import test score files separately from EzEMR CSV files and JSON backups."
 };
 const uiPattern = new RegExp(Object.keys(UI_EN).sort((a, b) => b.length - a.length).map(key => key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') || '(?!)', 'g');
 // Translate source literals only; interpolated names, notes and result values stay untouched.
@@ -1301,21 +1366,81 @@ const isDue = (timing, visit) => timing === 'session' ||
   (timing === 'assessment' && isAssessVisit(visit)) ||
   (timing === 'bp' && ['baseline', 'post'].includes(visit)) ||
   (timing === 'milestone' && ['baseline', 'post', 'followup'].includes(visit));
+// OcuTrain modules and UFOV subtests: one item per module or subtest, each with its own settings.
+// Field ids follow the keys in the programs' exported files so imported scores land in the same boxes.
+const numField = (id, label, extra = {}) => ({ id, label, type: 'number', ...extra });
+const asSetting = field => ({ ...field, group: 'setting' });
+const OT_OPTIONS = {
+  mode: ['Evaluation', 'Predictable', 'Random'],
+  stimulus: ['White dot', 'Red in White', 'Numbers dot'],
+  tracker: ['Tobii', 'WebGazer', 'None'],
+  vorAxis: ['Horizontal', 'Vertical']
+};
+const otResults = (extra = []) => [
+  numField('accuracy_rate', 'Gaze accuracy rate (%)', { min: 0, max: 100 }), ...extra,
+  numField('in_threshold_sec', 'On-target time (s)', { min: 0 }), numField('valid_sec', 'Valid gaze time (s)', { min: 0 }),
+  numField('actual_duration_sec', 'Test duration (s)', { min: 0 }),
+  { id: 'diplopia', label: 'Diplopia onset by direction (× = none)', type: 'text' }
+];
+const otSettings = (extra = []) => [
+  { id: 'mode', label: 'Test mode', type: 'select', options: OT_OPTIONS.mode },
+  { id: 'stimulusType', label: 'Stimulus type', type: 'select', options: OT_OPTIONS.stimulus },
+  numField('ballArcmin', 'Stimulus size (arcmin)', { min: 0 }), ...extra,
+  numField('horizontalSpanArcmin', 'Horizontal target span (arcmin)', { min: 0 }), numField('verticalSpanArcmin', 'Vertical target span (arcmin)', { min: 0 }),
+  { id: 'directions', label: 'Enabled directions', type: 'text' },
+  numField('threshold_deg', 'Hit distance threshold (deg)', { min: 0 }), numField('viewingDistanceCm', 'Viewing distance (cm)', { min: 0 }),
+  { id: 'eye_tracker', label: 'Eye tracker', type: 'select', options: OT_OPTIONS.tracker }
+].map(asSetting);
+const completedTargets = numField('completed_targets', 'Completed targets (n)', { min: 0 });
+const ufovFields = peripheral => [
+  numField('final_threshold_rt_ms', 'Threshold at 80% correct (ms)', { min: 0 }),
+  numField('accuracy_rate_percent', 'Overall accuracy (%)', { min: 0, max: 100 }),
+  ...(peripheral ? [numField('central_accuracy_percent', 'Central accuracy (%)', { min: 0, max: 100 }), numField('peripheral_accuracy_percent', 'Peripheral accuracy (%)', { min: 0, max: 100 })] : []),
+  numField('mean_response_time_ms', 'Mean response time (ms)', { min: 0 }),
+  numField('formal_trials_total', 'Formal trials (n)', { min: 0 }), numField('formal_trials_correct', 'Correct trials (n)', { min: 0 }),
+  numField('fastest_correct_duration_ms', 'Fastest correct duration (ms)', { min: 0 }),
+  ...(peripheral ? [{ id: 'direction_accuracy', label: 'Accuracy by direction', type: 'text' }] : []),
+  ...[{ id: 'stop_condition', label: 'Stop condition', type: 'select', options: ['Adaptive 80%', 'Fixed trials'] },
+    numField('contrast_percent', 'Contrast (%)', { min: 0, max: 100 }),
+    ...(peripheral ? [numField('target_visual_angle_deg', 'Peripheral eccentricity (deg)', { min: 0 })] : []),
+    numField('vehicle_visual_angle_deg', 'Vehicle size (deg)', { min: 0 }), numField('viewing_distance_cm', 'Viewing distance (cm)', { min: 0 }),
+    ...(peripheral ? [{ id: 'enabled_direction_list', label: 'Enabled directions', type: 'text' }] : []),
+    numField('refresh_rate_hz', 'Refresh rate (Hz)', { min: 0 })].map(asSetting)
+];
+const UFOV_OUTCOME = 'Presentation-time threshold at 80% correct from the adaptive staircase.';
+const DEVICE_ITEMS = [
+  { id: 'pursuit', domain: 'Smooth-pursuit control', name: 'Smooth pursuit (OcuTrain PURSUIT)', timing: 'assessment',
+    outcome: 'Accuracy counts the outward and return movement only; the central cross is excluded.',
+    fields: [...otResults([completedTargets]), ...otSettings([asSetting(numField('speedArcminSec', 'Movement speed (arcmin/s)', { min: 0 }))])] },
+  { id: 'fixation', domain: 'Fixation control', name: 'Fixation (OcuTrain FIXATION)', timing: 'assessment',
+    outcome: 'Accuracy counts the edge hold only; the central cross and movement are excluded.',
+    fields: [...otResults([completedTargets]), ...otSettings([asSetting(numField('speedArcminSec', 'Movement speed (arcmin/s)', { min: 0 })), asSetting(numField('holdSec', 'Edge hold time (s)', { min: 0 }))])] },
+  { id: 'saccade', domain: 'Saccadic control', name: 'Saccade (OcuTrain SACCADE)', timing: 'assessment',
+    outcome: 'Accuracy excludes the first 200 ms of each target; time to first fixation (TFF) is recorded separately.',
+    fields: [...otResults([numField('tff_mean_ms', 'Mean time to first fixation (ms)', { min: 0 }), numField('tff_detected_targets', 'TFF detected targets (n)', { min: 0 }), numField('tff_total_targets', 'TFF total targets (n)', { min: 0 }), completedTargets]),
+      ...otSettings([asSetting(numField('dwellMs', 'Target dwell time (ms)', { min: 0 }))])] },
+  { id: 'vor', domain: 'Vestibulo-ocular control', name: 'Vestibulo-ocular reflex (OcuTrain VOR)', timing: 'assessment',
+    outcome: 'Accuracy counts all valid tracking time while the head moves.',
+    fields: [...otResults(), ...[numField('vorGain', 'VOR multiplier (×)', { min: 1, max: 2, step: 0.1 }), { id: 'vorAxis', label: 'VOR direction', type: 'select', options: OT_OPTIONS.vorAxis },
+      numField('ballArcmin', 'Stimulus size (arcmin)', { min: 0 }), numField('threshold_deg', 'Hit distance threshold (deg)', { min: 0 }),
+      numField('viewingDistanceCm', 'Viewing distance (cm)', { min: 0 }), { id: 'eye_tracker', label: 'Eye tracker', type: 'select', options: OT_OPTIONS.tracker }].map(asSetting)] },
+  { id: 'ufov_speed', domain: 'Useful field of view', name: 'UFOV subtest 1 – processing speed', timing: 'milestone', outcome: UFOV_OUTCOME, fields: ufovFields(false) },
+  { id: 'ufov_divided', domain: 'Useful field of view', name: 'UFOV subtest 2 – divided attention', timing: 'milestone', outcome: UFOV_OUTCOME, fields: ufovFields(true) },
+  { id: 'ufov_selective', domain: 'Useful field of view', name: 'UFOV subtest 3 – selective attention', timing: 'milestone', outcome: UFOV_OUTCOME, fields: ufovFields(true) }
+];
+const deviceItem = id => DEVICE_ITEMS.find(item => item.id === id);
+// Test runs recorded under a training item: OcuTrain modules under oculomotor training, UFOV subtests under peripheral training.
+const RUN_ITEMS = { ocular: ['pursuit', 'fixation', 'saccade', 'vor'], periph: ['ufov_speed', 'ufov_divided', 'ufov_selective'] };
+// The training activity each test run counts toward; the activity keeps the latest run's main score.
+const RUN_ACTS = { pursuit: 'Smooth pursuit tracking', fixation: 'Fixation', saccade: 'Saccades', vor: 'Gaze stabilisation (VOR)',
+  ufov_speed: 'UFOV subtest 1 – processing speed', ufov_divided: 'UFOV subtest 2 – divided attention', ufov_selective: 'UFOV subtest 3 – selective attention' };
 const DEFAULT_PLAN = [
   { id: 'copm', domain: 'Occupational performance & satisfaction', name: 'COPM', timing: 'bp', copm: true,
     outcome: 'Performance and satisfaction ratings for the same priority occupations; change scores' },
-  { id: 'sacc', domain: 'Saccadic control', name: 'Eye tracker – structured saccade task (computer based)', timing: 'assessment',
-    fields: ['Gaze-shift latency (ms)', 'Accuracy (%)', 'Task errors (n)'], outcome: 'Gaze-shift timing, accuracy and task-error measures' },
-  { id: 'fix', domain: 'Fixation control', name: 'Eye tracker – fixation task (computer based)', timing: 'assessment',
-    fields: ['Fixation stability', 'Departures from target (n)'], outcome: 'Fixation-stability and departures-from-target measures' },
-  { id: 'purs', domain: 'Smooth-pursuit control', name: 'Eye tracker – moving-target pursuit task (computer based)', timing: 'assessment',
-    fields: ['Tracking accuracy', 'Interruptions (n)'], outcome: 'Tracking-accuracy and interruption measures' },
-  { id: 'periph', domain: 'Peripheral awareness', name: 'Structured peripheral-stimulus task with eye tracking (computer based)', timing: 'assessment',
-    fields: ['Detection accuracy (%)', 'Response time (ms)', 'Fixation compliance (%)'], outcome: 'Detection accuracy, response time and fixation compliance' },
+  ...DEVICE_ITEMS.slice(0, 4),
   { id: 'npc', domain: 'Basic visual function – convergence', name: 'Clinical convergence assessment (NPC)', timing: 'milestone',
     fields: ['NPC break (cm)', 'NPC recovery (cm)', 'Positive fusional vergence (Δ)', 'Binocular eye-tracking measures'], outcome: 'NPC, positive fusional vergence and selected binocular eye-tracking measures' },
-  { id: 'ufov', domain: 'Basic visual function', name: 'UFOV', timing: 'milestone',
-    fields: ['Processing speed (ms)', 'Divided attention (ms)', 'Selective attention (ms)'], outcome: '' },
+  ...DEVICE_ITEMS.slice(4),
   { id: 'func', domain: 'Functional vision (work related)', name: 'Work-related functional vision task', timing: 'milestone',
     fields: ['Task / measure', 'Result'], outcome: '' }
 ];
@@ -1323,9 +1448,9 @@ const OLD_DEFAULT_NAMES = ['VOMS (Vestibular/Ocular Motor Screening)', 'Near poi
 
 const TRAIN = [
   { k: 'ocular', label: 'Computer-based oculomotor training',
-    acts: ['Saccadic fixation', 'Smooth pursuit tracking', 'Vergence (convergence / divergence)', 'Accommodative facility', 'Anti-saccades', 'Gaze stabilisation (VOR ×1)'] },
+    acts: ['Smooth pursuit tracking', 'Fixation', 'Saccades', 'Gaze stabilisation (VOR)', 'Vergence (convergence / divergence)', 'Accommodative facility', 'Anti-saccades'] },
   { k: 'periph', label: 'Peripheral awareness',
-    acts: ['Peripheral light board', 'Central–peripheral dual task', 'Peripheral target detection', 'Useful field of view', 'Peripheral cue with motor response'] },
+    acts: ['UFOV subtest 1 – processing speed', 'UFOV subtest 2 – divided attention', 'UFOV subtest 3 – selective attention', 'Peripheral light board', 'Central–peripheral dual task', 'Peripheral target detection', 'Peripheral cue with motor response'] },
   { k: 'attn', label: 'Visual attention',
     acts: ['Sustained attention', 'Selective attention', 'Divided attention', 'Alternating attention', 'Visual span / tachistoscope'] },
   { k: 'search', label: 'Visual search',
@@ -1334,6 +1459,33 @@ const TRAIN = [
 const BLOCK_SUGGEST = ['Saccade task (eye tracker)', 'Fixation task (eye tracker)', 'Smooth-pursuit task (eye tracker)', 'Peripheral-stimulus task', 'Convergence (NPC) testing', 'UFOV', 'Work-related functional vision task', ...TRAIN.map(t => t.label)];
 const LABELS = {
   'Occupational performance & satisfaction': '職能表現與滿意度',
+  'Smooth pursuit (OcuTrain PURSUIT)': '平滑追視（OcuTrain PURSUIT）', 'Fixation (OcuTrain FIXATION)': '凝視（OcuTrain FIXATION）',
+  'Saccade (OcuTrain SACCADE)': '跳視（OcuTrain SACCADE）', 'Vestibulo-ocular reflex (OcuTrain VOR)': '前庭眼反射（OcuTrain VOR）',
+  'Vestibulo-ocular control': '前庭眼動控制',
+  'UFOV subtest 1 – processing speed': 'UFOV 子測驗 1：處理速度', 'UFOV subtest 2 – divided attention': 'UFOV 子測驗 2：分散注意力',
+  'UFOV subtest 3 – selective attention': 'UFOV 子測驗 3：選擇性注意力',
+  'Accuracy counts the outward and return movement only; the central cross is excluded.': '正確率只計算往外與返回的移動段，不含中央十字。',
+  'Accuracy counts the edge hold only; the central cross and movement are excluded.': '正確率只計算邊緣停留段，不含中央十字與移動段。',
+  'Accuracy excludes the first 200 ms of each target; time to first fixation (TFF) is recorded separately.': '正確率不計每個目標的前 200 ms；首次凝視時間（TFF）另外記錄。',
+  'Accuracy counts all valid tracking time while the head moves.': '正確率計算頭部轉動期間的全部有效追蹤時間。',
+  'Presentation-time threshold at 80% correct from the adaptive staircase.': '以自適應階梯求得答對率 80% 的呈現時間門檻。',
+  'Gaze accuracy rate (%)': '注視正確率（%）', 'On-target time (s)': '落在目標內時間（秒）', 'Valid gaze time (s)': '有效注視時間（秒）',
+  'Test duration (s)': '測驗時間（秒）', 'Diplopia onset by direction (× = none)': '各方向複視起始角度（× 表示無複視）',
+  'Completed targets (n)': '完成目標數', 'Mean time to first fixation (ms)': '平均首次凝視時間（ms）',
+  'TFF detected targets (n)': 'TFF 偵測到的目標數', 'TFF total targets (n)': 'TFF 目標總數',
+  'Test mode': '測驗模式', 'Stimulus type': '刺激種類', 'Stimulus size (arcmin)': '刺激大小（arcmin）',
+  'Movement speed (arcmin/s)': '移動速度（arcmin/s）', 'Edge hold time (s)': '邊緣停留時間（秒）', 'Target dwell time (ms)': '目標停留時間（ms）',
+  'Horizontal target span (arcmin)': '水平目標間距（arcmin）', 'Vertical target span (arcmin)': '垂直目標間距（arcmin）',
+  'Enabled directions': '啟用方向', 'Hit distance threshold (deg)': '命中距離門檻（度）', 'Viewing distance (cm)': '觀看距離（cm）',
+  'Eye tracker': '眼動儀', 'VOR multiplier (×)': 'VOR 倍率（×）', 'VOR direction': 'VOR 方向',
+  'Evaluation': '評估', 'Predictable': '可預期', 'Random': '隨機', 'White dot': '白點', 'Red in White': '白圈紅心', 'Numbers dot': '數字點',
+  'None': '無', 'Horizontal': '水平', 'Vertical': '垂直',
+  'Threshold at 80% correct (ms)': '80% 正確門檻（ms）', 'Overall accuracy (%)': '整體正確率（%）', 'Central accuracy (%)': '中央目標正確率（%）',
+  'Peripheral accuracy (%)': '周邊目標正確率（%）', 'Mean response time (ms)': '平均作答反應時間（ms）', 'Formal trials (n)': '正式題數',
+  'Correct trials (n)': '答對題數', 'Fastest correct duration (ms)': '最快正確呈現時間（ms）', 'Accuracy by direction': '各方向正確率',
+  'Stop condition': '終止條件', 'Adaptive 80%': '80% 自適應階梯', 'Fixed trials': '固定題數', 'Contrast (%)': '對比度（%）',
+  'Peripheral eccentricity (deg)': '周邊偏心視角（度）', 'Vehicle size (deg)': '車輛大小視角（度）', 'Refresh rate (Hz)': '螢幕更新率（Hz）',
+  'Fixation': '凝視', 'Saccades': '跳視', 'Gaze stabilisation (VOR)': '凝視穩定（VOR）',
   'Saccadic control': '跳視控制', 'Fixation control': '凝視控制', 'Smooth-pursuit control': '平滑追視控制',
   'Peripheral awareness': '周邊覺察', 'Basic visual function – convergence': '基本視覺功能：輻輳',
   'Basic visual function': '基本視覺功能', 'Functional vision (work related)': '工作相關功能性視覺',
@@ -1681,8 +1833,11 @@ function validateRecord(c, s) {
     const d = s.training[t.k]; if (!d) continue;
     if (!object(d) || ['dur', 'diff'].some(key => d[key] != null && (typeof d[key] !== 'number' || !Number.isFinite(d[key]) || d[key] < 0 || (key === 'diff' && d[key] > 10))) ||
       (d.acts != null && (!Array.isArray(d.acts) || d.acts.some(a => typeof a !== 'string'))) ||
+      (d.actScores != null && (!object(d.actScores) || Object.values(d.actScores).some(v => typeof v !== 'string' && !(typeof v === 'number' && Number.isFinite(v))))) ||
       (d.eyedot != null && (!Array.isArray(d.eyedot) || d.eyedot.some(r => !object(r) || !id(r.id) ||
-        (r.count != null && (typeof r.count !== 'number' || !Number.isFinite(r.count) || r.count < 0)))))) throw new Error(ui('訓練紀錄格式錯誤'));
+        (r.count != null && (typeof r.count !== 'number' || !Number.isFinite(r.count) || r.count < 0))))) ||
+      (d.runs != null && (!Array.isArray(d.runs) || d.runs.some(r => !object(r) || !id(r.id) || !id(r.item) || !optionalText(r.time) || !optionalText(r.file) ||
+        !object(r.values) || Object.values(r.values).some(v => typeof v !== 'string' && !(typeof v === 'number' && Number.isFinite(v))))))) throw new Error(ui('訓練紀錄格式錯誤'));
   }
   for (const item of [...assessmentItems(c, s), ...trainingItems(c, s)]) {
     const values = (item.id ? s.assess[item.id] : s.training[item.k])?.values;
@@ -2293,14 +2448,22 @@ const FIELD_TYPES = { text: '文字', number: '數值', textarea: '長文字', s
 const trainingPlan = c => Array.isArray(c.trainingPlan) ? c.trainingPlan : TRAIN;
 const itemKey = (item, kind) => kind === 'assessment' ? item.id : item.k;
 const hasAssessmentData = a => !!(a && (a.done || a.notes || a.copm?.length || Object.keys(a.values || {}).length));
-const hasTrainingData = d => !!(d && (d.on || d.acts?.length || d.eyedot?.length || d.program || d.dur != null || d.level || d.perf || d.diff != null || d.notes || Object.keys(d.values || {}).length));
+const hasTrainingData = d => !!(d && (d.on || d.acts?.length || d.eyedot?.length || d.program || d.dur != null || d.level || d.perf || d.diff != null || d.notes || Object.keys(d.values || {}).length || Object.keys(d.actScores || {}).length || d.runs?.length));
+// Items without an explicit choice stay in the initial assessment, as before this setting existed.
+const isInitial = item => item.initial !== false;
+// Baseline lists the initial items; later assessment visits list the initial items that are due by timing.
+const isPlanned = (item, visit) => visit === 'baseline' ? isInitial(item)
+  : isDue(item.timing || 'assessment', visit) && (!isAssessVisit(visit) || isInitial(item));
+// One score per activity, e.g. "Saccadic fixation: 74%".
+const actSummary = d => (d.acts || []).map(a => { const v = d.actScores?.[a]; return labelText(a) + (v != null && v !== '' ? ui('：') + v : ''); }).join(ui('、'));
 function fieldsFor(item) {
   return (item.fields || []).map(f => typeof f === 'string' ? { id: f, label: labelText(f), type: 'text' } : f);
 }
 const fieldLabel = f => labelText(f.label) + (f.unit ? `（${f.unit}）` : '');
 function resultEntries(item, values) {
   const fields = fieldsFor(item);
-  return Object.entries(values || {}).map(([key, value]) => [fields.some(f => f.id === key) ? fieldLabel(fields.find(f => f.id === key)) : labelText(key), value]);
+  // Canonical select values such as "Evaluation" are shown in the interface language.
+  return Object.entries(values || {}).map(([key, value]) => { const f = fields.find(f => f.id === key); return [f ? fieldLabel(f) : labelText(key), f?.type === 'select' ? labelText(value) : value]; });
 }
 function itemsFor(c, s, kind) {
   const items = kind === 'assessment' ? c.plan : trainingPlan(c);
@@ -2324,19 +2487,29 @@ function preserveLegacyTemplates(next, c) {
   if (!next.legacyTemplates && sessions.some(s => !s.assessmentPlan || !s.trainingPlan)) next.legacyTemplates = { assessment: clone(c.plan), training: clone(trainingPlan(c)) };
   return next;
 }
+const hasValue = value => value != null && value !== '';
+const shownValue = (f, value) => !hasValue(value) ? '-' : f.type === 'select' ? labelText(value) : value;
+// Result boxes come first; test settings (field.group === 'setting') fold into one section below them.
 function fieldInputs(item, prefix, values = {}) {
   values = values || {};
-  return fieldsFor(item).map((f, i) => {
+  const boxes = fieldsFor(item).map((f, i) => {
     const id = prefix + '-' + i, value = Object.hasOwn(values, f.id) ? values[f.id] : null, type = f.type || 'text';
     let input;
     if (type === 'textarea') input = `<textarea id="${id}">${val(value)}</textarea>`;
     else if (type === 'select') {
-      const options = [...new Set([...(f.options || []), ...(value != null && value !== '' ? [String(value)] : [])])];
-      input = ui`<select id="${id}"><option value="">請選擇</option>${options.map(option => `<option value="${esc(option)}" ${String(value) === option ? 'selected' : ''}>${esc(option)}</option>`).join('')}</select>`;
+      const options = [...new Set([...(f.options || []), ...(hasValue(value) ? [String(value)] : [])])];
+      input = ui`<select id="${id}"><option value="">請選擇</option>${options.map(option => `<option value="${esc(option)}" ${String(value) === option ? 'selected' : ''}>${esc(labelText(option))}</option>`).join('')}</select>`;
     } else input = `<input type="${type === 'number' ? 'number' : 'text'}" id="${id}" value="${val(value)}" ${type === 'number' ? `step="${val(f.step ?? 'any')}" ${f.min != null ? `min="${val(f.min)}"` : ''} ${f.max != null ? `max="${val(f.max)}"` : ''}` : ''}>`;
-    return `<label class="f" for="${id}">${esc(fieldLabel(f))}${input}</label>`;
-  }).join('');
+    return { f, html: `<label class="f" for="${id}">${esc(fieldLabel(f))}${input}</label>` };
+  });
+  const settings = boxes.filter(b => b.f.group === 'setting');
+  const count = settings.filter(b => hasValue(values[b.f.id])).length;
+  return boxes.filter(b => b.f.group !== 'setting').map(b => b.html).join('') + (settings.length
+    ? `<details class="settings" id="${prefix}-settings"><summary>${count ? ui('測驗設定（已填 {0} 項）', count) : ui('測驗設定')}</summary><div class="grid">${settings.map(b => b.html).join('')}</div></details>` : '');
 }
+// Settings of one result as a short line, e.g. "Evaluation · White dot · 60 arcmin".
+const settingSummary = (item, values = {}) => fieldsFor(item).filter(f => f.group === 'setting' && hasValue(values?.[f.id]))
+  .map(f => f.type === 'select' ? labelText(values[f.id]) : fieldLabel(f) + ui('：') + values[f.id]).join(' · ');
 function readFields(item, prefix, previous = {}) {
   const values = new Map(Object.entries(previous));
   fieldsFor(item).forEach((f, i) => {
@@ -2598,10 +2771,12 @@ function renderOutcomes() {
           return `<tr><td>${fmtDate(s.date)}</td><td>${visitLabel(s.visit)}</td><td>${a.perf ?? '–'}</td><td>${ch(a.perf, base?.perf)}</td><td>${a.sat ?? '–'}</td><td>${ch(a.sat, base?.sat)}</td></tr>`; }).join('')}
         </tbody></table></div></section>`);
     } else {
-      const fields = [...new Map(rows.flatMap(s => fieldsFor(assessmentItems(c, s).find(p => p.id === item.id) || item)).map(f => [f.id, f])).values()];
+      const def = s => assessmentItems(c, s).find(p => p.id === item.id) || item;
+      const fields = [...new Map(rows.flatMap(s => fieldsFor(def(s))).map(f => [f.id, f])).values()].filter(f => f.group !== 'setting');
+      const settings = rows.some(s => settingSummary(def(s), s.assess[item.id].values));
       parts.push(ui`<section class="panel"><h3>${esc(labelText(item.name))}</h3><p class="note" style="margin:4px 0 10px">${esc(labelText(item.domain))}</p>
-        <div class="scroll"><table class="out"><thead><tr><th>日期</th><th>紀錄類型</th>${fields.map(f => `<th>${esc(fieldLabel(f))}</th>`).join('')}<th>備註</th></tr></thead><tbody>
-        ${rows.map(s => { const a = s.assess[item.id]; return `<tr><td>${fmtDate(s.date)}</td><td>${visitLabel(s.visit)}</td>${fields.map(f => `<td>${esc(a.values?.[f.id] ?? '-')}</td>`).join('')}<td style="text-align:left;font-family:var(--f-body)">${esc(a.notes || '')}</td></tr>`; }).join('')}
+        <div class="scroll"><table class="out"><thead><tr><th>日期</th><th>紀錄類型</th>${fields.map(f => `<th>${esc(fieldLabel(f))}</th>`).join('')}${settings ? ui('<th>測驗設定</th>') : ''}<th>備註</th></tr></thead><tbody>
+        ${rows.map(s => { const a = s.assess[item.id]; return `<tr><td>${fmtDate(s.date)}</td><td>${visitLabel(s.visit)}</td>${fields.map(f => `<td>${esc(shownValue(f, a.values?.[f.id]))}</td>`).join('')}${settings ? `<td style="text-align:left;font-family:var(--f-body)">${esc(settingSummary(def(s), a.values))}</td>` : ''}<td style="text-align:left;font-family:var(--f-body)">${esc(a.notes || '')}</td></tr>`; }).join('')}
         </tbody></table></div></section>`);
     }
   }
@@ -2609,8 +2784,22 @@ function renderOutcomes() {
   for (const item of allTraining.values()) {
     const rows = asc.filter(s => s.training?.[item.k]?.on); if (!rows.length) continue;
     const fields = [...new Map(rows.flatMap(s => fieldsFor(trainingItems(c, s).find(t => t.k === item.k) || item)).map(f => [f.id, f])).values()];
-    parts.push(ui`<section class="panel"><h3>${esc(labelText(item.label))}</h3><div class="scroll" style="margin-top:10px"><table class="out"><thead><tr><th>日期</th><th>活動</th><th>設備／程式</th><th>時間（分鐘）</th><th>設定</th><th>表現</th><th>難度</th>${fields.map(f => `<th>${esc(fieldLabel(f))}</th>`).join('')}<th>觀察</th></tr></thead><tbody>
-      ${rows.map(s => { const d = s.training[item.k]; return `<tr><td>${fmtDate(s.date)}</td><td>${esc((d.acts || []).map(labelText).join(ui('、')))}</td><td>${esc(d.program)}</td><td>${esc(d.dur ?? '-')}</td><td>${esc(d.level)}</td><td>${esc(d.perf)}</td><td>${esc(d.diff ?? '-')}</td>${fields.map(f => `<td>${esc(d.values?.[f.id] ?? '-')}</td>`).join('')}<td>${esc(d.notes)}</td></tr>`; }).join('')}</tbody></table></div></section>`);
+    // One column per activity, so each activity's score can be followed across visits.
+    const acts = [...new Set(rows.flatMap(s => (s.training[item.k].acts || []).map(labelText)))];
+    const actCell = (d, label) => { const a = (d.acts || []).find(x => labelText(x) === label); return a == null ? '-' : d.actScores?.[a] ?? '✓'; };
+    const perf = rows.some(s => s.training[item.k].perf);
+    parts.push(ui`<section class="panel"><h3>${esc(labelText(item.label))}</h3>${acts.length ? ui('<p class="note" style="margin:4px 0 0">活動欄顯示該次的分數；✓ 表示有做但未填分數。</p>') : ''}<div class="scroll" style="margin-top:10px"><table class="out"><thead><tr><th>日期</th>${acts.map(a => `<th>${esc(a)}</th>`).join('')}<th>設備／程式</th><th>時間（分鐘）</th><th>設定</th>${perf ? ui('<th>表現</th>') : ''}<th>難度</th>${fields.map(f => `<th>${esc(fieldLabel(f))}</th>`).join('')}<th>觀察</th></tr></thead><tbody>
+      ${rows.map(s => { const d = s.training[item.k]; return `<tr><td>${fmtDate(s.date)}</td>${acts.map(a => `<td>${esc(actCell(d, a))}</td>`).join('')}<td>${esc(d.program)}</td><td>${esc(d.dur ?? '-')}</td><td>${esc(d.level)}</td>${perf ? `<td>${esc(d.perf)}</td>` : ''}<td>${esc(d.diff ?? '-')}</td>${fields.map(f => `<td>${esc(d.values?.[f.id] ?? '-')}</td>`).join('')}<td>${esc(d.notes)}</td></tr>`; }).join('')}</tbody></table></div></section>`);
+  }
+  const runRows = asc.flatMap(s => Object.values(s.training || {}).flatMap(d => d?.on ? (d.runs || []).map(r => ({ s, r })) : []));
+  for (const id of new Set(runRows.map(x => x.r.item))) {
+    const item = deviceItem(id); if (!item) continue;
+    const list = runRows.filter(x => x.r.item === id);
+    const fields = fieldsFor(item).filter(f => f.group !== 'setting' && list.some(x => hasValue(x.r.values?.[f.id])));
+    parts.push(ui`<section class="panel"><h3>${esc(labelText(item.name))}（復健測驗紀錄）</h3><p class="note" style="margin:4px 0 10px">復健時的每次測驗，各自顯示當次設定。</p>
+      <div class="scroll"><table class="out"><thead><tr><th>日期</th><th>時間</th>${fields.map(f => `<th>${esc(fieldLabel(f))}</th>`).join('')}<th>測驗設定</th></tr></thead><tbody>
+      ${list.map(({ s, r }) => `<tr><td>${fmtDate(s.date)}</td><td>${esc(r.time || '-')}</td>${fields.map(f => `<td>${esc(shownValue(f, r.values?.[f.id]))}</td>`).join('')}<td style="text-align:left;font-family:var(--f-body)">${esc(settingSummary(item, r.values))}</td></tr>`).join('')}
+      </tbody></table></div></section>`);
   }
   const edRows = asc.flatMap(s => s.training?.ocular?.on ? (s.training.ocular.eyedot || []).map(r => ({ s, r })) : []);
   if (edRows.length) {
@@ -2638,8 +2827,27 @@ function renderPlan() {
           ${item.copm ? '' : ui`<button class="btn small" data-action="item-copy" data-kind="${kind}" data-id="${key}" aria-label="${esc(ui('複製 {0}', name))}">複製</button>`}
           <button class="btn small" data-action="item-toggle" data-kind="${kind}" data-id="${key}" aria-label="${esc(active ? ui('停用 {0}', name) : ui('啟用 {0}', name))}">${active ? ui('停用') : ui('啟用')}</button></div></article>`;
     }).join('') || ui('<p class="note">尚無項目，請按新增項目，選擇現有模板或建立空白模板。</p>')}</div></section>`;
+  const initialItems = c.plan.filter(p => p.active !== false);
+  const initialPanel = ui`<section class="panel" aria-labelledby="initialHeading"><h3 id="initialHeading">初次評估項目</h3>
+    <p class="note">勾選初次評估（基準評估）要施測的項目。填寫基準評估時，這些項目列在最前面；療程後與追蹤評估只列出其中依評估時機應再評估的項目。實際施測後，再於病歷中勾選並填寫。</p>
+    ${initialItems.length ? `<div class="pick-group" id="initialPicks" role="group" aria-labelledby="initialHeading" style="margin-top:12px">${initialItems.map(p => `<label class="pick"><input type="checkbox" data-initial="${p.id}" ${isInitial(p) ? 'checked' : ''}>${esc(labelText(p.name))}</label>`).join('')}</div>` : ui('<p class="note">尚無啟用的評估項目。</p>')}</section>`;
   $('#tabBody').innerHTML = ui`<div class="plan-edit"><div><h3>評估與復健項目設定</h3><p class="note">以下設定適用於 ${esc(c.name)}。從既有模板開始，或建立空白項目。停用項目仍保留歷史結果；新增個案時可複用這份設定。</p></div>
-    ${section('assessment', ui('評估項目'), c.plan)}${section('training', ui('復健項目'), trainingPlan(c))}</div>`;
+    ${initialPanel}${section('assessment', ui('評估項目'), c.plan)}${section('training', ui('復健項目'), trainingPlan(c))}</div>`;
+  $('#initialPicks')?.addEventListener('change', e => setInitial(e.target));
+}
+// Saves one item's place in the initial assessment right away, like enabling or disabling an item.
+async function setInitial(box) {
+  const c = cur(), id = box.dataset.initial;
+  if (!c || !id) return;
+  if (savingItems) { box.checked = !box.checked; return; }
+  const next = preserveLegacyTemplates(clone(c), c);
+  next.plan.find(p => p.id === id).initial = box.checked;
+  savingItems = true;
+  try { await safe(() => store.saveClient(next), ui('項目設定儲存失敗')); }
+  catch (_) { box.checked = !box.checked; return; }
+  finally { savingItems = false; }
+  clients[clients.findIndex(client => client.id === c.id)] = next;
+  toast(box.checked ? ui('已列入初次評估項目。') : ui('已移出初次評估項目。'));
 }
 function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
   const c = cur(), assessment = kind === 'assessment', listKey = assessment ? 'plan' : 'trainingPlan';
@@ -2662,7 +2870,7 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
     else draft.acts = [...new Set($('#item-acts').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean))];
     draft.fields = [...form.querySelectorAll('.field-editor')].map((row, i) => {
       const get = suffix => $('#item-field-' + i + '-' + suffix)?.value || '';
-      const field = { id: draft.fields[i].id, label: get('label').trim(), type: get('type'), unit: get('unit').trim() };
+      const field = { id: draft.fields[i].id, label: get('label').trim(), type: get('type'), unit: get('unit').trim(), ...(draft.fields[i].group ? { group: draft.fields[i].group } : {}) };
       if (field.type === 'select') field.options = [...new Set(get('options').split(/\r?\n/).map(s => s.trim()).filter(Boolean))];
       if (field.type === 'number') for (const prop of ['min', 'max', 'step']) if (get(prop).trim()) field[prop] = Number(get(prop));
       return field;
@@ -2720,7 +2928,7 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
       if (fromEditor) {
         if (creating && assessment) editing.assess[newKey] = { done: true, values: {} };
         if (creating && !assessment) editing.training[newKey] = { on: true, acts: [] };
-        dirty = true; renderEditor(); $('#' + (assessment ? 'ac-' : 'tx-') + newKey)?.scrollIntoView({ block: 'center' });
+        dirty = true; renderEditor(); $('#' + (assessment ? 'as-' : 'tx-') + newKey)?.scrollIntoView({ block: 'center' });
       } else renderMain();
       toast(ui('項目已儲存，可在復健紀錄中填寫。'));
     } catch (err) { error.hidden = false; error.textContent = ui('項目未儲存：') + (err.message || err); }
@@ -2789,14 +2997,25 @@ function updateSym() {
   $('#addRec').hidden = !!rec;
 }
 
+// Chip pickers follow the NTUHLowvision outpatient form: tick what was done, then only those items open for entry.
+function pickGroups(groups) {
+  return groups.filter(g => g.items.length).map(g => g.title
+    ? `<div class="pick-label" id="${g.id}">${esc(g.title)}</div><div class="pick-group" role="group" aria-labelledby="${g.id}">${g.items.join('')}</div>`
+    : `<div class="pick-group" role="group" aria-label="${esc(g.label)}">${g.items.join('')}</div>`).join('');
+}
 function assessHTML(c, s) {
   const shown = assessmentItems(c, s).filter(p => (p.active !== false || hasAssessmentData(s.assess?.[p.id])) && (!p.copm || COPM_VISITS.includes(s.visit)));
-  const groups = Object.keys(TIMING).map(t => ({ t, items: shown.filter(p => (p.timing || 'assessment') === t) })).filter(g => g.items.length);
-  if (!groups.length) return ui('<span class="muted">本次沒有可填寫的評估項目，可按「新增評估項目」建立。COPM 僅在基準與療程後評估顯示。</span>');
+  if (!shown.length) return ui('<span class="muted">本次沒有可填寫的評估項目，可按「新增評估項目」建立。COPM 僅在基準與療程後評估顯示。</span>');
   const prevCopm = (() => { for (const x of byDate(sessions).reverse()) { if (x.id !== s.id && x.assess?.copm?.copm?.some(r => r.occ)) return x.assess.copm.copm; } return null; })();
-  return groups.map(g => `<div class="group-h">${ui(TIMING[g.t])}</div>` + g.items.map(p => {
+  const planned = shown.filter(p => isPlanned(p, s.visit)), others = shown.filter(p => !isPlanned(p, s.visit));
+  const chip = p => `<label class="pick"><input type="checkbox" id="ac-${p.id}" ${s.assess?.[p.id]?.done ? 'checked' : ''}>${esc(labelText(p.name))}</label>`;
+  const picks = planned.length
+    ? pickGroups([{ id: 'assessPlanned', title: s.visit === 'baseline' ? ui('初次評估項目') : ui('本次應評估'), items: planned.map(chip) },
+      { id: 'assessOther', title: ui('其他項目'), items: others.map(chip) }])
+    : pickGroups([{ label: ui('評估項目'), items: others.map(chip) }]);
+  return picks + '<div class="picked">' + [...planned, ...others].map(p => {
     const a = s.assess?.[p.id] || {};
-    const due = isDue(p.timing, s.visit);
+    const detail = [p.domain, p.outcome].filter(Boolean).map(labelText).join(' · ');
     let inner;
     if (p.copm) {
       const rows = (a.copm && a.copm.length ? a.copm : (prevCopm || [])).map(r => ({ occ: r.occ, perf: a.copm ? r.perf : null, sat: a.copm ? r.sat : null }));
@@ -2811,12 +3030,10 @@ function assessHTML(c, s) {
       inner = `<div class="grid">${fieldInputs(p, 'af-' + p.id, a.values)}</div>`;
     }
     inner += ui`<label class="f" for="an-${p.id}">備註<input type="text" id="an-${p.id}" value="${val(a.notes)}"></label>`;
-    return `<div class="as ${a.done ? 'on' : ''}" data-id="${p.id}">
-      <label class="as-head"><input type="checkbox" id="ac-${p.id}" ${a.done ? 'checked' : ''}>
-        <span class="t"><b>${esc(labelText(p.name))} ${due ? ui('<span class="chip due">本次應評估</span>') : ''}</b><span>${esc([p.domain, p.outcome].filter(Boolean).map(labelText).join(' · '))}</span></span></label>
-      <div class="as-body" ${a.done ? '' : 'hidden'}>${inner}
-        </div></div>`;
-  }).join('')).join('');
+    return `<section class="as" id="as-${p.id}" data-id="${p.id}" aria-labelledby="as-${p.id}-h" ${a.done ? '' : 'hidden'}>
+      <div class="as-head"><b id="as-${p.id}-h">${esc(labelText(p.name))}</b>${detail ? `<span>${esc(detail)}</span>` : ''}</div>
+      <div class="as-body">${inner}</div></section>`;
+  }).join('') + '</div>';
 }
 function updateCopm() {
   const box = $('#copmSum'); if (!box) return;
@@ -2828,20 +3045,27 @@ function updateCopm() {
 
 function renderEditor() {
   const c = cur(), s = editing;
-  const rate = (id, v, label) => `<label class="f" for="${id}">${label}<span class="rate"><input type="range" min="0" max="10" step="1" id="${id}" value="${v ?? 0}" data-set="${v != null}"><output id="${id}-o">${v ?? '-'}</output></span></label>`;
+  // 0–10 ratings use the same number boxes as the symptom table; an empty box means not rated.
+  const rate = (id, v, label) => `<label class="f" for="${id}">${label}<input type="number" min="0" max="10" step="1" inputmode="numeric" id="${id}" value="${val(v)}"></label>`;
   s.training = s.training || {};
   s.training.ocular = s.training.ocular || {};
   s.training.ocular.eyedot = (s.training.ocular.eyedot || []).map(r => ({ id: r.id || uid('e'), ...r }));
-  const txBlocks = trainingItems(c, s).filter(t => t.active !== false || hasTrainingData(s.training?.[t.k])).map(t => {
+  const txItems = trainingItems(c, s).filter(t => t.active !== false || hasTrainingData(s.training?.[t.k]));
+  const txPicks = pickGroups([{ label: ui('本次復健項目'), items: txItems.map(t => `<label class="pick"><input type="checkbox" id="tx-${t.k}-on" ${s.training?.[t.k]?.on ? 'checked' : ''}>${esc(labelText(t.label))}</label>`) }]);
+  const txBlocks = txItems.map(t => {
     const d = s.training?.[t.k] || {};
     // the client's own typed activities from earlier sessions come back as options
     const custom = [...new Set([...sessions.flatMap(x => x.training?.[t.k]?.acts || []), ...(d.acts || [])])].filter(a => !(t.acts || []).some(existing => labelText(existing) === labelText(a)));
     const allActs = [...new Map([...(t.acts || []), ...custom].map(a => [labelText(a), a])).values()];
-    return ui`<fieldset class="tx ${d.on ? 'on' : ''}" id="tx-${t.k}">
-      <label class="tx-head"><input type="checkbox" id="tx-${t.k}-on" ${d.on ? 'checked' : ''}>${esc(labelText(t.label))}</label>
-      <div class="tx-body" ${d.on ? '' : 'hidden'}>
-        <div class="acts" id="tx-${t.k}-acts">${allActs.map((a, i) => actChip(t.k, i, a, (d.acts || []).some(selected => labelText(selected) === labelText(a)))).join('')}</div>
+    const selected = a => (d.acts || []).find(x => labelText(x) === labelText(a));
+    return ui`<section class="tx" id="tx-${t.k}" aria-labelledby="tx-${t.k}-h" ${d.on ? '' : 'hidden'}>
+      <h4 class="tx-head" id="tx-${t.k}-h">${esc(labelText(t.label))}</h4>
+      <div class="tx-body">
+        <div class="acts" id="tx-${t.k}-acts">${allActs.map((a, i) => actChip(t.k, i, a, selected(a) != null)).join('')}</div>
         <div class="row"><input type="text" id="tx-${t.k}-new" data-k="${t.k}" placeholder="輸入活動名稱" style="flex:1;min-width:0" aria-label="新增${esc(labelText(t.label))}活動"><button type="button" class="btn small" data-action="act-add" data-k="${t.k}">加入活動</button></div>
+        <div class="act-score-box"><div class="pick-label">各活動表現（一項一個分數）</div>
+          <div class="act-scores" id="tx-${t.k}-scores">${allActs.map((a, i) => actScoreRow(t.k, i, a, selected(a) != null, d.actScores?.[selected(a)])).join('')}</div></div>
+        ${RUN_ITEMS[t.k] ? runsHTML(t.k, d.runs || []) : ''}
         ${t.k === 'ocular' ? ui`<div class="sub" style="border-top:0;padding-top:4px">
           <div class="spread"><h4>EyeDot Trainer 訓練紀錄 <a class="note" href="https://eyedottrainer.com/#modes" target="_blank" rel="noopener">模式說明（另開分頁）</a></h4>
             <button type="button" class="btn small" data-action="ed-add">＋ 新增 EyeDot 紀錄</button></div>
@@ -2850,14 +3074,12 @@ function renderEditor() {
           <label class="f" for="tx-${t.k}-program">程式／設備<input type="text" id="tx-${t.k}-program" value="${val(d.program)}" placeholder="使用的軟體或工具"></label>
           <label class="f" for="tx-${t.k}-dur">時間（分鐘）<input type="number" min="0" step="any" id="tx-${t.k}-dur" value="${val(d.dur)}"></label>
           <label class="f" for="tx-${t.k}-level">級別／設定<input type="text" id="tx-${t.k}-level" value="${val(d.level)}" placeholder="速度、目標大小、視野範圍"></label>
-          <label class="f" for="tx-${t.k}-perf">表現<input type="text" id="tx-${t.k}-perf" value="${val(d.perf)}" placeholder="正確率、反應時間、得分"></label>
-        </div>
-        <div class="grid">
+          ${!allActs.length || d.perf ? ui`<label class="f" for="tx-${t.k}-perf">${allActs.length ? ui('整體表現') : ui('表現')}<input type="text" id="tx-${t.k}-perf" value="${val(d.perf)}" placeholder="正確率、反應時間、得分"></label>` : ''}
           ${rate(`tx-${t.k}-diff`, d.diff, ui('個案自評難度（0 至 10）'))}
         </div>
         ${fieldsFor(t).length ? `<div class="grid">${fieldInputs(t, 'tf-' + t.k, d.values)}</div>` : ''}
         <label class="f" for="tx-${t.k}-notes">觀察紀錄<textarea id="tx-${t.k}-notes" style="min-height:60px">${val(d.notes)}</textarea></label>
-      </div></fieldset>`;
+      </div></section>`;
   }).join('');
 
   $('#main').innerHTML = ui`
@@ -2912,12 +3134,15 @@ function renderEditor() {
 
         <div class="sub">
           <div class="spread"><h3 style="font-size:1rem">評估項目</h3><button type="button" class="btn small" data-action="plan-add" data-editor="true">＋ 新增評估項目</button></div>
-          <div class="checklist" id="assessList">${assessHTML(c, s)}</div>
+          <p class="note" style="margin:0">勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。</p>
+          <div class="sub" style="border-top:0;padding-top:0" id="assessList">${assessHTML(c, s)}</div>
         </div>
 
         <div class="sub">
           <div class="spread"><h3 style="font-size:1rem">復健項目</h3><button type="button" class="btn small" data-action="training-add" data-editor="true">＋ 新增復健項目</button></div>
-          <div style="display:flex;flex-direction:column;gap:10px">${txBlocks}</div>
+          <p class="note" style="margin:0">勾選本次進行的項目，再勾選做過的活動，每個活動填一個分數。</p>
+          ${txPicks}
+          <div class="picked">${txBlocks}</div>
           <label class="f" for="s-otx">其他治療／居家計畫<textarea id="s-otx" style="min-height:60px">${val(s.otherTx)}</textarea></label>
           <div class="grid">${rate('s-tol', s.tolerance, ui('個案自評整體耐受度（0 分最差，10 分最佳）'))}</div>
         </div>
@@ -2944,14 +3169,14 @@ function renderEditor() {
     const t = e.target;
     if (t.id.startsWith('sy')) updateSym();
     if (t.id.startsWith('copm-') || t.id === 's-date') updateCopm();
-    if (t.type === 'range') { t.dataset.set = 'true'; const o = $('#' + t.id + '-o'); if (o) o.textContent = t.value; }
   });
   form.addEventListener('change', e => {
     dirty = true;
     const t = e.target;
-    if (t.id.startsWith('ac-')) { const box = t.closest('.as'); box.classList.toggle('on', t.checked); setSectionEnabled(box.querySelector('.as-body'), t.checked); }
+    if (t.id.startsWith('ac-')) setSectionEnabled($('#as-' + t.id.slice(3)), t.checked);
     const m = t.id.match(/^tx-([A-Za-z0-9_-]+)-on$/);
-    if (m) { const fs = $('#tx-' + m[1]); fs.classList.toggle('on', t.checked); setSectionEnabled(fs.querySelector('.tx-body'), t.checked); }
+    if (m) setSectionEnabled($('#tx-' + m[1]), t.checked);
+    if (t.dataset.act != null) showActScore(t);
     if (t.id === 's-visit') {
       const was = editing.visit;
       editing = collectSession(); editing.sym = shapeSym(editing.sym, editing.visit);
@@ -2964,23 +3189,61 @@ function renderEditor() {
   form.addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.target.id && /^tx-[A-Za-z0-9_-]+-new$/.test(e.target.id)) { e.preventDefault(); addActivity(e.target.dataset.k); }
   });
-  form.querySelectorAll('.as-body, .tx-body').forEach(box => setSectionEnabled(box, !box.hidden));
+  form.querySelectorAll('.as, .tx').forEach(box => setSectionEnabled(box, !box.hidden));
   updateSym(); updateCopm();
 }
 
 function actChip(k, i, a, on) {
-  return `<label class="act"><input type="checkbox" id="tx-${k}-a${i}" data-act="${esc(a)}" ${on ? 'checked' : ''}>${esc(labelText(a))}</label>`;
+  return `<label class="act"><input type="checkbox" id="tx-${k}-a${i}" data-act="${esc(a)}" data-score="tx-${k}-r${i}" ${on ? 'checked' : ''}>${esc(labelText(a))}</label>`;
 }
+// Each ticked activity shows its own score box; unticked activities keep no score.
+function actScoreRow(k, i, a, on, value) {
+  return `<label class="f" id="tx-${k}-r${i}" for="tx-${k}-s${i}" ${on ? '' : 'hidden'}>${esc(labelText(a))}<input type="text" id="tx-${k}-s${i}" value="${val(value)}" placeholder="${esc(ui('例：85%、12 次、40 秒'))}" aria-label="${esc(ui('{0}的表現', labelText(a)))}"></label>`;
+}
+function showActScore(chip) { const row = document.getElementById(chip.dataset.score); if (row) row.hidden = !chip.checked; }
 function addActivity(k) {
   const inp = $(`#tx-${k}-new`), v = inp.value.trim(); if (!v) { inp.focus(); return; }
   const box = $(`#tx-${k}-acts`);
   const existing = [...box.querySelectorAll('input')].find(i => labelText(i.dataset.act).toLocaleLowerCase() === labelText(v).toLocaleLowerCase());
-  if (existing) existing.checked = true;
-  else box.insertAdjacentHTML('beforeend', actChip(k, box.querySelectorAll('input').length, v, true));
+  if (existing) { existing.checked = true; showActScore(existing); }
+  else {
+    const i = box.querySelectorAll('input').length;
+    box.insertAdjacentHTML('beforeend', actChip(k, i, v, true));
+    $(`#tx-${k}-scores`).insertAdjacentHTML('beforeend', actScoreRow(k, i, v, true, null));
+  }
   inp.value = ''; inp.focus();
   dirty = true;
 }
 
+// One card per test run, using the same result and setting boxes as the matching assessment item.
+function runsHTML(k, runs) {
+  return ui`<div class="runs" id="tx-${k}-runs"><div class="pick-label">測驗紀錄（每次測驗一筆，各自記錄設定）</div>
+    ${runs.length ? runs.map(r => runCard(k, r)).join('') : ui('<p class="note" style="margin:0">尚無測驗紀錄。可匯入 OcuTrain 或周邊視野訓練的分數檔，或在下方新增。</p>')}
+    <div class="row"><select id="tx-${k}-run-item" aria-label="測驗紀錄項目" style="flex:1;min-width:0">${RUN_ITEMS[k].map(id => `<option value="${id}">${esc(labelText(deviceItem(id).name))}</option>`).join('')}</select>
+      <button type="button" class="btn small" data-action="run-add" data-k="${k}">新增測驗紀錄</button></div></div>`;
+}
+function runCard(k, r) {
+  const item = deviceItem(r.item) || { fields: [] }, title = labelText(item.name || r.item);
+  return `<section class="run" data-run="${r.id}" aria-labelledby="rn-${r.id}-h"><div class="run-head"><h5 id="rn-${r.id}-h">${esc(title)}${r.time ? ' · ' + esc(r.time) : ''}${r.file ? `<span class="note">${esc(ui('來源：') + r.file)}</span>` : ''}</h5>
+    <button type="button" class="btn x" data-action="run-del" data-k="${k}" data-id="${r.id}" aria-label="${esc(ui('移除{0}測驗紀錄', title))}">×</button></div>
+    <div class="grid">${fieldInputs(item, 'rn-' + r.id, r.values)}</div></section>`;
+}
+function readRuns(k) {
+  return (editing?.training?.[k]?.runs || []).map(r => ({ ...r, values: readFields(deviceItem(r.item) || { fields: [] }, 'rn-' + r.id, r.values || {}) }));
+}
+function rerenderRuns(k, runs) {
+  editing.training[k] = { ...(editing.training[k] || {}), runs };
+  $('#tx-' + k + '-runs').outerHTML = runsHTML(k, runs);
+}
+// Result lines first, then the test settings on one line.
+function resultLines(item, values) {
+  const fields = fieldsFor(item), settings = new Set(fields.filter(f => f.group === 'setting').map(f => f.id));
+  const order = new Map(fields.map((f, i) => [f.id, i])), rank = key => order.get(key) ?? fields.length;
+  const results = resultEntries(item, Object.fromEntries(Object.entries(values || {}).filter(([key]) => !settings.has(key)).sort(([a], [b]) => rank(a) - rank(b))));
+  const summary = settingSummary(item, values);
+  return [...results, ...(summary ? [[ui('測驗設定'), summary]] : [])];
+}
+const runLine = r => { const item = deviceItem(r.item) || { fields: [] }; return `${labelText(item.name || r.item)}${r.time ? ' ' + r.time : ''}：${resultLines(item, r.values).map(([label, value]) => label + ui('：') + value).join(ui('；'))}`; };
 // EyeDot mode and setting names match eyedottrainer.com.
 const ED_MODES = ['Circle', 'Figure 8', 'Saccade', 'Smooth Pursuit', 'Random Path'];
 const ED_DUR = ['30 seconds', '1 minute', '2 minutes', '3 minutes', 'Continuous'];
@@ -3038,21 +3301,28 @@ function collectSession() {
     } else {
       a.values = readFields(p, 'af-' + p.id, editing.assess?.[p.id]?.values);
     }
-    if (a.done || a.notes || a.copm?.length || (a.values && Object.keys(a.values).length)) s.assess[p.id] = a;
+    // Only items ticked as assessed are recorded; results saved earlier for an unticked item are kept.
+    if (a.done || hasAssessmentData(editing.assess?.[p.id])) s.assess[p.id] = a;
     else delete s.assess[p.id];
   }
-  const rv = id => { const el = $('#' + id); return el.dataset.set === 'true' ? +el.value : null; };
+  const rv = id => numOrNull($('#' + id).value);
   s.training = clone(editing.training || {});
   for (const t of trainingItems(c, editing)) {
     if (!$('#tx-' + t.k + '-on')) continue;
-    const g = k => $(`#tx-${t.k}-${k}`).value;
-    s.training[t.k] = { ...s.training[t.k],
-      on: $(`#tx-${t.k}-on`).checked,
-      acts: [...document.querySelectorAll(`#tx-${t.k}-acts input:checked`)].map(i => i.dataset.act),
+    const g = k => $(`#tx-${t.k}-${k}`)?.value ?? '';
+    const on = $(`#tx-${t.k}-on`).checked;
+    if (!on && !hasTrainingData(editing.training?.[t.k])) { delete s.training[t.k]; continue; }
+    const chips = [...document.querySelectorAll(`#tx-${t.k}-acts input:checked`)];
+    const actScores = Object.fromEntries(chips.map(i => [i.dataset.act, $('#' + i.dataset.score.replace(/-r(\d+)$/, '-s$1'))?.value.trim() ?? '']).filter(([, v]) => v));
+    s.training[t.k] = { ...s.training[t.k], on,
+      acts: chips.map(i => i.dataset.act),
       ...(t.k === 'ocular' ? { eyedot: readEyedot() } : {}),
+      ...(RUN_ITEMS[t.k] ? { runs: readRuns(t.k) } : {}),
       program: g('program').trim(), dur: numOrNull(g('dur')), level: g('level').trim(), perf: g('perf').trim(),
       diff: rv(`tx-${t.k}-diff`), notes: g('notes')
     };
+    if (Object.keys(actScores).length) s.training[t.k].actScores = actScores; else delete s.training[t.k].actScores;
+    if (!s.training[t.k].runs?.length) delete s.training[t.k].runs;
     const values = readFields(t, 'tf-' + t.k, editing.training?.[t.k]?.values);
     if (Object.keys(values).length) s.training[t.k].values = values; else delete s.training[t.k].values;
   }
@@ -3106,7 +3376,7 @@ function noteText(c, s, list = sessions) {
         const av = copmAvg(a.copm), b = copmBaseline(s.id, s.date, s.visit, list);
         L.push(ui`      平均：表現 ${av.perf ?? '-'}${av.perf != null && b?.perf != null ? '（' + signed(av.perf - b.perf) + ui('，相較 ') + b.date + '）' : ''}，滿意度 ${av.sat ?? '-'}${av.sat != null && b?.sat != null ? '（' + signed(av.sat - b.sat) + ui('，相較 ') + b.date + '）' : ''}`);
       } else {
-        resultEntries(p, a.values).forEach(([label, value]) => L.push(`      ${label}：${value}`));
+        resultLines(p, a.values).forEach(([label, value]) => L.push(`      ${label}${ui("：")}${value}`));
       }
       if (a.notes) L.push(ui`      備註：${a.notes}`);
     }
@@ -3117,8 +3387,9 @@ function noteText(c, s, list = sessions) {
     tx.forEach(t => {
       const d = s.training[t.k];
       L.push(`  • ${labelText(t.label)}${d.dur != null ? '：' + d.dur + ui(' 分鐘') : ''}`);
-      if (d.acts?.length) L.push(ui`      活動：${d.acts.map(labelText).join(ui('、'))}`);
+      if (d.acts?.length) L.push(ui`      活動：${actSummary(d)}`);
       (d.eyedot || []).forEach((r, i) => L.push(`      EyeDot Trainer ${i + 1}：${edSummary(r)}${r.notes ? '，' + r.notes : ''}`));
+      (d.runs || []).forEach(r => L.push('      ' + ui('測驗紀錄：') + runLine(r)));
       if (d.program) L.push(ui`      程式／設備：${d.program}`);
       if (d.level) L.push(ui`      級別／設定：${d.level}`);
       if (d.perf) L.push(ui`      表現：${d.perf}`);
@@ -3255,30 +3526,36 @@ async function loadExample() {
     subjective: 'Eye strain and headache after 30 min of screen work. Avoids driving on highways. Off work part-time.', feedback: 'Saccade task made eyes tired; peripheral task was hard to keep fixation.',
     sym: [row('pre', [4, 2, 1, 3, 0]), row('sub', [4, 2, 1, 3, 0], { test: 'pursuit' }), row('sub', [5, 3, 2, 4, 1], { test: 'fixation' }), row('sub', [7, 4, 3, 5, 2], { test: 'saccade' }), row('end', [6, 3, 2, 5, 1]), row('rec', [4, 2, 1, 3, 0], { recMin: 20 })],
     assess: { copm: { done: true, notes: '', copm: copm([3, 4, 3, 6, 4], [2, 3, 2, 5, 3]) },
-      sacc: { done: true, values: { 'Gaze-shift latency (ms)': '268', 'Accuracy (%)': '81', 'Task errors (n)': '9' }, notes: 'Hypometric saccades to the right' },
-      periph: { done: true, values: { 'Detection accuracy (%)': '72', 'Response time (ms)': '640', 'Fixation compliance (%)': '78' }, notes: '' },
+      pursuit: { done: true, values: { accuracy_rate: 71.2, completed_targets: 16, mode: 'Evaluation', stimulusType: 'White dot', ballArcmin: 60, speedArcminSec: 300, eye_tracker: 'Tobii', viewingDistanceCm: 60 }, notes: 'Catch-up saccades on the return path' },
+      fixation: { done: true, values: { accuracy_rate: 64.5, completed_targets: 16, mode: 'Evaluation', stimulusType: 'White dot', ballArcmin: 60, speedArcminSec: 300, holdSec: 2, eye_tracker: 'Tobii', viewingDistanceCm: 60 }, notes: '' },
+      saccade: { done: true, values: { accuracy_rate: 68.4, tff_mean_ms: 312, tff_detected_targets: 20, tff_total_targets: 24, completed_targets: 24, mode: 'Evaluation', stimulusType: 'White dot', ballArcmin: 60, dwellMs: 500, eye_tracker: 'Tobii', viewingDistanceCm: 60 }, notes: 'Hypometric saccades to the right' },
+      ufov_divided: { done: true, values: { final_threshold_rt_ms: 180, accuracy_rate_percent: 72, central_accuracy_percent: 90, peripheral_accuracy_percent: 72, mean_response_time_ms: 640, stop_condition: 'Adaptive 80%', contrast_percent: 100, target_visual_angle_deg: 10, vehicle_visual_angle_deg: 2, viewing_distance_cm: 60 }, notes: '' },
       npc: { done: true, values: { 'NPC break (cm)': '12', 'NPC recovery (cm)': '15', 'Positive fusional vergence (Δ)': 'x/12/6' }, notes: '' } },
     training: {}, tolerance: 5, assessment: 'Reduced saccadic accuracy, peripheral detection and convergence, with symptom provocation during visual tasks limiting computer work.', plan: 'Weekly sessions: computer-based oculomotor and peripheral awareness training. Re-assess in 4 weeks.' });
   const s2 = Object.assign({ id: uid('s'), num: 2, date: '2026-09-08', visit: 'treatment', ...base, duration: 45,
     subjective: 'Headaches a little less. Still tired eyes by midday.', feedback: 'Found vergence work tiring; peripheral board was okay.',
     sym: [row('pre', [3, 2, 1, 2, 0]), row('end', [4, 2, 2, 3, 0])],
-    assess: {}, training: { ocular: { on: true, acts: ['Saccadic fixation', 'Vergence (convergence / divergence)'], program: 'EyeDot Trainer', dur: 15, level: 'Slow–Medium', perf: '74% accuracy', diff: 7, notes: 'Two rest breaks.',
+    assess: {}, training: { ocular: { on: true, acts: ['Smooth pursuit tracking', 'Fixation', 'Vergence (convergence / divergence)'], actScores: { 'Smooth pursuit tracking': '74%', 'Fixation': '66%', 'Vergence (convergence / divergence)': '8 reps' }, program: 'OcuTrain, EyeDot Trainer', dur: 15, level: '', perf: '', diff: 7, notes: 'Two rest breaks.',
+        runs: [{ id: uid('r'), item: 'pursuit', time: '10:12', values: { accuracy_rate: 74, actual_duration_sec: 45, mode: 'Random', stimulusType: 'White dot', ballArcmin: 60, speedArcminSec: 240, eye_tracker: 'Tobii' } },
+          { id: uid('r'), item: 'fixation', time: '10:20', values: { accuracy_rate: 66, actual_duration_sec: 60, mode: 'Predictable', stimulusType: 'Red in White', ballArcmin: 45, speedArcminSec: 300, holdSec: 3, eye_tracker: 'Tobii' } }],
         eyedot: [{ id: uid('e'), mode: 'Smooth Pursuit', speed: 'Slow', dur: '1 minute', dir: null, trail: 'On', dot: 'Large · 18px', full: 'No', count: 6, best: '', notes: 'Catch-up saccades at turns' },
           { id: uid('e'), mode: 'Saccade', speed: 'Slow', dur: '1 minute', dir: null, trail: null, dot: 'Large · 18px', full: 'No', count: 33, best: '', notes: 'Undershoots to the right' }] },
-      periph: { on: true, acts: ['Peripheral light board'], program: 'Light board', dur: 10, level: '60 s trials, static', perf: '38 hits / 60 s', diff: 5, notes: '' } },
+      periph: { on: true, acts: ['Peripheral light board'], actScores: { 'Peripheral light board': '38 hits / 60 s' }, program: 'Light board', dur: 10, level: '60 s trials, static', perf: '', diff: 5, notes: '' } },
     tolerance: 6, assessment: 'Tolerating graded training; symptom rise settles by session end.', plan: 'Progress oculomotor level when difficulty ≤ 5.' });
   const s3 = Object.assign({ id: uid('s'), num: 3, date: '2026-09-22', visit: 'treatment', ...base, duration: 45,
     subjective: 'Working 6 h with breaks. Mild headache late afternoon.', feedback: 'Search tasks were easy; attention with distractors was harder.',
     sym: [row('pre', [2, 1, 0, 1, 0]), row('end', [2, 1, 1, 2, 0])],
-    assess: {}, training: { attn: { on: true, acts: ['Selective attention', 'Divided attention'], program: 'Attention tasks', dur: 12, level: 'Moderate distractors', perf: 'RT 540 ms', diff: 6, notes: '' },
-      search: { on: true, acts: ['Letter / number cancellation', 'Search with distractors'], program: 'Cancellation tasks', dur: 10, level: 'Dense array', perf: '96%, 74 s', diff: 3, notes: '' } },
+    assess: {}, training: { attn: { on: true, acts: ['Selective attention', 'Divided attention'], actScores: { 'Selective attention': 'RT 540 ms', 'Divided attention': 'RT 610 ms' }, program: 'Attention tasks', dur: 12, level: 'Moderate distractors', perf: '', diff: 6, notes: '' },
+      search: { on: true, acts: ['Letter / number cancellation', 'Search with distractors'], actScores: { 'Letter / number cancellation': '96%, 74 s', 'Search with distractors': '88%' }, program: 'Cancellation tasks', dur: 10, level: 'Dense array', perf: '', diff: 3, notes: '' } },
     tolerance: 8, assessment: 'Minimal symptom provocation. Ready for re-assessment.', plan: 'Assessment visit next session.' });
   const s4 = Object.assign({ id: uid('s'), num: 4, date: '2026-10-06', visit: 'post', ...base,
     subjective: 'Back at work full days. Driving on highways again.', feedback: 'Tasks felt manageable today.',
     sym: [row('pre', [1, 1, 0, 1, 0]), row('sub', [1, 1, 0, 1, 0], { test: 'pursuit' }), row('sub', [1, 1, 0, 1, 0], { test: 'fixation' }), row('sub', [2, 1, 1, 1, 0], { test: 'saccade' }), row('end', [2, 1, 1, 1, 0])],
     assess: { copm: { done: true, notes: '', copm: copm([7, 7, 6, 8, 7], [7, 6, 6, 8, 8]) },
-      sacc: { done: true, values: { 'Gaze-shift latency (ms)': '221', 'Accuracy (%)': '92', 'Task errors (n)': '3' }, notes: '' },
-      periph: { done: true, values: { 'Detection accuracy (%)': '88', 'Response time (ms)': '515', 'Fixation compliance (%)': '93' }, notes: '' },
+      pursuit: { done: true, values: { accuracy_rate: 86.9, completed_targets: 16, mode: 'Evaluation', stimulusType: 'White dot', ballArcmin: 60, speedArcminSec: 300, eye_tracker: 'Tobii', viewingDistanceCm: 60 }, notes: '' },
+      fixation: { done: true, values: { accuracy_rate: 82.3, completed_targets: 16, mode: 'Evaluation', stimulusType: 'White dot', ballArcmin: 60, speedArcminSec: 300, holdSec: 2, eye_tracker: 'Tobii', viewingDistanceCm: 60 }, notes: '' },
+      saccade: { done: true, values: { accuracy_rate: 88.1, tff_mean_ms: 241, tff_detected_targets: 23, tff_total_targets: 24, completed_targets: 24, mode: 'Evaluation', stimulusType: 'White dot', ballArcmin: 60, dwellMs: 500, eye_tracker: 'Tobii', viewingDistanceCm: 60 }, notes: '' },
+      ufov_divided: { done: true, values: { final_threshold_rt_ms: 90, accuracy_rate_percent: 88, central_accuracy_percent: 96, peripheral_accuracy_percent: 88, mean_response_time_ms: 515, stop_condition: 'Adaptive 80%', contrast_percent: 100, target_visual_angle_deg: 10, vehicle_visual_angle_deg: 2, viewing_distance_cm: 60 }, notes: '' },
       npc: { done: true, values: { 'NPC break (cm)': '6', 'NPC recovery (cm)': '8', 'Positive fusional vergence (Δ)': 'x/20/12' }, notes: '' } },
     training: {}, tolerance: 9, assessment: 'Clinically meaningful COPM gains; improved saccadic accuracy, peripheral detection and NPC.', plan: 'Discharge with home program. Follow-up in 3 months.' });
   await safe(() => store.saveClient(c), ui('無法建立範例個案'));
@@ -3342,9 +3619,12 @@ function buildWorkbook(list) {
       }
       for (const t of trainingItems(c, s)) {
         const d = s.training?.[t.k]; if (!d?.on) continue;
-        S['Training'].push({ ...sid, 'Category': labelText(t.label), 'Activities': (d.acts || []).map(labelText).join(ui('、')), 'Program / equipment': d.program || '', 'Duration (min)': blank(d.dur),
+        S['Training'].push({ ...sid, 'Category': labelText(t.label), 'Activities': actSummary(d), 'Program / equipment': d.program || '', 'Duration (min)': blank(d.dur),
           'Level / settings': d.level || '', 'Performance': d.perf || '', 'Client-rated difficulty (0–10)': blank(d.diff), 'Observations': d.notes || '' });
+        (d.acts || []).filter(act => d.actScores?.[act] != null).forEach(act => S['Training results'].push({ ...sid, 'Category': labelText(t.label), 'Measure': labelText(act), 'Value': asNum(d.actScores[act]) }));
         resultEntries(t, d.values).forEach(([label, value]) => S['Training results'].push({ ...sid, 'Category': labelText(t.label), 'Measure': label, 'Value': asNum(value) }));
+        (d.runs || []).forEach(r => { const item = deviceItem(r.item) || { fields: [] };
+          resultEntries(item, r.values).forEach(([label, value]) => S['Training results'].push({ ...sid, 'Category': labelText(t.label), 'Measure': `${labelText(item.name || r.item)}${r.time ? ' ' + r.time : ''} · ${label}`, 'Value': asNum(value) })); });
         if (t.k === 'ocular') (d.eyedot || []).forEach((r, i) => S['EyeDot Trainer'].push({ ...sid, 'Trial': i + 1, 'Mode': r.mode, 'Speed': edSpeedLabel(r.mode, r.speed) || '', 'Duration': r.dur || '',
           'Direction': r.dir || '', 'Trail': r.trail || '', 'Dot size': r.dot || '', 'Fullscreen': r.full || '', 'Count': blank(r.count), 'Count unit': edCountLabel(r.mode), 'Best': asNum(r.best), 'Notes': r.notes || '' }));
       }
@@ -3463,7 +3743,7 @@ function soapFormSheet(c, s, list = sessions) {
           (av.sat ?? '') + (av.sat != null && b?.sat != null ? ui`（${signed(av.sat - b.sat)}，相較 ${b.date}）` : ''), ''], 'tdb', [[0, 3], [4, 5], [6, 7]]);
       } else {
         add([`${labelText(p.name)}${p.domain ? '：' + labelText(p.domain) : ''}`, '', '', '', ui('結果'), '', '', ''], 'th', [[0, 3], [4, 7]]);
-        resultEntries(p, a.values).forEach(([label, value]) => add([label, '', '', '', value, '', '', ''], 'td', [[0, 3], [4, 7]], textH(value)));
+        resultLines(p, a.values).forEach(([label, value]) => add([label, '', '', '', value, '', '', ''], 'td', [[0, 3], [4, 7]], textH(value)));
         if (a.notes) add([ui('備註'), '', '', '', a.notes, '', '', ''], 'td', [[0, 3], [4, 7]], textH(a.notes));
       }
     }
@@ -3473,9 +3753,10 @@ function soapFormSheet(c, s, list = sessions) {
     add([ui('復健項目')], 'sub', [[0, W - 1]]);
     if (tx.length) add([ui('類別'), ui('活動'), '', ui('程式／設備'), ui('時間（分鐘）'), ui('級別／設定'), ui('表現'), ui('個案自評難度（0 至 10）')], 'th', [[1, 2]], 32);
     for (const t of tx) {
-      const d = s.training[t.k], acts = (d.acts || []).map(labelText).join(ui('、'));
+      const d = s.training[t.k], acts = actSummary(d);
       add([labelText(t.label), acts, '', d.program || '', d.dur ?? '', d.level || '', d.perf || '', d.diff ?? ''], 'td', [[1, 2]], Math.max(20, Math.ceil(acts.length / 28) * 15 + 6));
       resultEntries(t, d.values).forEach(([label, value]) => add([label, value], 'td', [[1, 7]], textH(value)));
+      (d.runs || []).forEach(r => { const line = runLine(r); add([ui('測驗紀錄'), line], 'td', [[1, 7]], textH(line)); });
       if (d.notes) add([ui('觀察'), d.notes], 'td', [[1, 7]], textH(d.notes));
     }
     const ed = s.training?.ocular?.on ? (s.training.ocular.eyedot || []) : [];
@@ -3811,12 +4092,252 @@ async function importAll(file) {
   if (!curId && clients.length) curId = clients[0].id;
   await loadSessions(); renderClients(); renderMain(); toast(ui`已還原 ${n} 位個案。`);
 }
+// Score files from OcuTrain and the UFOV-style peripheral field training program.
+// SCORE_FORMATS holds each program's own file vocabulary; it is matched as data and never translated.
+const SCORE_FORMATS = {
+  otModules: { VOR: 'vor', PURSUIT: 'pursuit', SACCADE: 'saccade', FIXATION: 'fixation' },
+  otModes: { evaluation: 'Evaluation', predictable: 'Predictable', random: 'Random' },
+  otStimuli: { white_dot: 'White dot', red_in_white: 'Red in White', numbers_dot: 'Numbers dot' },
+  otTrackers: { tobii: 'Tobii', webgazer: 'WebGazer', off: 'None' },
+  otDirections: { rightUp: ['↗', 'Top-Right'], leftUp: ['↖', 'Top-Left'], rightDown: ['↘', 'Bottom-Right'], leftDown: ['↙', 'Bottom-Left'],
+    middleUp: ['↑', 'Up'], middleDown: ['↓', 'Down'], leftMiddle: ['←', 'Left'], rightMiddle: ['→', 'Right'], center: ['·', 'Center'] },
+  otComplete: ['duration_complete', 'evaluation_complete'],
+  ufovItems: { 1: 'ufov_speed', 2: 'ufov_divided', 3: 'ufov_selective' },
+  // Peripheral axes 0 to 7, clockwise from up, as numbered by the program.
+  ufovArrows: ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖'],
+  ufovStop: { adaptive_80: 'Adaptive 80%', fixed_trials: 'Fixed trials' }
+};
+const leadNumber = value => { const m = String(value ?? '').match(/-?\d+(?:\.\d+)?/); return m ? Number(m[0]) : null; };
+const pad2 = n => String(n).padStart(2, '0');
+const localDate = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const localTime = d => `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+// Directions and diplopia are written with arrows so the text reads the same in both languages.
+const otDirectionText = keys => Array.isArray(keys) && keys.length ? keys.map(k => SCORE_FORMATS.otDirections[k]?.[0] || k).join(' ') : null;
+const otDiplopiaText = (q, sessionId) => q && q.source_session_id === sessionId && Array.isArray(q.responses) && q.responses.length
+  ? q.responses.map(r => `${SCORE_FORMATS.otDirections[r.direction]?.[0] || r.direction} ${r.no_diplopia ? '×' : Number.isFinite(r.onset_angle_deg) ? Math.round(r.onset_angle_deg * 10) / 10 + '°' : '-'}`).join(' · ') : null;
+function scoreRecord(program, item, file, info) {
+  const def = deviceItem(item), fields = fieldsFor(def), ids = new Set(fields.map(f => f.id));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(info.date || '')) throw new Error(ui('缺少測驗日期。'));
+  const values = Object.fromEntries(Object.entries(info.values).filter(([k, v]) => ids.has(k) && hasValue(v) && !(typeof v === 'number' && !Number.isFinite(v))));
+  const main = fields[0].id;
+  return { program, item, file, ...info, values, score: hasValue(values[main]) ? values[main] + (program === 'UFOV' ? ' ms' : '%') : '' };
+}
+function ocuTrainJSONRecord(d, file) {
+  const item = SCORE_FORMATS.otModules[String(d.module || '').toUpperCase()];
+  if (!item) throw new Error(ui('無法辨識 OcuTrain 模組：{0}', d.module));
+  const st = d.settings || {}, ended = new Date(d.ended_at || '');
+  return scoreRecord('OcuTrain', item, file, {
+    key: 'OcuTrain:' + d.session_id, subject: String(d.subject_id ?? ''), date: isNaN(ended) ? '' : localDate(ended), time: isNaN(ended) ? '' : localTime(ended),
+    mode: item === 'vor' ? null : SCORE_FORMATS.otModes[st.mode || d.mode] || null, complete: SCORE_FORMATS.otComplete.includes(d.end_reason), reason: d.end_reason || '',
+    values: {
+      accuracy_rate: numOrNull(d.accuracy_rate), in_threshold_sec: numOrNull(d.in_threshold_sec), valid_sec: numOrNull(d.valid_sec),
+      actual_duration_sec: d.actual_duration_ms != null ? Math.round(d.actual_duration_ms / 10) / 100 : null, completed_targets: numOrNull(d.completed_targets),
+      tff_mean_ms: numOrNull(d.tff_mean_ms), tff_detected_targets: numOrNull(d.tff_detected_targets), tff_total_targets: numOrNull(d.tff_total_targets),
+      diplopia: otDiplopiaText(d.diplopia_questionnaire, d.session_id),
+      mode: SCORE_FORMATS.otModes[st.mode || d.mode], stimulusType: SCORE_FORMATS.otStimuli[d.stimulus?.type || st.stimulusType],
+      ballArcmin: numOrNull(d.stimulus?.arcmin ?? st.ballArcmin), speedArcminSec: numOrNull(st.speedArcminSec), holdSec: numOrNull(st.holdSec), dwellMs: numOrNull(st.dwellMs),
+      horizontalSpanArcmin: numOrNull(st.horizontalSpanArcmin), verticalSpanArcmin: numOrNull(st.verticalSpanArcmin),
+      directions: otDirectionText(d.stimulus?.selected_directions || st.directions), threshold_deg: numOrNull(d.threshold_deg),
+      viewingDistanceCm: numOrNull(d.calibration?.viewingDistanceCm), eye_tracker: SCORE_FORMATS.otTrackers[d.eye_tracking?.source],
+      vorGain: numOrNull(st.vorGain), vorAxis: { horizontal: 'Horizontal', vertical: 'Vertical' }[st.vorAxis]
+    }
+  });
+}
+function ocuTrainCSVRecord(text, file) {
+  const meta = {};
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.startsWith('#')) { if (line.trim()) break; continue; }
+    const m = line.match(/^#\s*([^:]+?):\s?(.*)$/); if (m && !Object.hasOwn(meta, m[1].trim())) meta[m[1].trim()] = m[2].trim();
+  }
+  const item = SCORE_FORMATS.otModules[(meta['Training Module'] || '').match(/\(([A-Z]+)\)\s*$/)?.[1]];
+  if (!item) throw new Error(ui('無法辨識 OcuTrain 模組：{0}', meta['Training Module'] || '-'));
+  const json = value => { try { return JSON.parse(value || 'null'); } catch (_) { return null; } };
+  const st = json(meta['Module Settings']) || {}, tff = (meta['TFF Detected Targets'] || '').match(/(\d+)\s*\/\s*(\d+)/), hardware = meta['Eye Tracker Hardware'] || '';
+  const names = Object.fromEntries(Object.entries(SCORE_FORMATS.otDirections).map(([key, [, name]]) => [name, key]));
+  const listed = meta['Enabled Directions'] && meta['Enabled Directions'] !== 'All' ? meta['Enabled Directions'].split(/,\s*/).map(name => names[name] || name) : st.directions;
+  const stimulus = Object.values(SCORE_FORMATS.otStimuli).includes(meta['Stimulus Type']) ? meta['Stimulus Type'] : SCORE_FORMATS.otStimuli[st.stimulusType];
+  return scoreRecord('OcuTrain', item, file, {
+    key: 'OcuTrain:' + meta['Session ID'], subject: meta['Subject ID'] || '', date: meta['Test Date'] || '', time: meta['Test Time'] || '',
+    mode: item === 'vor' ? null : SCORE_FORMATS.otModes[st.mode] || null, complete: SCORE_FORMATS.otComplete.includes(meta['Test Termination Reason']), reason: meta['Test Termination Reason'] || '',
+    values: {
+      accuracy_rate: leadNumber(meta['Gaze Accuracy Rate']), in_threshold_sec: leadNumber(meta['On-Target Duration (Numerator)']),
+      valid_sec: leadNumber(meta['Valid Gaze Duration (Denominator)']), actual_duration_sec: leadNumber(meta['Total Test Duration']),
+      completed_targets: leadNumber(meta['Completed Targets']), tff_mean_ms: leadNumber(meta['Mean Time To First Fixation (TFF)']),
+      tff_detected_targets: tff ? Number(tff[1]) : null, tff_total_targets: tff ? Number(tff[2]) : null,
+      diplopia: otDiplopiaText(json(meta['Diplopia Questionnaire']), meta['Session ID']),
+      mode: SCORE_FORMATS.otModes[st.mode], stimulusType: stimulus, ballArcmin: leadNumber(meta['Stimulus Size']) ?? numOrNull(st.ballArcmin),
+      speedArcminSec: numOrNull(st.speedArcminSec), holdSec: numOrNull(st.holdSec), dwellMs: numOrNull(st.dwellMs),
+      horizontalSpanArcmin: leadNumber(meta['Horizontal Target Span']) ?? numOrNull(st.horizontalSpanArcmin),
+      verticalSpanArcmin: leadNumber(meta['Vertical Target Span']) ?? numOrNull(st.verticalSpanArcmin),
+      directions: otDirectionText(listed), threshold_deg: leadNumber(meta['Hit Distance Threshold']), viewingDistanceCm: leadNumber(meta['Viewing Distance']),
+      eye_tracker: /tobii/i.test(hardware) ? 'Tobii' : /webgazer/i.test(hardware) ? 'WebGazer' : /untracked|none/i.test(hardware) ? 'None' : null,
+      vorGain: leadNumber(meta['VOR Multiplier']) ?? numOrNull(st.vorGain),
+      vorAxis: /vertical/i.test(meta['VOR Direction'] || '') ? 'Vertical' : /horizontal/i.test(meta['VOR Direction'] || '') ? 'Horizontal' : null
+    }
+  });
+}
+// The program's statistics CSV lists one parameter per row: name, code, value, unit, details.
+function ufovRecord(text, file) {
+  const rows = parseCSV(text), by = Object.fromEntries(rows.filter(r => r.length >= 3).map(r => [r[1], { value: r[2], detail: r[4] || '' }]));
+  const subtest = leadNumber(by.subtest_code?.value), item = SCORE_FORMATS.ufovItems[subtest];
+  if (!item) throw new Error(ui('無法辨識周邊視野訓練的子測驗：{0}', by.subtest_code?.value ?? '-'));
+  const arrows = SCORE_FORMATS.ufovArrows;
+  const directions = rows.filter(r => /^spatial_dir_\d_/.test(r[1] || '')).map(r => {
+    const percent = leadNumber(r[2]), counts = (r[4] || '').match(/(\d+)\D+(\d+)/);
+    return percent == null ? null : `${arrows[Number(r[1].match(/^spatial_dir_(\d)/)[1])]} ${percent}%${counts ? ` (${counts[2]}/${counts[1]})` : ''}`;
+  }).filter(Boolean);
+  const enabled = (by.enabled_direction_list?.detail || '').split(/,\s*/).filter(a => /^[0-7]$/.test(a)).map(a => arrows[Number(a)]);
+  const mode = by.test_mode?.detail || '', aborted = /aborted/i.test(by.test_aborted?.value || '');
+  const number = code => leadNumber(by[code]?.value);
+  return scoreRecord('UFOV', item, file, {
+    key: ['UFOV', by.subject_id?.value, by.test_date?.value, by.test_time?.value, subtest].join(':'), subject: by.subject_id?.value || '',
+    date: by.test_date?.value || '', time: by.test_time?.value || '', mode: null, formal: mode === 'formal', testMode: mode, complete: !aborted, reason: aborted ? 'aborted' : '',
+    values: {
+      ...Object.fromEntries(['final_threshold_rt_ms', 'accuracy_rate_percent', 'central_accuracy_percent', 'peripheral_accuracy_percent', 'mean_response_time_ms',
+        'formal_trials_total', 'formal_trials_correct', 'fastest_correct_duration_ms', 'contrast_percent', 'target_visual_angle_deg', 'vehicle_visual_angle_deg',
+        'viewing_distance_cm', 'refresh_rate_hz'].map(code => [code, number(code)])),
+      direction_accuracy: directions.join(' · '), enabled_direction_list: enabled.join(' '), stop_condition: SCORE_FORMATS.ufovStop[by.stop_condition?.detail]
+    }
+  });
+}
+// Recognizes score files by content, so the usual Import command accepts them.
+function scoreFormat(name, text) {
+  const body = text.replace(/^﻿/, '');
+  if (/\.json$/i.test(name)) {
+    let data; try { data = JSON.parse(body); } catch (_) { return null; }
+    const first = Array.isArray(data) ? data[0] : data;
+    if (first?.record_type === 'diplopia_questionnaire') return { kind: 'ot-diplopia' };
+    if (first && typeof first.module === 'string' && first.session_id) return { kind: 'ot-json', data: [].concat(data) };
+    if (typeof first?.experiment === 'string' && /^UFOV/.test(first.experiment)) return { kind: 'ufov-json' };
+    return null;
+  }
+  if (/^# -- Oculomotor/.test(body) || /^# Training Module:/m.test(body.slice(0, 4000))) return { kind: 'ot-csv', text: body };
+  if (/^(?:[^,\r\n]*,){3}Subtest/.test(body)) return { kind: 'ufov-raw' };
+  if (/(^|\n)"?[^",\r\n]*"?,"?subtest_code"?,/.test(body)) return { kind: 'ufov-stats', text: body };
+  return null;
+}
+function scorePreview(c, records, notes) {
+  return new Promise(resolve => {
+    const subjects = [...new Set(records.map(r => r.subject).filter(Boolean))].join(ui('、')) || '-';
+    const dest = [['assess', ui('評估')], ['training', ui('復健訓練')], ['skip', ui('不匯入')]];
+    const m = modal(ui`<h3>匯入測驗分數</h3>
+      <p style="margin:0">${ui('匯入到 {0}。檔案中的受試者代號：{1}', `<b>${esc(c.name)}</b>${c.ref ? ui('（{0}）', esc(c.ref)) : ''}`, esc(subjects))}</p>
+      <p class="note" style="margin:0">「評估」寫入同名的評估項目；「復健訓練」寫入復健項目的測驗紀錄，並把主要分數填入對應活動。該日沒有紀錄時會新增一筆。</p>
+      <ol class="import-list">${records.map((r, i) => `<li class="import-row"><div class="import-info">
+        <div class="import-title"><b class="import-name" id="score-name-${i}">${esc(labelText(deviceItem(r.item).name))}</b>${r.mode ? `<span class="chip import-mode">${esc(labelText(r.mode))}</span>` : ''}<span class="import-score">${esc(r.score || '-')}</span></div>
+        <span class="note import-when" id="score-when-${i}">${esc(r.date + (r.time ? ' ' + r.time : ''))}</span><span class="note import-file">${esc(r.file)}</span>${r.status ? `<span class="import-status">${esc(r.status)}</span>` : ''}</div>
+        <label class="f" for="score-dest-${i}"><span id="score-dest-${i}-l">${ui('匯入為')}</span><select id="score-dest-${i}" aria-labelledby="score-dest-${i}-l score-name-${i} score-when-${i}">${dest.map(([v, text]) => `<option value="${v}" ${r.dest === v ? 'selected' : ''}>${esc(text)}</option>`).join('')}</select></label></li>`).join('')}</ol>
+      ${notes.length ? `<ul class="note" style="margin:0">${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
+      <div class="row" style="justify-content:flex-end"><button class="btn" id="scoreCancel">取消</button><button class="btn primary" id="scoreImport">匯入</button></div>`, result => resolve(result || null));
+    m.style.width = 'min(900px, 100%)';
+    m.querySelector('#scoreCancel').onclick = () => closeModal(false);
+    m.querySelector('#scoreImport').onclick = () => closeModal(records.map((r, i) => m.querySelector('#score-dest-' + i).value));
+  });
+}
+async function importScoreFiles(entries) {
+  const c = cur();
+  if (!c) throw new Error(ui('請先選擇要匯入測驗分數的個案。'));
+  const records = [], notes = [], order = { 'ot-json': 0, 'ot-csv': 1 };
+  // JSON goes first so that, for a run exported as both JSON and CSV, the JSON copy is listed.
+  for (const e of [...entries].sort((a, b) => (order[a.kind] ?? 2) - (order[b.kind] ?? 2))) {
+    const name = e.file.name;
+    try {
+      if (e.kind === 'ot-json') records.push(...e.data.map(d => ocuTrainJSONRecord(d, name)));
+      else if (e.kind === 'ot-csv') records.push(ocuTrainCSVRecord(e.text, name));
+      else if (e.kind === 'ufov-stats') records.push(ufovRecord(e.text, name));
+      else if (e.kind === 'ufov-raw') notes.push(ui('{0}：原始分數檔只有逐題資料，請匯入同一次的統計成績 CSV。', name));
+      else if (e.kind === 'ufov-json') notes.push(ui('{0}：此 JSON 沒有記錄測驗模式與正式題，請匯入同一次的統計成績 CSV。', name));
+      else notes.push(ui('{0}：只有複視問卷，沒有測驗分數，未匯入。', name));
+    } catch (err) { throw new Error(`${name}: ${err.message || err}`); }
+  }
+  const unique = [];
+  for (const r of records) {
+    const twin = unique.find(u => u.key === r.key);
+    if (twin) notes.push(ui('{0} 與 {1} 是同一次測驗，只列出一筆。', r.file, twin.file)); else unique.push(r);
+  }
+  if (!unique.length) throw new Error(notes.join(' ') || ui('沒有可匯入的測驗分數。'));
+  const same = (a, b) => String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+  for (const r of unique) {
+    const owner = clients.find(x => x.id !== c.id && x.ref && same(x.ref, r.subject));
+    if (owner) throw new Error(ui('受試者代號 {0} 屬於個案 {1}，請先開啟該個案再匯入。', r.subject, owner.name));
+  }
+  const imported = new Set(sessions.flatMap(s => (s.sourceRecords || []).map(x => x.fields?.import_key).filter(Boolean)));
+  for (const r of unique) {
+    const status = imported.has(r.key) ? ui('已匯入過，預設不匯入。')
+      : !r.complete ? ui('測驗未完成（{0}），預設不匯入。', r.reason || '-')
+      : r.program === 'UFOV' && !r.formal ? ui('不是正式紀錄（{0}），預設不匯入。', r.testMode || '-') : '';
+    r.status = status;
+    r.dest = status ? 'skip' : r.program === 'OcuTrain' ? (r.mode === 'Evaluation' ? 'assess' : 'training')
+      : sessions.some(s => s.date === r.date && isAssessVisit(s.visit)) ? 'assess' : 'training';
+  }
+  unique.sort((a, b) => (a.date + ' ' + a.time).localeCompare(b.date + ' ' + b.time));
+  const choices = await scorePreview(c, unique, notes);
+  if (!choices) return;
+  unique.forEach((r, i) => { r.dest = choices[i]; });
+  await applyScores(c, unique.filter(r => r.dest !== 'skip'));
+}
+async function applyScores(c, records) {
+  if (!records.length) { toast(ui('沒有匯入任何測驗分數。')); return; }
+  if (savingSession || savingItems) throw new Error(ui('正在儲存資料，請等候完成後再匯入。'));
+  savingSession = true; renderCommands();
+  try {
+    const next = preserveLegacyTemplates(clone(c), c), list = clone(sessions), changed = new Set(), lines = [], warnings = [];
+    let planChanged = false;
+    for (const r of records) {
+      const assess = r.dest === 'assess', def = deviceItem(r.item), name = labelText(def.name);
+      const day = list.filter(s => s.date === r.date && s.visit !== 'absent');
+      let s = day.find(x => isAssessVisit(x.visit) === assess) || day[0];
+      if (!s) {
+        s = { id: uid('s'), date: r.date, num: null, visit: assess ? 'assessment' : 'treatment', clinician: '', duration: null, subjective: '', feedback: '',
+          sym: [], assess: {}, training: {}, otherTx: '', tolerance: null, assessment: '', plan: '', nextDate: '' };
+        list.push(s); warnings.push(ui('已新增 {0} 的{1}紀錄。', r.date, visitLabel(s.visit)));
+      }
+      if (assess) {
+        const prev = s.assess[r.item];
+        if (Object.entries(r.values).some(([k, v]) => hasValue(prev?.values?.[k]) && String(prev.values[k]) !== String(v))) {
+          warnings.push(ui('{0} {1}：已有不同的結果，未覆蓋（{2}）。', r.date, name, r.file)); continue;
+        }
+        if (!next.plan.some(p => p.id === r.item)) { next.plan.push(clone(def)); planChanged = true; }
+        s.assess[r.item] = { ...(prev || {}), done: true, notes: prev?.notes || '', values: { ...(prev?.values || {}), ...r.values } };
+        if (Array.isArray(s.assessmentPlan) && !s.assessmentPlan.some(p => p.id === r.item)) s.assessmentPlan.push(clone(def));
+      } else {
+        const k = RUN_ITEMS.ocular.includes(r.item) ? 'ocular' : 'periph', act = RUN_ACTS[r.item];
+        if (Array.isArray(next.trainingPlan) && !next.trainingPlan.some(t => t.k === k)) { next.trainingPlan.push(clone(TRAIN.find(t => t.k === k))); planChanged = true; }
+        const d = s.training[k] = { ...(s.training[k] || {}), on: true };
+        d.runs = [...(d.runs || []), { id: uid('r'), item: r.item, ...(r.time ? { time: r.time } : {}), file: r.file, values: r.values }];
+        if (!(d.acts || []).some(a => labelText(a) === labelText(act))) d.acts = [...(d.acts || []), act];
+        // Runs are applied in time order, so the activity ends up with the latest run's score.
+        if (r.score) d.actScores = { ...(d.actScores || {}), [d.acts.find(a => labelText(a) === labelText(act))]: r.score };
+        if (!d.program) d.program = r.program;
+        if (Array.isArray(s.trainingPlan) && !s.trainingPlan.some(t => t.k === k)) s.trainingPlan.push(clone(trainingPlan(next).find(t => t.k === k)));
+      }
+      s.sourceRecords = [...(s.sourceRecords || []), { file: r.file, sheet: r.program, fields: { import_key: r.key, subject_id: r.subject, test_date: r.date, test_time: r.time || '', item: r.item, imported_as: assess ? 'assessment' : 'training' } }];
+      s.updated = new Date().toISOString();
+      changed.add(s);
+      lines.push(`${r.date}${r.time ? ' ' + r.time : ''} · ${name}${r.score ? ' ' + r.score : ''} → ${assess ? ui('評估') : ui('復健訓練')}`);
+    }
+    for (const s of changed) validateRecord(next, s);
+    if (planChanged) { await safe(() => store.saveClient(next), ui('匯入個案失敗')); clients[clients.findIndex(x => x.id === c.id)] = next; }
+    for (const s of changed) await safe(() => store.saveSession(c.id, s), ui('匯入紀錄失敗'));
+    editing = null; view = 'sessions'; sessionFilter = { visit: '', from: '', to: '' };
+    await loadSessions(); renderClients(); renderMain();
+    const summary = ui('已匯入 {0} 筆測驗分數。', lines.length);
+    modal(ui`<h3>${esc(summary)}</h3><ul>${[...lines, ...warnings].map(w => `<li>${esc(w)}</li>`).join('')}</ul><button class="btn primary" id="importReportClose">關閉</button>`).querySelector('#importReportClose').onclick = closeModal;
+  } finally { savingSession = false; renderCommands(); }
+}
 async function importRecords(files) {
   if (files.some(f => /\.(xlsb|xlsx)$/i.test(f.name))) {
     if (files.some(f => !/\.(xlsb|xlsx)$/i.test(f.name))) throw new Error(ui('請分別匯入 Excel、CSV 或 JSON 備份。'));
     const bundles = [], warnings = [];
     for (const file of files) { const parsed = await readAssessmentWorkbook(file); bundles.push(...parsed.bundles); warnings.push(...parsed.warnings); }
     await importSourceBundles(bundles, warnings); return;
+  }
+  // OcuTrain and peripheral field training score files are recognized by their content.
+  const scores = [];
+  for (const file of files) scores.push(/\.(csv|json)$/i.test(file.name) ? scoreFormat(file.name, await file.text()) : null);
+  if (scores.some(Boolean)) {
+    if (scores.some(x => !x)) throw new Error(ui('測驗分數檔請與 EzEMR 的 CSV 或 JSON 備份分開匯入。'));
+    await importScoreFiles(files.map((file, i) => ({ file, ...scores[i] }))); return;
   }
   if (files.length === 1 && files[0].name.toLowerCase().endsWith('.json')) { await importAll(files[0]); return; }
   if (files.some(f => !f.name.toLowerCase().endsWith('.csv'))) throw new Error(ui('請選擇多份 CSV，或單一 JSON 備份。'));
@@ -3886,7 +4407,7 @@ document.addEventListener('click', async e => {
   if (a === 'copy-folder') { await copyFolderClick(); return; }
   if (a === 'import-records') { $('#importFile').click(); return; }
   if (a === 'import-soap-folder') { $('#importSOAPFolder').click(); return; }
-  if (['act-add', 'ed-add', 'ed-del', 'sym-rec', 'sym-del'].includes(a)) dirty = true;
+  if (['act-add', 'ed-add', 'ed-del', 'run-add', 'run-del', 'sym-rec', 'sym-del'].includes(a)) dirty = true;
   if (a === 'new-client') clientForm(null);
   else if (a === 'edit-client') clientForm(c);
   else if (a === 'example') await loadExample();
@@ -3933,6 +4454,12 @@ document.addEventListener('click', async e => {
     editing.training.ocular.eyedot = rows; $('#edWrap').innerHTML = eyedotHTML(rows);
     const oc = $('#tx-ocular-on'); if (!oc.checked) { oc.checked = true; oc.dispatchEvent(new Event('change', { bubbles: true })); }
   }
+  else if (a === 'run-add') {
+    const k = b.dataset.k, runs = readRuns(k), run = { id: uid('r'), item: $('#tx-' + k + '-run-item').value, values: {} };
+    rerenderRuns(k, [...runs, run]);
+    $(`[data-run="${run.id}"] input`)?.focus();
+  }
+  else if (a === 'run-del') { const k = b.dataset.k; rerenderRuns(k, readRuns(k).filter(r => r.id !== b.dataset.id)); $('#tx-' + k + '-run-item').focus(); }
   else if (a === 'ed-del') { editing.training.ocular.eyedot = readEyedot().filter(r => r.id !== b.dataset.id); $('#edWrap').innerHTML = eyedotHTML(editing.training.ocular.eyedot); }
   else if (a === 'sym-rec') { editing.sym = readSym(); if (!editing.sym.some(r => r.kind === 'rec')) editing.sym.push({ id: uid('r'), kind: 'rec', scores: {}, recMin: null }); rerenderSym(); }
   else if (a === 'sym-del') { editing.sym = readSym().filter(r => r.id !== b.dataset.id); rerenderSym(); }
