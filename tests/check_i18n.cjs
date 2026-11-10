@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 const { parse } = require(require.resolve('acorn', { paths: [__dirname, path.join(root, '.tmp', 'test-tools')] }));
 
 const canonical = new Set(['SYMS', 'TP_LABEL', 'SUBTESTS', 'ABSENCE_REASONS', 'NOTIFIED', 'TIMING', 'VISITS', 'FIELD_TYPES', 'EYES']);
-const builtins = new Set(['DEFAULT_PLAN', 'TRAIN', 'EYE_PROCS', 'ED_MODES', 'ED_DUR', 'ED_DOT']);
+const builtins = new Set(['DEFAULT_PLAN', 'ASSESSMENT_TITLES', 'TRAIN', 'EYE_PROCS', 'ED_MODES', 'ED_DUR', 'ED_DOT']);
 const shared = new Set(['CSV + PDF', 'CSV', 'PDF', 'JSON', 'HTML', 'Excel', 'Data', 'SOAP', 'COPM', 'UFOV', 'NPC', 'NRS', 'OU', 'OD', 'OS', 'EyeDot Trainer', 'EyeDot ×', 'OcuTrain', 'Tobii', 'WebGazer', 'English', 'EzEMR', 'Ctrl+S', 'Ctrl+O', 'Ctrl+C', 'S', 'O', 'A', 'P']);
 const han = /\p{Script=Han}/u;
 const uiAttributes = new Set(['title', 'aria-label', 'placeholder']);

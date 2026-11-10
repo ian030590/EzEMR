@@ -172,6 +172,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
 
     await action('open-session').click();
     await page.locator('#tx-ocular-on').check(); await page.locator('#tx-ocular-new').fill('測試自訂跳視'); await action('act-add').click();
+    await page.locator('#tx-ocular-acts [data-act="EyeDot Trainer"]').check();
     await action('ed-add').click(); await page.locator('#edWrap input[id$="-count"]').fill('12');
     await action('sym-rec').click(); await page.locator('#symWrap input[id^="syr-"]').fill('8');
     await action('save-session').click(); await page.waitForSelector('.sess');

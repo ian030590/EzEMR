@@ -55,7 +55,7 @@ const ordered = (text, parts) => {
         const pSection = page.locator('.soap-sec').nth(3);
         for (const selector of ['#tx-ocular-on', '#s-otx', '#s-tol', '#s-plan', '#s-next']) assert.equal(await pSection.locator(selector).count(), 1, selector);
         assert.equal(await page.locator('.soap-sec').nth(1).locator('#assessList, #symWrap, #s-obj').count(), 3);
-        assert.deepEqual(await pSection.locator('.sec-body > h4, .sec-body > .sub > h4').allTextContents(), terms.slice(0, 3));
+        assert.deepEqual(await pSection.locator('.sec-body > h4, .sec-body > .sub > h4').allTextContents(), [...terms.slice(0, 3), en ? 'Session response' : '本次反應']);
         assert.equal(await page.locator('#s-mode').inputValue(), 'inperson');
         assert.equal(await page.locator('#s-mode option[value=""]').count(), 0);
         assert.equal(await page.locator('#s-mode').getAttribute('id'), await page.getByLabel(en ? 'Service mode' : '服務型態', { exact: true }).getAttribute('id'));

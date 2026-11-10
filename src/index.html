@@ -66,8 +66,8 @@
   <button role="menuitem" tabindex="-1" data-action="new-client">新增個案…</button>
   <button role="menuitem" tabindex="-1" data-action="new-session" data-needs="client" disabled>新增復健紀錄</button>
   <hr role="separator">
-  <button role="menuitem" tabindex="-1" data-action="save-session" data-needs="draft" disabled><span data-label>儲存 CSV 與 PDF</span><kbd data-shortcut="S">Ctrl+S</kbd></button>
-  <button role="menuitem" tabindex="-1" data-action="import-records">匯入 CSV／評估復能 Excel／備份／測驗分數…</button>
+  <button role="menuitem" tabindex="-1" data-action="save-session" data-needs="draft" disabled title="儲存 CSV 與 PDF"><span data-label>儲存紀錄</span><kbd data-shortcut="S">Ctrl+S</kbd></button>
+  <button role="menuitem" tabindex="-1" data-action="import-records" title="匯入 CSV、評估復能 Excel、JSON 備份或測驗分數檔">匯入資料…</button>
   <button role="menuitem" tabindex="-1" data-action="import-soap-folder">匯入舊版 SOAP 資料夾…</button>
   <hr role="separator">
   <button role="menuitem" tabindex="-1" data-action="storage-settings">儲存位置…</button>
@@ -84,7 +84,6 @@
   <button role="menuitemcheckbox" tabindex="-1" data-action="toggle-theme" id="themeToggle" aria-checked="false">切換為深色</button>
   <hr role="separator">
   <button role="menuitem" tabindex="-1" data-action="global-settings">基本資料欄位…</button>
-  <button role="menuitem" tabindex="-1" data-action="storage-settings">儲存位置…</button>
 </div>
 <div class="command-menu" id="exportMenu" role="menu" aria-labelledby="exportMenuButton" hidden>
   <span class="menu-label">目前個案</span>

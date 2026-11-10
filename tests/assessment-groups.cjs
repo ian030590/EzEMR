@@ -59,6 +59,27 @@ const ordered = (text, terms) => {
         if (await page.locator('#askYes').count()) await page.locator('#askYes').click();
         await page.waitForSelector('#soapForm', { state: 'detached' });
       };
+      const functionOf = p => p.functionCategory || (['copm', 'self_report', 'ot_assessment', 'daily_task', 'participation', 'ot_record'].includes(p.id) ? 'daily'
+        : ['st_tug', 'st_10mwt', 'st_bbt', 'st_9hpt', 'st_cop'].includes(p.id) ? 'motor'
+        : ['ufov_speed', 'ufov_divided', 'ufov_selective', 'st_neglect'].includes(p.id) ? 'cognitive'
+        : ['func', 'st_search', 'st_reading', 'st_coordination'].includes(p.id) ? 'functional' : p.category || 'visual');
+      const periodOf = p => p.outcomePeriod || (p.id.startsWith('st_') ? 'short' : 'long');
+      const verifyGroups = async (plan, visit) => {
+        assert.deepEqual(await page.locator('.assessment-period > .spread > h3').allTextContents(), en ? ['Short-term outcomes', 'Long-term assessments'] : ['短期成效', '長期評估']);
+        const due = p => visit === 'baseline' ? p.initial !== false : (p.timing === 'session' || p.timing === 'assessment' && ['assessment', 'post', 'followup'].includes(visit) || p.timing === 'bp' && visit === 'post' || p.timing === 'milestone' && ['post', 'followup'].includes(visit)) && (visit === 'treatment' || p.initial !== false);
+        for (const period of ['short', 'long']) for (const category of ['visual', 'functional', 'motor', 'daily', 'cognitive']) {
+          const items = plan.filter(p => functionOf(p) === category && periodOf(p) === period && (p.id !== 'copm' || ['baseline', 'post'].includes(visit)));
+          const group = page.locator(`#assess-${period} [data-function="${category}"]`);
+          assert.equal(await group.count(), items.length ? 1 : 0, `${period}/${category}: only populated groups are shown`);
+          if (!items.length) continue;
+          assert.deepEqual(await group.locator('.pick input').evaluateAll(nodes => nodes.map(n => n.id)), [...items.filter(due), ...items.filter(p => !due(p))].map(p => 'ac-' + p.id));
+          assert.equal(await group.locator('.pick input:disabled').count(), 0);
+          assert.equal(await group.locator('.pick-group:empty').count(), 0);
+          const heading = page.locator(`#assessPlanned-${period}-${category}`);
+          assert.equal(await heading.count(), items.some(due) ? 1 : 0);
+          if (items.some(due)) assert.equal(await heading.innerText(), en ? visit === 'baseline' ? 'Initial assessment items' : 'Due this visit' : visit === 'baseline' ? '初次評估項目' : '本次應評估');
+        }
+      };
       try {
         await page.goto(`http://127.0.0.1:${server.address().port}/`); await ready();
         await page.locator('#languageSelect').selectOption(locale); await connect('group-records');
@@ -82,22 +103,13 @@ const ordered = (text, terms) => {
         assert.equal(await page.locator('#s-visit').inputValue(), 'baseline');
         for (const visit of ['baseline', 'post', 'followup', 'treatment']) {
           await page.locator('#s-visit').selectOption(visit);
-          assert.deepEqual(await page.locator('#assessList > section > h3').allTextContents(), groups);
-          assert.equal(await page.locator('[id^="assessPlanned-"]').count(), visit === 'treatment' ? 2 : 0, `${visit}: only nonempty planned headings`);
-          assert.equal(await page.locator('#assessList .pick-label').count(), visit === 'treatment' ? 4 : 0);
+          await verifyGroups(plan, visit);
+          assert.equal(await page.locator('[id^="assessPlanned-"]').count(), visit === 'treatment' ? 4 : 0, `${visit}: only nonempty planned headings`);
           assert.equal(await page.locator('#assessList .pick-group:empty').count(), 0);
           assert.equal(await page.locator('#assessList .as:visible').count(), 0);
-          assert.equal(await page.locator('#assess-visual #symWrap').count(), 1);
-          assert.equal(await page.evaluate(() => !!(document.querySelector('#symWrap').compareDocumentPosition(document.querySelector('#assess-visual .pick')) & Node.DOCUMENT_POSITION_FOLLOWING)), true);
-          for (const [i, category] of ['visual', 'functional'].entries()) {
-            const categoryItems = plan.filter(p => (category === 'functional') === (p.category === 'functional')
-              && (p.id !== 'copm' || ['baseline', 'post'].includes(visit)));
-            const ids = (visit === 'treatment' ? [...categoryItems.filter(p => p.timing === 'session'), ...categoryItems.filter(p => p.timing !== 'session')] : categoryItems).map(p => 'ac-' + p.id);
-            assert.deepEqual(await page.locator(`#assess-${category} .pick input`).evaluateAll(nodes => nodes.map(n => n.id)), ids);
-            assert.equal(await page.locator(`#assess-${category} .pick input:disabled`).count(), 0);
-            if (visit === 'treatment') assert.equal(await page.locator(`[aria-labelledby="assessPlanned-${category}"]`).count(), 1);
-            else assert.equal(await page.locator(`#assess-${category} .pick-group`).getAttribute('aria-label'), groups[i]);
-            const id = category === 'visual' ? 'va' : 'daily_task';
+          assert.equal(await page.locator('#visualSymptoms #symWrap').count(), 1);
+          assert.equal(await page.locator('.assessment-period #symWrap').count(), 0, 'Symptom ratings stay separate from functional outcomes');
+          for (const id of ['va', 'daily_task']) {
             await page.locator('#ac-' + id).focus(); await page.keyboard.press('Space');
             assert.equal(await page.locator('#ac-' + id).isChecked(), true);
             assert.equal(await page.locator('#as-' + id).isVisible(), true);
@@ -114,49 +126,47 @@ const ordered = (text, terms) => {
             await page.screenshot({ path: path.join(output, `${locale}-no-initial-${colorScheme}-${width}.png`), fullPage: true });
           }
         }
-        check(`${locale}: all 38 new-client initial choices are false on disk and unticked in settings; all four visit types keep both O groups, NRS first, no empty picks, available items and keyboard tick-to-open; light/dark layouts fit 320/1280px`);
+        check(`${locale}: all 38 initial choices start unticked on disk and screen; four visit types preserve short/long groups, separate NRS, available items and keyboard tick-to-open; light/dark layouts fit 320/1280px`);
         await discard(); await page.locator('#tab-plan').click();
         for (const item of plan) {
           await page.locator(`[data-initial="${item.id}"]`).check();
           await page.waitForFunction(id => !savingItems && cur().plan.find(p => p.id === id).initial === true, item.id);
         }
         await action('new-session').click();
-        assert.deepEqual(await page.locator('#assessList > section > h3').allTextContents(), groups);
+        await verifyGroups(await page.evaluate(() => cur().plan), 'baseline');
         const assessmentSection = page.locator('.soap-sec').nth(1);
-        const addAssessment = assessmentSection.locator('[data-action="plan-add"][data-editor="true"]');
+        const addAssessment = assessmentSection.locator('[data-action="plan-add"][data-editor="true"]:not([data-category]):not([data-period])');
         const assessmentNote = assessmentSection.getByText(en
           ? 'Tick the items tested this visit to open their fields. Unticked items are not saved. Change the initial assessment items under Item settings.'
           : '勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。', { exact: true });
         for (const element of [addAssessment, assessmentNote]) {
           assert.equal(await element.count(), 1);
-          assert.equal(await element.evaluate(node => !!(node.compareDocumentPosition(document.querySelector('#assess-visual')) & Node.DOCUMENT_POSITION_FOLLOWING)), true, 'Assessment controls precede the visual-function group');
+          assert.equal(await element.evaluate(node => !!(node.compareDocumentPosition(document.querySelector('#assess-short')) & Node.DOCUMENT_POSITION_FOLLOWING)), true, 'Assessment controls precede both periods');
           assert.equal(await element.evaluate(node => !!(document.querySelector('#s-obj').compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)), true, 'Assessment controls follow objective findings');
         }
         const nrsHeading = assessmentSection.getByRole('heading', { name: en ? 'Symptom rating (NRS, 0 to 10)' : '症狀評分（NRS，0 至 10）', level: 4, exact: true });
         const nrsSize = await nrsHeading.evaluate(node => parseFloat(getComputedStyle(node).fontSize));
-        for (const category of ['visual', 'functional']) {
-          const groupSize = await page.locator(`#assess-${category}-h`).evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+        for (const period of ['short', 'long']) {
+          const categoryAdd = page.locator(`#assess-${period} [data-action="plan-add"][data-period="${period}"]`);
+          assert.equal(await categoryAdd.count(), 1, 'Each assessment category has a direct add entry');
+          await categoryAdd.click();
+          assert.equal(await page.locator('#item-period').inputValue(), period, 'New items default to their entry period');
+          await page.keyboard.press('Escape');
+          const groupSize = await page.locator(`#assess-${period}-h`).evaluate(node => parseFloat(getComputedStyle(node).fontSize));
           assert.ok(groupSize > nrsSize, 'Assessment group headings are larger than the subordinate NRS heading');
         }
         check(`${locale}: assessment add button and instructions follow objective findings and precede both groups; h3 groups are larger than the h4 NRS heading`);
-        assert.equal(await page.locator('#assess-visual #symWrap').count(), 1);
-        assert.equal(await page.locator('#assess-functional #symWrap').count(), 0);
-        assert.equal(await page.evaluate(() => !!(document.querySelector('#symWrap').compareDocumentPosition(document.querySelector('#assess-visual .pick')) & Node.DOCUMENT_POSITION_FOLLOWING)), true);
-        for (const [category, label] of ['visual', 'functional'].map((category, i) => [category, groups[i]])) {
-          const ids = await page.evaluate(category => cur().plan.filter(p => assessmentCategory(p) === category).map(p => 'ac-' + p.id), category);
-          assert.deepEqual(await page.locator(`#assess-${category} .pick input`).evaluateAll(nodes => nodes.map(n => n.id)), ids);
-          assert.equal(await page.locator(`#assessPlanned-${category}`).innerText(), en ? 'Initial assessment items' : '初次評估項目');
-          assert.equal(await page.getByRole('region', { name: label, exact: true }).count(), 1);
-        }
+        assert.equal(await page.locator('#visualSymptoms #symWrap').count(), 1);
+        await verifyGroups(await page.evaluate(() => cur().plan), 'baseline');
         const remediation = page.locator('.soap-sec').nth(3).locator('.sec-body > h4 + .sub');
         assert.equal(await remediation.evaluate(node => getComputedStyle(node).borderTopWidth), '0px');
         await page.locator('#s-visit').selectOption('post');
-        for (const category of ['visual', 'functional']) assert.equal(await page.locator(`#assessPlanned-${category}`).innerText(), en ? 'Due this visit' : '本次應評估');
+        await verifyGroups(await page.evaluate(() => cur().plan), 'post');
         await page.locator('#s-visit').selectOption('followup'); assert.equal(await page.locator('#ac-copm').count(), 0);
-        await page.locator('#s-visit').selectOption('treatment'); assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 2);
+        await page.locator('#s-visit').selectOption('treatment'); assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 4);
         assert.equal(await page.locator('#ac-copm').count(), 0);
         await page.locator('#s-visit').selectOption('baseline');
-        check(`${locale}: new client has 14 new built-ins, canonical categories/fields/timing and initial picks; O groups keep NRS first and visit rules; remediation content has no top border`);
+        check(`${locale}: canonical categories, fields, timing and initial choices survive function/period grouping; separate NRS and visit rules hold; remediation has no top border`);
 
         await page.locator('#s-date').fill('2026-11-07');
         for (const id of ['va', 'daily_task', 'copm']) await page.locator('#ac-' + id).check();
@@ -249,11 +259,7 @@ const ordered = (text, terms) => {
         await page.locator('#tab-plan').click();
         assert.equal(await page.locator('#initialPicks input:checked').count(), 38);
         await action('new-session').click();
-        for (const category of ['visual', 'functional']) {
-          assert.equal(await page.locator(`#assessPlanned-${category}`).innerText(), en ? 'Initial assessment items' : '初次評估項目');
-          assert.deepEqual(await page.locator(`[aria-labelledby="assessPlanned-${category}"] input`).evaluateAll(nodes => nodes.map(n => n.id)),
-            await page.locator(`#assess-${category} .pick input`).evaluateAll(nodes => nodes.map(n => n.id)));
-        }
+        await verifyGroups(noChoice.client.plan, 'baseline');
         assert.equal(await page.locator('[id^="assessOther-"]').count(), 0);
         await discard();
         assert.equal(await page.evaluate(async () => (await (await groupRoot.getFileHandle('clients.csv')).getFile()).text()), noChoice.csv);
@@ -273,10 +279,12 @@ const ordered = (text, terms) => {
         await page.reload(); await ready(); await connect('group-legacy');
         assert.deepEqual(await page.evaluate(() => cur()), legacy);
         await action('new-session').click();
-        assert.equal(await page.locator('#assess-functional #ac-copm').count(), 1); assert.equal(await page.locator('#assess-functional #ac-func').count(), 1);
-        assert.equal(await page.locator('#assess-visual #ac-custom_group').count(), 1);
-        for (const item of legacy.plan.filter(p => !['copm', 'func'].includes(p.id))) assert.equal(await page.locator('#assess-visual #ac-' + item.id).count(), 1);
-        for (const [category, id] of [['visual', 'npc'], ['functional', 'func']]) assert.equal(await page.locator(`[aria-labelledby="assessOther-${category}"] #ac-${id}`).count(), 1);
+        await verifyGroups(legacy.plan, 'baseline');
+        assert.equal(await page.locator('#assess-long [data-function="daily"] #ac-copm').count(), 1);
+        assert.equal(await page.locator('#assess-long [data-function="functional"] #ac-func').count(), 1);
+        assert.equal(await page.locator('#assess-long [data-function="visual"] #ac-custom_group').count(), 1);
+        assert.equal(await page.locator('[aria-labelledby="assessOther-long-visual"] #ac-npc').count(), 1);
+        assert.equal(await page.locator('#assess-long [data-function="functional"] #ac-func').count(), 1);
         await page.locator('#languageSelect').selectOption(en ? 'zh-TW' : 'en'); await page.locator('#languageSelect').selectOption(locale);
         assert.deepEqual(await page.evaluate(async () => (await store.listClients())[0]), legacy);
         const validation = await page.evaluate(() => {
@@ -291,15 +299,15 @@ const ordered = (text, terms) => {
         check(`${locale}: old object template loads without rewriting or new items; old name-only default keeps the ten-item battery; fallback categories and both due/other lists hold; invalid categories have translated errors`);
 
         await action('plan-add').click();
-        assert.equal(await page.getByLabel(en ? 'Category' : '分類', { exact: true }).inputValue(), 'visual');
-        const seeds = await page.evaluate(() => DEFAULT_PLAN.filter(p => !p.copm).map(p => ({ id: p.id, label: labelText(p.name) })));
+        assert.equal(await page.getByLabel(en ? 'Function category' : '功能分類', { exact: true }).inputValue(), 'visual');
+        const seeds = await page.evaluate(() => DEFAULT_PLAN.filter(p => !p.copm).map(p => ({ id: p.id, label: assessmentTemplateLabel(p) })));
         for (const id of Object.keys(expected)) assert.ok((await page.locator('#item-base option').allTextContents()).includes(seeds.find(p => p.id === id).label));
         await page.locator('#item-base').selectOption(String(seeds.findIndex(p => p.id === 'self_report')));
-        assert.equal(await page.locator('#item-category').inputValue(), 'functional');
+        assert.equal(await page.locator('#item-category').inputValue(), 'daily');
         await page.locator('#itemForm [type="submit"]').click(); await page.waitForSelector('#itemForm', { state: 'detached' });
         const added = await page.evaluate(() => cur().plan.at(-1)); assert.equal(added.category, 'functional');
         assert.equal(Object.hasOwn(added, 'initial'), false, 'Items added later from the unchanged standard seeds keep implicit inclusion');
-        assert.equal(await page.locator('#assess-functional #ac-' + added.id).isChecked(), true);
+        assert.equal(await page.locator('#assess-long [data-function="daily"] #ac-' + added.id).isChecked(), true);
         await discard(); await page.locator('#tab-plan').click();
         assert.equal(await page.locator(`[data-initial="${added.id}"]`).isChecked(), true);
         await page.locator('[data-action="item-edit"][data-id="custom_group"]').click();
@@ -307,18 +315,17 @@ const ordered = (text, terms) => {
         assert.equal(await page.locator('#item-category').inputValue(), 'functional');
         await page.locator('#itemForm [type="submit"]').click(); await page.waitForSelector('#itemForm', { state: 'detached' });
         await page.locator('[data-action="item-edit"][data-id="copm"]').click();
-        assert.equal(await page.locator('#item-category').inputValue(), 'functional'); assert.equal(await page.locator('#item-category').isDisabled(), true);
+        assert.equal(await page.locator('#item-category').inputValue(), 'daily'); assert.equal(await page.locator('#item-category').isDisabled(), true);
         await page.keyboard.press('Escape'); assert.equal(await page.locator('#itemForm').count(), 0);
-        await action('new-session').click(); assert.equal(await page.locator('#assess-functional #ac-custom_group').count(), 1);
-        assert.equal(await page.locator('#assess-visual #ac-custom_group').count(), 0);
+        await action('new-session').click(); assert.equal(await page.locator('#assess-long [data-function="functional"] #ac-custom_group').count(), 1);
+        assert.equal(await page.locator('#assess-long [data-function="visual"] #ac-custom_group').count(), 0);
         await discard();
         // No items in one group produces no repeated empty message; an empty battery produces one.
         await page.evaluate(() => { editing = { visit: 'treatment', sym: [], assess: {}, training: {} }; view = 'edit'; cur().plan = []; renderEditor(); });
-        assert.equal(await page.locator('#assessList .muted').count(), 1);
-        assert.match(await page.locator('#assessList .muted').innerText(), en ? /No assessments/ : /沒有可填寫/);
+        assert.deepEqual(await page.locator('#assessList .assessment-empty').allTextContents(), en ? ['No short-term measures configured.', 'No long-term assessments configured.'] : ['尚未設定短期指標。', '尚未設定長期評估。']);
         await page.evaluate(() => { cur().plan = [clone(DEFAULT_PLAN.find(p => p.id === 'va'))]; renderEditor(); });
-        assert.equal(await page.locator('#assess-functional .pick').count(), 0); assert.equal(await page.locator('#assessList .muted').count(), 0);
-        check(`${locale}: existing Add assessment dialog offers all new seeds, carries categories and retains the editor draft; keyboard category edit moves custom items; COPM stays functional; empty groups render gracefully`);
+        assert.equal(await page.locator('#assess-long [data-function="functional"]').count(), 0); assert.equal(await page.locator('#assessList .assessment-empty').count(), 1);
+        check(`${locale}: Add assessment offers every seed, carries function and period and retains the draft; keyboard edits move custom items; COPM stays in daily living; empty groups have translated messages`);
 
         await connect('group-demo'); await action('example').click(); await page.locator('#tab-sessions').click(); await page.waitForSelector('.sess');
         const demo = await page.evaluate(() => ({ plan: cur().plan, baseline: sessions.find(s => s.visit === 'baseline') }));
@@ -327,14 +334,11 @@ const ordered = (text, terms) => {
         assert.ok(demo.plan.every(item => item.initial === (demo.baseline.assess[item.id]?.done === true)));
         assert.equal(demo.plan.filter(item => item.initial === false).length, 32);
         await page.locator(`[data-action="open-session"][data-id="${demo.baseline.id}"]`).click();
-        for (const category of ['visual', 'functional']) {
-          assert.equal(await page.locator(`#assessPlanned-${category}`).innerText(), en ? 'Initial assessment items' : '初次評估項目');
-          assert.deepEqual(await page.locator(`[aria-labelledby="assessPlanned-${category}"] input`).evaluateAll(nodes => nodes.map(n => n.id)),
-            demo.plan.filter(item => demoInitial.includes(item.id) && (category === 'functional') === (item.id === 'copm')).map(item => 'ac-' + item.id));
-        }
+        await verifyGroups(demo.plan, 'baseline');
+        assert.equal(await page.locator('[aria-labelledby^="assessPlanned-"] input').count(), 6);
         await discard(); await page.locator('#tab-plan').click();
         assert.equal(await page.locator('#initialPicks input:checked').count(), 6);
-        check(`${locale}: demo initial battery exactly matches its six completed baseline assessments; the other 32 items are explicitly excluded and both baseline initial groups remain visible`);
+        check(`${locale}: demo initial battery matches its six completed baseline assessments; the other 32 items stay excluded while all applicable function/period groups remain available`);
         assert.deepEqual(errors, []);
       } finally { await context.close(); }
     }

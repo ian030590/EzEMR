@@ -129,7 +129,9 @@ function zipEntries(bytes) {
       await action('edit-client').click(); await page.locator('#cf-name').fill('Synthetic private patient edited');
       await page.locator('#cForm [type="submit"]').click(); await page.waitForSelector('#cForm', { state: 'detached' });
       await action('new-session').click(); await page.locator('#s-subj').fill('Synthetic private clinical note ' + sentinel);
-      await page.locator('#tx-ocular-on').check(); await action('eye-help').click();
+      await page.locator('#tx-ocular-on').check();
+      await page.locator('#tx-ocular-acts [data-act="EyeDot Trainer"]').check();
+      await action('eye-help').click();
       assert.equal(await page.locator('#modeDocURL').inputValue(), 'https://eyedottrainer.com/#modes');
       assert.equal(await page.locator('#modeDocURL').evaluate(node => node.readOnly), true);
       assert.equal(await page.locator('.modal').getByRole('button', { name: /copy/i }).isVisible(), true);

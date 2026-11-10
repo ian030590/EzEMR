@@ -9,8 +9,12 @@ const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 const evidence = [];
-const shortVisual = ['st_search', 'st_neglect', 'st_npc', 'st_pfv', 'st_gaze', 'st_tolerance', 'st_load'].map(id => 'ac-' + id);
-const shortFunctional = ['st_reading', 'st_coordination', 'st_tug', 'st_10mwt', 'st_bbt', 'st_9hpt', 'st_cop'].map(id => 'ac-' + id);
+const shortGroups = {
+  visual: ['st_npc', 'st_pfv', 'st_gaze', 'st_tolerance', 'st_load'],
+  functional: ['st_search', 'st_reading', 'st_coordination'],
+  motor: ['st_tug', 'st_10mwt', 'st_bbt', 'st_9hpt', 'st_cop'],
+  cognitive: ['st_neglect']
+};
 const check = name => { evidence.push(name); console.log('PASS: ' + name); };
 
 (async () => {
@@ -45,7 +49,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     });
     assert.deepEqual(found, [], `Untranslated built-in UI in ${selector}`);
   };
-  const groupIds = (id, category = 'visual') => page.locator(`[aria-labelledby="${id}-${category}"] input`).evaluateAll(inputs => inputs.map(input => input.id));
+  const groupIds = (id, category = 'visual', period = 'long') => page.locator(`[aria-labelledby="${id}-${period}-${category}"] input`).evaluateAll(inputs => inputs.map(input => input.id));
   const noOverflow = () => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
   const discard = async () => { await action('cancel-edit').click(); if (await page.locator('#askYes').count()) await page.locator('#askYes').click(); await page.waitForSelector('#soapForm', { state: 'detached' }); };
 
@@ -83,11 +87,15 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     // Baseline record: initial items first, every section closed until ticked.
     await action('new-session').click();
     assert.equal(await page.locator('#s-visit').inputValue(), 'baseline');
-    assert.equal(await page.locator('#assessPlanned-visual').innerText(), '初次評估項目');
-    assert.equal(await page.locator('#assessPlanned-functional').innerText(), '初次評估項目');
-    assert.deepEqual(await groupIds('assessPlanned'), ['ac-pursuit', 'ac-fixation', 'ac-saccade', 'ac-vor', 'ac-npc', 'ac-ufov_divided', 'ac-ufov_selective', 'ac-record_review', 'ac-optometry_record', 'ac-ot_record', 'ac-va', 'ac-near_va', 'ac-refraction', 'ac-vf', 'ac-cs', 'ac-color', 'ac-stereo', ...shortVisual]);
-    assert.deepEqual(await groupIds('assessPlanned', 'functional'), ['ac-copm', 'ac-func', 'ac-self_report', 'ac-ot_assessment', 'ac-daily_task', 'ac-participation', ...shortFunctional]);
-    assert.deepEqual(await groupIds('assessOther'), ['ac-ufov_speed']);
+    assert.equal(await page.locator('#assessPlanned-long-visual').innerText(), '初次評估項目');
+    assert.equal(await page.locator('#assessPlanned-long-functional').innerText(), '初次評估項目');
+    assert.deepEqual(await groupIds('assessPlanned'), ['ac-pursuit', 'ac-fixation', 'ac-saccade', 'ac-vor', 'ac-npc', 'ac-record_review', 'ac-optometry_record', 'ac-va', 'ac-near_va', 'ac-refraction', 'ac-vf', 'ac-cs', 'ac-color', 'ac-stereo']);
+    assert.deepEqual(await groupIds('assessPlanned', 'functional'), ['ac-func']);
+    assert.deepEqual(await groupIds('assessPlanned', 'daily'), ['ac-copm', 'ac-ot_record', 'ac-self_report', 'ac-ot_assessment', 'ac-daily_task', 'ac-participation']);
+    assert.deepEqual(await groupIds('assessPlanned', 'cognitive'), ['ac-ufov_divided', 'ac-ufov_selective']);
+    for (const [category, ids] of Object.entries(shortGroups)) assert.deepEqual(await groupIds('assessPlanned', category, 'short'), ids.map(id => 'ac-' + id));
+    assert.deepEqual(await groupIds('assessOther', 'cognitive'), ['ac-ufov_speed']);
+    assert.equal(await page.locator('[aria-labelledby^="assessPlanned-"] input').count(), 37);
     assert.equal(await page.locator('#assessList .as:visible').count(), 0);
     await page.locator('#ac-saccade').check();
     assert.equal(await page.locator('#as-saccade').isVisible(), true);
@@ -147,15 +155,15 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     // Treatment visits include session measures; later assessments use the selected initial items and timing.
     await action('new-session').click();
     assert.equal(await page.locator('#s-visit').inputValue(), 'treatment');
-    assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 2);
-    assert.deepEqual(await groupIds('assessPlanned'), shortVisual);
-    assert.deepEqual(await groupIds('assessPlanned', 'functional'), shortFunctional);
+    assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 4);
+    for (const [category, ids] of Object.entries(shortGroups)) assert.deepEqual(await groupIds('assessPlanned', category, 'short'), ids.map(id => 'ac-' + id));
+    assert.equal(await page.locator('#assess-long [aria-labelledby^="assessPlanned-"] input').count(), 0);
     assert.equal(await page.locator('#ac-copm').count(), 0);
     await page.locator('#s-visit').selectOption('post');
-    assert.equal(await page.locator('#assessPlanned-visual').innerText(), '本次應評估');
-    assert.equal(await page.locator('#assessPlanned-functional').innerText(), '本次應評估');
-    assert.ok((await groupIds('assessPlanned', 'functional')).includes('ac-copm'));
-    assert.deepEqual(await groupIds('assessOther'), ['ac-ufov_speed']);
+    assert.equal(await page.locator('#assessPlanned-long-visual').innerText(), '本次應評估');
+    assert.equal(await page.locator('#assessPlanned-long-functional').innerText(), '本次應評估');
+    assert.ok((await groupIds('assessPlanned', 'daily')).includes('ac-copm'));
+    assert.deepEqual(await groupIds('assessOther', 'cognitive'), ['ac-ufov_speed']);
     await page.locator('#ac-npc').check(); await page.locator('#tx-attn-on').check(); await page.locator('#tx-attn-a1').check();
     for (const width of [320, 360, 768, 1280]) {
       await page.setViewportSize({ width, height: 900 });
@@ -170,17 +178,17 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     // English editor and settings, keeping the draft.
     await page.locator('#tx-attn-s1').fill('95%');
     await choose('en');
-    assert.equal(await page.locator('#assessPlanned-visual').innerText(), 'Due this visit');
-    assert.equal(await page.locator('#assessPlanned-functional').innerText(), 'Due this visit');
-    assert.equal(await page.locator('#assessOther-visual').innerText(), 'Other items');
+    assert.equal(await page.locator('#assessPlanned-long-visual').innerText(), 'Due this visit');
+    assert.equal(await page.locator('#assessPlanned-long-functional').innerText(), 'Due this visit');
+    assert.equal(await page.locator('#assessOther-long-cognitive').innerText(), 'Other items');
     assert.equal(await page.locator('#tx-attn-s1').inputValue(), '95%');
     assert.equal(await page.locator('#tx-attn-s1').getAttribute('aria-label'), 'Selective attention performance');
     assert.equal(await page.locator('#tx-attn-s0').getAttribute('placeholder'), 'e.g. 85%, 12 reps, 40 s');
     assert.equal(await page.locator('#ac-npc').isChecked(), true);
     await checkEnglish('#soapForm');
     await page.locator('#s-visit').selectOption('baseline');
-    assert.equal(await page.locator('#assessPlanned-visual').innerText(), 'Initial assessment items');
-    assert.equal(await page.locator('#assessPlanned-functional').innerText(), 'Initial assessment items');
+    assert.equal(await page.locator('#assessPlanned-long-visual').innerText(), 'Initial assessment items');
+    assert.equal(await page.locator('#assessPlanned-long-functional').innerText(), 'Initial assessment items');
     await checkEnglish('#assessList');
     await discard();
     await page.locator('#tab-plan').click();

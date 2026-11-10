@@ -1266,7 +1266,8 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .menubar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--control-gap); padding-right: 8px; border-right: 1px solid var(--line); }
 .menu-trigger, .tool-button { min-width: 44px; min-height: 44px; height: auto; padding: var(--control-pad); margin: 0; font-size: var(--text-control); white-space: nowrap; }
 .menu-trigger:hover, .menu-trigger[aria-expanded="true"], .tool-button:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
-.tool-button:disabled, .command-menu button:disabled { color: var(--muted); opacity: .6; cursor: default; }
+.tool-button:disabled, .command-menu button:disabled { color: var(--muted) !important; opacity: 1; cursor: default; }
+.command-menu button:disabled { background: var(--sunk); }
 .command-toolbar { display: flex; min-width: 0; flex-wrap: nowrap; align-items: center; gap: var(--control-gap); }
 .tool-group { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; grid-auto-rows: 1fr; gap: var(--control-gap); align-items: stretch; min-width: 0; max-width: 100%; }
 .tool-group:not([hidden]) ~ .tool-group { border-left: 1px solid var(--line); padding-left: 8px; }
@@ -1287,7 +1288,7 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .app-chrome .input .button-group:empty { display: none; }
 .command-menu button { display: flex; gap: 16px; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; padding: 6px 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; font-size: var(--text-control); cursor: pointer; white-space: normal; }
 .command-menu button:hover:not(:disabled), .command-menu button:focus-visible { background: var(--accent-soft); color: var(--accent); }
-.command-menu kbd { font: var(--text-small)/1.5 var(--f-body); color: var(--muted); white-space: nowrap; }
+.command-menu kbd { font: var(--text-small)/1.5 var(--f-body); color: var(--muted); background: var(--sunk); border: 1px solid var(--control-line); border-radius: 3px; padding: 0 4px; white-space: nowrap; }
 .command-menu hr { border: 0; border-top: 1px solid var(--line); margin: 5px; }
 .command-menu .menu-label { display: block; padding: 5px 10px; color: var(--muted); font-size: var(--text-small); }
 
@@ -1357,11 +1358,14 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .clinical-map { border: 1px solid var(--line); border-radius: var(--r); overflow: clip; }
 .clinical-map-row { display: grid; grid-template-columns: minmax(0, 1fr); }
 .clinical-map-row + .clinical-map-row { border-top: 1px solid var(--control-line); }
-.clinical-map-cell { padding: 10px 12px; min-width: 0; overflow-wrap: anywhere; }
+.clinical-map-cell { padding: 14px 16px; min-width: 0; overflow-wrap: anywhere; }
 .clinical-map-cell + .clinical-map-cell { border-top: 1px solid var(--line); }
 .clinical-map-cell:first-child { background: var(--sunk); }
-.clinical-map-cell h4 { font-size: 1rem; color: var(--ink); margin-bottom: 6px; }
-.clinical-map-cell .clinical-symptom { font-size: 1rem; font-weight: 400; margin: 4px 0; }
+.clinical-map-cell h4 { font-size: var(--text-small); color: var(--muted); margin-bottom: 10px; }
+.clinical-map-cell .clinical-symptom { font-size: 1.125rem; font-weight: 700; margin: 4px 0; }
+.clinical-map-cell .eyebrow, .clinical-map-cell .clinical-domains { font-size: var(--text-small); color: var(--muted); }
+.clinical-evidence { padding-top: 10px; margin-top: 12px; border-top: 1px solid var(--line); font-size: var(--text-small); }
+.clinical-evidence h5 { margin: 0; font: inherit; font-weight: 600; color: var(--muted); }
 .clinical-map-cell p, .clinical-map-cell ul { margin: 6px 0; }
 .clinical-map-cell ul, .clinical-evidence-preview ul { padding-inline-start: 20px; }
 .clinical-map-cell li + li { margin-top: 4px; }
@@ -1374,9 +1378,26 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .clinical-link-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .clinical-link-grid > * { min-width: 0; }
 .clinical-link details { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 8px; }
-.clinical-link details > .f { margin-block: 16px 8px; }
+.clinical-link details > .f { margin-block: 16px 0; }
+.clinical-link > .f { margin-top: 16px; }
+.clinical-link details[open] > .row { margin-block: 12px 16px; }
+.clinical-approach { display: grid; gap: 8px; margin-block: 16px; }
+.clinical-approach:first-of-type { margin-top: 0; }
+.clinical-link details > .pick-group:empty, .clinical-evidence-preview:empty { display: none; }
 .clinical-evidence-preview { font-size: var(--text-small); overflow-wrap: anywhere; }
 .clinical-evidence-preview li { margin-top: 6px; white-space: pre-wrap; }
+.supplemental-notes { border-top: 1px solid var(--line); padding-top: 8px; }
+.supplemental-notes[open] > .grid { margin-top: 12px; }
+.strategy-entry { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; }
+.strategy-entry > .f { flex: 1 1 220px; }
+.strategy-entry > input { flex: 1 1 220px; width: auto; }
+.strategy-entry > .btn { flex: 0 0 auto; }
+#symSummary { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+#symSummary > div { display: flex; align-items: baseline; gap: 6px; padding: 0; background: transparent; }
+#symSummary dd { font-size: var(--text-control); margin: 0; }
+#sessionResponse { display: grid; gap: 14px; }
+#sessionResponse > button { justify-self: start; }
+#s-tol { max-width: 10rem; }
 .clinical-domain { border: 0; padding: 0; margin: 0; min-width: 0; }
 .clinical-domain legend { padding: 0; font-size: var(--text-small); color: var(--muted); font-weight: 600; }
 .clinical-domain .pick-group { margin-top: 6px; }
@@ -1429,12 +1450,19 @@ textarea { min-height: 88px; resize: vertical; line-height: var(--leading-body);
 
 .soap { display: flex; flex-direction: column; gap: 24px; }
 .soap-sec { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; }
-.soap-sec + .soap-sec { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 28px; }
+.soap-sec + .soap-sec { margin-top: 0; border-top: 1px solid var(--line); padding-top: 24px; }
 .letter { display: grid; place-items: center; align-self: start; width: 44px; min-height: 44px; font-size: 1.25rem; font-weight: 600; color: var(--accent); border-radius: var(--r); background: var(--accent-soft); }
 .sec-body { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .sec-title { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 @media (max-width: 560px) { .soap-sec { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
 .sub { border-top: 1px solid var(--line); padding-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+.sec-body > .note, .sub > .note, .as-body > .note, .tx-body > .note { margin: 0; }
+#assessList { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; min-width: 0; }
+.assessment-period { gap: 20px; padding-top: 16px; min-width: 0; }
+.assessment-group { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; }
+.assessment-group > h4 { color: var(--muted); }
+.assessment-group .pick-label + .pick-group { margin-top: -4px; }
+.assessment-empty { margin: 0; }
 
 .vf-entry { grid-column: 1 / -1; padding: 16px; border: 1px solid var(--line); border-radius: var(--r); background: var(--sunk); }
 .vf-entry > .note { margin: 0 0 18px; }
@@ -1531,8 +1559,6 @@ details.settings > .grid { padding: 4px 12px 12px; }
 .short-stage > legend { font-size: var(--text-control); font-weight: 600; padding: 0 4px; max-width: 100%; }
 .short-stage > .grid > .f:first-child { grid-column: 1 / -1; }
 .grid > details.short-stage { padding: 0; }
-.short-guide { margin-top: 10px; }
-.short-guide .body > p { margin: 0; }
 .short-record { margin-top: 12px; min-width: 0; }
 .short-record + .short-record { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 16px; }
 .short-record h4 { margin: 0 0 8px; }
@@ -1569,38 +1595,39 @@ table.sym.ed select:disabled { opacity: .45; }
 .editor-head h2 { margin-top: 4px; }
 .editor-head .save-hint { max-width: 70ch; }
 
-.sess-list { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-.sess { border-bottom: 1px solid var(--line); padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: start; }
-.sess:last-child { border-bottom: 0; }
+.sess-list { display: flex; flex-direction: column; gap: 16px; }
+.sess { background: var(--surface); border: 1px solid var(--control-line); border-radius: var(--r); padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; }
 .sess > * + * { margin-top: 0; }
-.sess .when { font-weight: 600; }
-.session-content { min-width: 0; }
-.session-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 8px; }
+.sess .when { font-size: 1.125rem; font-weight: 700; }
+.session-content { min-width: 0; display: grid; gap: 12px; }
+.session-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0; }
 .session-kind, .session-meta > .muted { font-size: var(--text-small); }
 .session-kind { color: var(--accent); font-weight: 600; }
 .session-kind.absent { color: var(--bad); }
-.session-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
-.session-metrics > div { min-width: 0; padding: 6px 10px; background: var(--sunk); }
+.session-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 32rem; margin: 0; }
+.session-metrics > div { min-width: 0; padding: 0 12px; }
+.session-metrics > div:first-child { padding-left: 0; }
 .session-metrics > div + div { border-left: 1px solid var(--line); }
 .score-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 8px; margin: 0; }
 .score-summary > div { min-width: 0; padding: 6px 10px; background: var(--sunk); border-radius: 4px; }
 .session-metrics dt, .session-stages dt, .session-context dt, .score-summary dt { font-size: var(--text-control); color: var(--muted); }
 .session-metrics dd, .score-summary dd { font-size: 1.125rem; line-height: 1.3; font-weight: 600; margin: 2px 0 0; }
-.session-metrics .metric-pre, .score-summary .metric-pre { background: var(--pre-soft); }
+.session-metrics dd { font-size: var(--text-control); }
+.score-summary .metric-pre { background: var(--pre-soft); }
 .metric-pre dd { color: var(--pre); }
-.session-metrics .metric-end, .score-summary .metric-end { background: var(--accent-soft); }
+.score-summary .metric-end { background: var(--accent-soft); }
 .metric-end dd { color: var(--accent); }
 .score-summary .delta { font-size: var(--text-control); }
 .metric-change.good dd { color: var(--good); }
 .metric-change.bad dd { color: var(--bad); }
-.session-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 8px 0 0; }
+.session-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
 .session-stages dd, .session-context dd { margin: 0; font-variant-numeric: tabular-nums; }
-.session-context { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 8px 0 0; }
+.session-context { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0; }
 .session-context > div { display: flex; gap: 6px; align-items: baseline; }
-.session-training { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 8px 0 0; margin: 8px 0 0; border-top: 1px solid var(--line); list-style: none; font-size: var(--text-small); }
+.session-training { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 12px 0 0; margin: 0; border-top: 1px solid var(--line); list-style: none; font-size: var(--text-small); }
 .session-training > li { min-width: 0; }
-.session-note { margin: 8px 0 0; font-size: var(--text-small); color: var(--muted); max-width: 75ch; }
-.session-actions { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: var(--control-gap); }
+.session-note { margin: 0; font-size: var(--text-small); color: var(--muted); max-width: 75ch; }
+.session-actions { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: var(--control-gap); border-top: 1px solid var(--line); padding-top: 12px; }
 .session-absent .session-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .session-actions .btn { border-color: var(--line); background: transparent; font-weight: 500; }
 .session-actions .btn:first-child { color: var(--accent); background: var(--accent-soft); border-color: var(--accent-soft); font-weight: 600; }
@@ -1794,8 +1821,8 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
   <button role="menuitem" tabindex="-1" data-action="new-client">新增個案…</button>
   <button role="menuitem" tabindex="-1" data-action="new-session" data-needs="client" disabled>新增復健紀錄</button>
   <hr role="separator">
-  <button role="menuitem" tabindex="-1" data-action="save-session" data-needs="draft" disabled><span data-label>儲存 CSV 與 PDF</span><kbd data-shortcut="S">Ctrl+S</kbd></button>
-  <button role="menuitem" tabindex="-1" data-action="import-records">匯入 CSV／評估復能 Excel／備份／測驗分數…</button>
+  <button role="menuitem" tabindex="-1" data-action="save-session" data-needs="draft" disabled title="儲存 CSV 與 PDF"><span data-label>儲存紀錄</span><kbd data-shortcut="S">Ctrl+S</kbd></button>
+  <button role="menuitem" tabindex="-1" data-action="import-records" title="匯入 CSV、評估復能 Excel、JSON 備份或測驗分數檔">匯入資料…</button>
   <button role="menuitem" tabindex="-1" data-action="import-soap-folder">匯入舊版 SOAP 資料夾…</button>
   <hr role="separator">
   <button role="menuitem" tabindex="-1" data-action="storage-settings">儲存位置…</button>
@@ -1812,7 +1839,6 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
   <button role="menuitemcheckbox" tabindex="-1" data-action="toggle-theme" id="themeToggle" aria-checked="false">切換為深色</button>
   <hr role="separator">
   <button role="menuitem" tabindex="-1" data-action="global-settings">基本資料欄位…</button>
-  <button role="menuitem" tabindex="-1" data-action="storage-settings">儲存位置…</button>
 </div>
 <div class="command-menu" id="exportMenu" role="menu" aria-labelledby="exportMenuButton" hidden>
   <span class="menu-label">目前個案</span>
@@ -1843,6 +1869,48 @@ if (window.XLSX) XLSX.read = XLSX.readFile = XLSX.readFileSync = () => { throw n
 let language = 'zh-TW';
 try { if (localStorage.getItem('ezrehab-language') === 'en') language = 'en'; } catch (_) {}
 const UI_EN = {
+  "短期成效": "Short-term outcomes",
+  "長期評估": "Long-term assessments",
+  "短期指標": "Short-term measures",
+  "長期指標": "Long-term measures",
+  "指標期程": "Outcome period",
+  "功能分類": "Function category",
+  "動作功能": "Motor function",
+  "日常生活功能": "Daily living function",
+  "認知功能": "Cognitive function",
+  "新增短期指標": "Add short-term measure",
+  "新增長期評估": "Add long-term assessment",
+  "尚未設定短期指標。": "No short-term measures configured.",
+  "尚未設定長期評估。": "No long-term assessments configured.",
+  "功能分類或指標期程格式錯誤。": "Invalid function category or outcome period.",
+  "新增方案": "Add plan",
+  "輸入方案名稱": "Enter plan name",
+  "新增{0}方案": "Add {0} plan",
+  "方案名稱最多 200 字。": "Plan names can contain up to 200 characters.",
+  "自訂方案最多 100 項。": "A record can contain up to 100 custom plans.",
+  "自訂介入方案格式錯誤": "Invalid custom intervention plan",
+  "整體補充（選填）": "General notes (optional)",
+  "各症狀已於上方分別記錄；此處補充跨症狀的資訊。": "Each symptom is recorded above. Add information shared across symptoms here.",
+  "本次反應": "Session response",
+  "症狀合計：{0} → {1}（變化 {2}）": "Symptom total: {0} → {1} (change {2})",
+  "尚未填寫症狀評分；可回到評估區填寫。": "Symptoms have not been rated. Enter ratings in the assessment section.",
+  "編輯症狀評分": "Edit symptom ratings",
+  "整體耐受度為選填自評，與上方症狀 NRS 分數分開記錄，不互相換算。": "Overall tolerance is an optional self-rating, recorded separately from symptom NRS scores without conversion.",
+  "變更服務型態": "Change service mode",
+  "尚未指定服務型態，以下列出兩種型態的處置。": "Service mode is not specified; interventions for both modes are shown below.",
+  "症狀推理摘要": "Symptom reasoning summary",
+  "症狀處置摘要": "Symptom intervention summary",
+  "編輯症狀連結 {0}": "Edit symptom link {0}",
+  "此處置已連結症狀，請先在症狀連結中移除。": "This intervention is linked to a symptom. Remove it from the symptom link first.",
+  "儲存紀錄": "Save record",
+  "匯入資料…": "Import data...",
+  "評估依據": "Assessment evidence",
+  "相關面向：": "Related domains: ",
+  "新增指標": "Add measure",
+  "為 {0} 新增指標": "Add measure to {0}",
+  "指標名稱": "Measure name",
+  "此指標只加入本次紀錄；其他病歷與項目設定不變。": "This measure is added to this record only; other records and item settings stay unchanged.",
+  "請填寫指標名稱。": "Enter a measure name.",
   "功能表現": "Functional performance",
   "評估分類必須為視覺功能或功能表現。": "Assessment category must be visual function or functional performance.",
   "測量時點": "Measurement stage",
@@ -3110,6 +3178,14 @@ const DEFAULT_PLAN = [
   ...SHORT_TERM_ITEMS
 ];
 const OLD_DEFAULT_NAMES = ['VOMS (Vestibular/Ocular Motor Screening)', 'Near point of convergence (NPC)', 'King-Devick test', 'DEM (Developmental Eye Movement)'];
+const ASSESSMENT_TITLES = {
+  pursuit: 'Smooth pursuit (OcuTrain)', fixation: 'Fixation control (OcuTrain)', saccade: 'Saccade control (OcuTrain)', vor: 'Vestibulo-ocular reflex (OcuTrain)',
+  npc: 'Convergence assessment (NPC)', ufov_speed: 'Processing speed (UFOV 1)', ufov_divided: 'Divided attention (UFOV 2)', ufov_selective: 'Selective attention (UFOV 3)',
+  func: 'Work-related vision task', ot_record: 'OT record review',
+  st_search: 'Visual search', st_neglect: 'Spatial attention', st_reading: 'Reading performance', st_npc: 'Convergence assessment (NPC)', st_pfv: 'Positive fusional vergence (PFV)',
+  st_coordination: 'Visuomotor coordination', st_gaze: 'Eye movement control', st_tug: 'Mobility (TUG)', st_10mwt: 'Walking speed (10MWT)',
+  st_bbt: 'Gross dexterity (BBT)', st_9hpt: 'Fine dexterity (9HPT)', st_cop: 'Postural control (COP)', st_tolerance: 'Symptoms and recovery', st_load: 'Fixed-load tolerance'
+};
 
 const TRAIN = [
   { k: 'ocular', label: 'Computer-based oculomotor training',
@@ -3123,6 +3199,12 @@ const TRAIN = [
 ];
 const BLOCK_SUGGEST = ['Saccade task (eye tracker)', 'Fixation task (eye tracker)', 'Smooth-pursuit task (eye tracker)', 'Peripheral-stimulus task', 'Convergence (NPC) testing', 'UFOV', 'Work-related functional vision task', ...TRAIN.map(t => t.label)];
 const LABELS = {
+  'Work-related vision task': '工作視覺作業', 'OT record review': '職能評估紀錄',
+  'Smooth pursuit (OcuTrain)': '追視控制（OcuTrain）', 'Fixation control (OcuTrain)': '凝視控制（OcuTrain）', 'Saccade control (OcuTrain)': '跳視控制（OcuTrain）', 'Vestibulo-ocular reflex (OcuTrain)': '前庭眼反射（OcuTrain）',
+  'Convergence assessment (NPC)': '集合功能（NPC）', 'Processing speed (UFOV 1)': '處理速度（UFOV 1）', 'Divided attention (UFOV 2)': '分散注意（UFOV 2）', 'Selective attention (UFOV 3)': '選擇注意（UFOV 3）',
+  'Spatial attention': '空間注意', 'Reading performance': '閱讀表現', 'Positive fusional vergence (PFV)': '正融像輻輳（PFV）', 'Visuomotor coordination': '視動協調', 'Eye movement control': '眼動控制',
+  'Mobility (TUG)': '起身行走（TUG）', 'Walking speed (10MWT)': '步行速度（10MWT）', 'Gross dexterity (BBT)': '手部靈巧（BBT）', 'Fine dexterity (9HPT)': '手指靈巧（9HPT）',
+  'Postural control (COP)': '姿勢控制（COP）', 'Symptoms and recovery': '症狀恢復', 'Fixed-load tolerance': '負荷耐受',
   'Pre 1': '訓練前 1', 'Pre 2 (optional)': '訓練前 2（選用）', 'Immediate post': '訓練後立即', 'Recovery (optional)': '恢復期（選用）', '24–72 h follow-up (optional)': '24–72 小時追蹤（選用）',
   'Short-term functional outcomes': '短期功能成效', 'Short-term tolerability / safety': '短期耐受性／安全性',
   'Visual search (short-term)': '視覺搜尋（短期）', 'Spatial neglect / attention (short-term)': '空間忽略／注意（短期）',
@@ -3549,6 +3631,7 @@ function validateItems(items, kind) {
     used.add(key);
     if (kind === 'assessment' && (!Object.hasOwn(TIMING, item.timing || 'assessment') || (item.copm && key !== 'copm'))) throw new Error(ui('評估時機或 COPM 模板格式錯誤'));
     if (kind === 'assessment' && item.category !== undefined && !['visual', 'functional'].includes(item.category)) throw new Error(ui('評估分類必須為視覺功能或功能表現。'));
+    if (kind === 'assessment' && (item.functionCategory !== undefined && !ASSESSMENT_FUNCTIONS.includes(item.functionCategory) || item.outcomePeriod !== undefined && !['short', 'long'].includes(item.outcomePeriod))) throw new Error(ui('功能分類或指標期程格式錯誤。'));
     if (kind === 'training' && (item.acts != null && (!Array.isArray(item.acts) || item.acts.some(a => typeof a !== 'string')))) throw new Error(ui('復健活動清單格式錯誤'));
     if (item.fields != null && !Array.isArray(item.fields)) throw new Error(ui('結果欄位格式錯誤'));
     const fieldIds = new Set();
@@ -3574,9 +3657,9 @@ const INTERVENTIONS = {
 };
 function serviceModeLabel(mode) { return mode === 'inperson' ? ui('面對面') : mode === 'telerehab' ? ui('遠距復健') : ui('未指定'); }
 function approachLabel(approach) { return approach === 'adaptation' ? ui('調適') : ui('代償'); }
-function strategyLabel(approach, id) {
+function strategyLabel(approach, id, s) {
   for (const catalog of Object.values(INTERVENTIONS)) if (Object.hasOwn(catalog[approach], id)) return labelText(catalog[approach][id]);
-  return id;
+  return s?.interventions?.[approach]?.custom?.find(item => item.id === id)?.name || id;
 }
 function validateRecord(c, s) {
   const id = value => typeof value === 'string' && /^[A-Za-z0-9_-]{1,120}$/.test(value) && !['__proto__', 'constructor', 'prototype'].includes(value);
@@ -3597,6 +3680,7 @@ function validateRecord(c, s) {
     for (const key of ['adaptation', 'compensation']) {
       const d = s.interventions[key];
       if (d != null && (!object(d) || !Array.isArray(d.picks) || d.picks.some(pick => !id(pick)) || (d.notes !== undefined && typeof d.notes !== 'string'))) throw new Error(ui('介入策略欄位格式錯誤'));
+      if (d?.custom != null && (!Array.isArray(d.custom) || d.custom.length > 100 || d.custom.some(item => !object(item) || !id(item.id) || typeof item.name !== 'string' || !item.name.trim() || item.name.length > 200) || new Set(d.custom.map(item => item.id)).size !== d.custom.length)) throw new Error(ui('自訂介入方案格式錯誤'));
     }
   }
   if (s.clinicalLinks !== undefined) {
@@ -4260,7 +4344,7 @@ function renderCommands() {
   $('#languageSelect').disabled = savingSession || savingItems || !!$('#layer').firstChild;
   if (!savingSession) {
     $('#toolbarSave [data-label]').textContent = ui('儲存');
-    $('#fileMenu [data-action="save-session"] [data-label]').textContent = ui('儲存 CSV 與 PDF');
+    $('#fileMenu [data-action="save-session"] [data-label]').textContent = ui('儲存紀錄');
   }
   const c = cur(), draft = !!c && view === 'edit' && !!editing;
   $('#saveTools').hidden = !draft;
@@ -4351,6 +4435,23 @@ const itemKey = (item, kind) => kind === 'assessment' ? item.id : item.k;
 const assessmentCategory = item => item.copm || item.id === 'copm' ? 'functional'
   : item.category || (['func', 'self_report', 'ot_assessment', 'daily_task', 'participation'].includes(item.id) ? 'functional' : 'visual');
 const assessmentCategoryLabel = category => category === 'functional' ? ui('功能表現') : ui('視覺功能');
+// Keep the original two-category values readable in older CSVs and snapshots.
+const ASSESSMENT_FUNCTIONS = ['visual', 'functional', 'motor', 'daily', 'cognitive'];
+const assessmentFunctionLabel = category => ({ visual: ui('視覺功能'), functional: ui('功能性視覺'), motor: ui('動作功能'), daily: ui('日常生活功能'), cognitive: ui('認知功能') })[category];
+const assessmentPeriodLabel = period => period === 'short' ? ui('短期指標') : ui('長期指標');
+function assessmentFunction(item) {
+  if (item.functionCategory) return item.functionCategory;
+  if (item.copm || ['copm', 'self_report', 'ot_assessment', 'daily_task', 'participation', 'ot_record'].includes(item.id)) return 'daily';
+  if (['st_tug', 'st_10mwt', 'st_bbt', 'st_9hpt', 'st_cop'].includes(item.id)) return 'motor';
+  if (['ufov_speed', 'ufov_divided', 'ufov_selective', 'st_neglect'].includes(item.id)) return 'cognitive';
+  if (['func', 'st_search', 'st_reading', 'st_coordination'].includes(item.id)) return 'functional';
+  return assessmentCategory(item);
+}
+const assessmentPeriod = item => item.outcomePeriod || (fieldsFor(item).some(field => field.phase) ? 'short' : 'long');
+const assessmentTemplateLabel = item => {
+  const built = DEFAULT_PLAN.find(seed => seed.id === item.id && seed.name === item.name);
+  return labelText(built && ASSESSMENT_TITLES[item.id] || item.name);
+};
 const hasAssessmentData = a => !!(a && (a.done || a.notes || a.copm?.length || Object.keys(a.values || {}).length));
 const hasTrainingData = d => !!(d && (d.on || d.acts?.length || d.eyedot?.length || d.program || d.dur != null || d.level || d.perf || d.diff != null || d.notes || Object.keys(d.values || {}).length || Object.keys(d.actScores || {}).length || d.runs?.length));
 // Items without an explicit choice stay in the initial assessment, as before this setting existed.
@@ -4479,11 +4580,13 @@ const SERVICE_REMEDIATION = {
 const peoLabel = key => ({ person: ui('個人'), environment: ui('環境'), occupation: ui('作業') })[key] || key;
 function clinicalInterventions() {
   return Object.entries(INTERVENTIONS).flatMap(([mode, approaches]) => Object.entries({ remediation: SERVICE_REMEDIATION[mode], ...approaches })
-    .flatMap(([approach, items]) => Object.entries(items).map(([id, label]) => ({ id, mode, approach, label: labelText(label) }))));
+    .flatMap(([approach, items]) => Object.entries(items).map(([id, label]) => ({ id, mode, approach, label: labelText(label) })))).concat({ id: 'eyedot_trainer', mode: null, approach: 'remediation', label: 'EyeDot Trainer' });
 }
-function clinicalInterventionLabel(id) {
+function clinicalInterventionLabel(id, s) {
   const item = clinicalInterventions().find(item => item.id === id);
-  return item ? [serviceModeLabel(item.mode), item.approach === 'remediation' ? ui('復能') : approachLabel(item.approach), item.label].join(' / ') : id;
+  if (item) return [...(item.mode ? [serviceModeLabel(item.mode)] : []), item.approach === 'remediation' ? ui('復能') : approachLabel(item.approach), item.label].join(' / ');
+  const approach = ['adaptation', 'compensation'].find(key => s?.interventions?.[key]?.custom?.some(item => item.id === id));
+  return approach ? approachLabel(approach) + ' / ' + strategyLabel(approach, id, s) : id;
 }
 function clinicalEvidenceText(c, s, ids, compact = false) {
   const items = assessmentItems(c, s);
@@ -4514,7 +4617,7 @@ function clinicalLinkLines(c, s) {
     ui('臨床推理與依據') + ui('：') + (link.reasoning || ui('尚未填寫推理')),
     ...clinicalEvidenceText(c, s, link.evidence),
     ...(link.evidenceNotes ? [ui('其他依據與觀察') + ui('：') + link.evidenceNotes] : []),
-    ui('介入處置') + ui('：') + (link.interventions.length ? link.interventions.map(clinicalInterventionLabel).join(ui('；')) : link.interventionNotes ? '' : ui('尚未記錄介入處置')),
+    ui('介入處置') + ui('：') + (link.interventions.length ? link.interventions.map(id => clinicalInterventionLabel(id, s)).join(ui('；')) : link.interventionNotes ? '' : ui('尚未記錄介入處置')),
     ...(link.interventionNotes ? [link.interventionNotes] : []), ''
   ]);
 }
@@ -4530,6 +4633,8 @@ function renderClinicalLinks(s) {
   const c = cur(), links = s.clinicalLinks || [], catalog = clinicalInterventions();
   const choices = assessmentItems(c, s).filter(p => p.active !== false || links.some(link => link.evidence.includes(p.id)) || s.assess?.[p.id]?.done);
   const box = $('#clinicalLinks');
+  const open = new Map([...box.querySelectorAll('[data-clinical-link]')].map(row => [row.dataset.id, [...row.querySelectorAll('details')].map(details => details.open)]));
+  const sharedIds = ['adaptation', 'compensation'].flatMap(approach => interventionPicks(approach));
   box.innerHTML = links.length ? links.map((link, index) => {
     const prefix = 'cl-' + index;
     const check = (key, id, label) => `<label class="pick"><input type="checkbox" data-clinical="${key}" value="${esc(id)}" ${link[key].includes(id) ? 'checked' : ''}>${esc(label)}</label>`;
@@ -4543,25 +4648,48 @@ function renderClinicalLinks(s) {
         <fieldset class="clinical-domain"><legend>推理面向</legend><div class="pick-group">${['person', 'environment', 'occupation'].map(key => check('peo', key, peoLabel(key))).join('')}</div></fieldset>
         <label class="f clinical-link-reasoning" for="${prefix}-reasoning">針對此症狀的臨床推理<textarea id="${prefix}-reasoning" data-clinical="reasoning" placeholder="說明評估發現如何影響個人、環境與作業的契合">${val(link.reasoning)}</textarea></label>
       </div>
-      <details><summary>連結本次評估 (${ui('已選 {0} 項', link.evidence.length)})</summary>
+      <details ${open.get(link.id)?.[0] ? 'open' : ''}><summary>連結本次評估 (${ui('已選 {0} 項', link.evidence.length)})</summary>
         <div class="pick-group">${selectedIds.map(id => check('evidence', id, labelText(choices.find(p => p.id === id)?.name || id))).join('')}</div>
         <label class="f" for="${prefix}-evidenceNotes">其他依據與觀察<textarea id="${prefix}-evidenceNotes" data-clinical="evidenceNotes" placeholder="記錄主訴、觀察、來源日期或推理依據">${val(link.evidenceNotes)}</textarea></label>
       </details>
       <div class="clinical-evidence-preview" aria-live="polite"></div>
-      <details><summary>選擇介入處置 (${ui('已選 {0} 項', link.interventions.length)})</summary>
-        ${!s.mode ? ui('<p class="note">選擇服務型態後，顯示對應處置；既有選項仍保留。</p>') : ''}
+      <details ${open.get(link.id)?.[1] ? 'open' : ''}><summary>選擇介入處置 (${ui('已選 {0} 項', link.interventions.length)})</summary>
+        <div class="row"><span>${ui('服務型態')}${ui('：')}${esc(serviceModeLabel(s.mode))}</span><button type="button" class="btn small" data-clinical-focus="s-mode">變更服務型態</button></div>
+        ${!s.mode ? ui('<p class="note">尚未指定服務型態，以下列出兩種型態的處置。</p>') : ''}
         ${['remediation', 'adaptation', 'compensation'].map(approach => {
-          const visible = catalog.filter(item => item.approach === approach && (item.mode === s.mode || link.interventions.includes(item.id)));
-          return visible.length ? `<h4>${approach === 'remediation' ? ui('復能') : approachLabel(approach)}</h4><div class="pick-group">${visible.map(item => check('interventions', item.id, item.label + (item.mode !== s.mode ? ' (' + serviceModeLabel(item.mode) + ')' : ''))).join('')}</div>` : '';
+          const visible = catalog.filter(item => item.approach === approach && (!item.mode || !s.mode || item.mode === s.mode || link.interventions.includes(item.id) || sharedIds.includes(item.id)));
+          return visible.length ? `<section class="clinical-approach"><h4>${approach === 'remediation' ? ui('復能') : approachLabel(approach)}</h4><div class="pick-group">${visible.map(item => check('interventions', item.id, item.label + (item.mode && item.mode !== s.mode ? ' (' + serviceModeLabel(item.mode) + ')' : ''))).join('')}</div></section>` : '';
         }).join('')}
-        <div class="pick-group">${link.interventions.filter(id => !catalog.some(item => item.id === id)).map(id => check('interventions', id, id)).join('')}</div>
-        <p class="note">其他服務型態的已選處置會保留。</p>
+        <div class="pick-group">${[...new Set([...link.interventions, ...sharedIds])].filter(id => !catalog.some(item => item.id === id)).map(id => check('interventions', id, clinicalInterventionLabel(id, s))).join('')}</div>
       </details>
       <label class="f" for="${prefix}-interventionNotes">此症狀的處置內容與目標<textarea id="${prefix}-interventionNotes" data-clinical="interventionNotes" placeholder="記錄實際處置、劑量、居家安排或待確認的計畫">${val(link.interventionNotes)}</textarea></label>
     </fieldset>`;
   }).join('') : ui('<p class="note">尚未建立症狀連結。新增一項，記錄它的推理與處置。</p>');
   $('[data-action="clinical-link-add"]').disabled = links.length >= 100;
   updateClinicalEvidence();
+}
+function syncClinicalSelections(source) {
+  if (source.dataset.clinical === 'interventions' && source.checked) {
+    if (source.value === 'eyedot_trainer') {
+      const ocular = $('#tx-ocular-on');
+      if (ocular) {
+        ocular.checked = true; setSectionEnabled($('#tx-ocular'), true);
+        const activity = [...document.querySelectorAll('#tx-ocular-acts [data-act]')].find(input => input.dataset.act === 'EyeDot Trainer');
+        if (activity) { activity.checked = true; showActScore(activity); }
+      }
+    }
+    for (const approach of ['adaptation', 'compensation']) {
+      const item = clinicalInterventions().find(item => item.id === source.value && item.approach === approach);
+      const picks = interventionPicks(approach);
+      const available = [...$('#' + approach + 'Picks').querySelectorAll('[data-strategy]')].some(input => input.dataset.strategy === source.value);
+      if ((item || available) && !picks.includes(source.value)) $('#' + approach + 'Picks').innerHTML = interventionHTML($('#s-mode').value, approach, [...picks, source.value], collectSession());
+    }
+  } else if (source.dataset.strategy && !source.checked) {
+    const linked = [...document.querySelectorAll('#clinicalLinks [data-clinical="interventions"]:checked')].some(input => input.value === source.dataset.strategy);
+    if (linked) { source.checked = true; toast(ui('此處置已連結症狀，請先在症狀連結中移除。')); }
+  }
+  if (source.dataset.strategy) renderClinicalLinks(collectSession());
+  else updateClinicalEvidence();
 }
 function updateClinicalEvidence() {
   if (!$('#clinicalLinks')) return;
@@ -4574,6 +4702,10 @@ function updateClinicalEvidence() {
     summaries[1].textContent = ui('選擇介入處置') + ' (' + ui('已選 {0} 項', link.interventions.length) + ')';
   });
 }
+document.addEventListener('click', e => {
+  const button = e.target.closest('[data-clinical-focus]'); if (!button) return;
+  document.getElementById(button.dataset.clinicalFocus)?.focus();
+});
 function renderDashboard() {
   const c = cur(), records = byDate(sessions.filter(s => s.visit !== 'absent')).reverse(), box = $('#tabBody');
   if (!records.length) {
@@ -4593,14 +4725,14 @@ function renderDashboard() {
   if (s.clinicalLinks?.length) {
     map = s.clinicalLinks.map(link => row(
       `<span class="eyebrow">${esc(assessmentCategoryLabel(link.category))}</span><p class="clinical-symptom clinical-note">${esc(link.symptom)}</p>`,
-      (link.peo.length ? `<span class="eyebrow">${link.peo.map(key => esc(peoLabel(key))).join(' / ')}</span>` : '') + text(link.reasoning, ui('尚未填寫推理')) +
-        (link.evidence.length ? ul(clinicalEvidenceText(c, s, link.evidence, true)) : link.evidenceNotes ? '' : text('', ui('尚未連結評估依據'))) + (link.evidenceNotes ? text(link.evidenceNotes) : ''),
-      (link.interventions.length ? ul(link.interventions.map(clinicalInterventionLabel)) : link.interventionNotes ? '' : text('', ui('尚未記錄介入處置'))) + (link.interventionNotes ? text(link.interventionNotes) : ''), link.id)).join('');
+      text(link.reasoning, ui('尚未填寫推理')) + (link.peo.length ? `<p class="clinical-domains">${ui('相關面向：')}${link.peo.map(key => esc(peoLabel(key))).join(' / ')}</p>` : '') +
+        `<div class="clinical-evidence"><h5>${ui('評估依據')}</h5>${link.evidence.length ? ul(clinicalEvidenceText(c, s, link.evidence, true)) : link.evidenceNotes ? '' : text('', ui('尚未連結評估依據'))}${link.evidenceNotes ? text(link.evidenceNotes) : ''}</div>`,
+      (link.interventions.length ? ul(link.interventions.map(id => clinicalInterventionLabel(id, s))) : link.interventionNotes ? '' : text('', ui('尚未記錄介入處置'))) + (link.interventionNotes ? text(link.interventionNotes) : ''), link.id)).join('');
   } else {
     const reasoning = ['person', 'environment', 'occupation'].filter(key => s.peo?.[key]).map(key => peoLabel(key) + ui('：') + s.peo[key]);
     const interventions = trainingItems(c, s).filter(t => s.training?.[t.k]?.on).map(t => ui('復能') + ' / ' + labelText(t.label));
     for (const approach of ['adaptation', 'compensation']) {
-      interventions.push(...(s.interventions?.[approach]?.picks || []).map(id => approachLabel(approach) + ' / ' + strategyLabel(approach, id)));
+      interventions.push(...(s.interventions?.[approach]?.picks || []).map(id => approachLabel(approach) + ' / ' + strategyLabel(approach, id, s)));
       if (s.interventions?.[approach]?.notes) interventions.push(approachLabel(approach) + ui('：') + s.interventions[approach].notes);
     }
     if (s.otherTx) interventions.push(s.otherTx);
@@ -4949,20 +5081,6 @@ function renderOutcomes() {
   }
 }
 
-function shortOutcomeGuide() {
-  return ui`<details class="script short-guide"><summary>短期成效指標與施測流程</summary><div class="body">
-    <p>功能成效與耐受性分開記錄。立即成效為訓練後即刻至約 30 分鐘；短期追蹤可納入 24–72 小時。各時點請填實際測量時間，訓練後註明距訓練結束幾分鐘，追蹤註明日期與時間。</p>
-    <p>先選一項與訓練目標直接對應的客觀主要指標，再選次要指標及症狀。新個案已包含短期模板；舊個案可按「新增評估項目」，從模板選取。</p>
-    <p>訓練前 1 → 訓練前 2（建議使用等值題型，估計波動與練習效應）→ 訓練（記錄內容、時間、難度、休息與不適）→ 訓練後立即 → 恢復期 15–30 分鐘及／或 24–72 小時追蹤。空白表示未測，不當成 0。</p>
-    <strong>建議主要／次要／耐受性組合</strong>
-    <p>搜尋：完成時間或漏答數／正確率與左右漏答／眼睛疲勞、頭痛。忽略：刪除測驗漏答數／時間與線段平分偏差／頭痛、暈眩、不適。</p>
-    <p>閱讀：速度／錯誤率與理解／眼睛疲勞。集合：NPC 或 PFV／另一項雙眼視覺指標／眼部不適、頭痛。視覺動作：命中率或時間／反應時間與誤差／疲勞與不適。</p>
-    <p>搜尋可採 Bells、Star／Letter Cancellation 或固定找物任務；時間、正確率與反應時間可能只是任務表現指標，須完整記錄流程與計分規則，不能當作已標準化量表。</p>
-    <p>症狀下降不能單獨證明療效；功能改善與暫時不適可能同時存在。固定負荷症狀誘發量＝負荷後分數－該次負荷前分數。VOMS 是篩檢工具。</p>
-    <p>Barthel Index、FIM、NEI VFQ-25、CBS、MVPT 不宜作單次立即成效主要指標；視力、視野與對比敏感度應依疾病及訓練目標決定。施測方便不代表對單次變化敏感。</p>
-    <p>改善方向依族群、疾病與測試條件而定。研究須查核信效度、MDC、MCID（如有）及授權，不能假設都有單次 MCID；若要推論介入造成改善，宜加入休息、常規治療等合理對照。此整理不是臨床指引或系統性回顧。</p>
-  </div></details>`;
-}
 function renderPlan() {
   const c = cur();
   const section = (kind, title, items) => ui`<section class="panel">
@@ -4982,7 +5100,7 @@ function renderPlan() {
     <p class="note">勾選初次評估（基準評估）要施測的項目。填寫基準評估時，這些項目列在最前面；療程後與追蹤評估只列出其中依評估時機應再評估的項目。實際施測後，再於病歷中勾選並填寫。</p>
     ${initialItems.length ? `<div class="pick-group" id="initialPicks" role="group" aria-labelledby="initialHeading" style="margin-top:12px">${initialItems.map(p => `<label class="pick"><input type="checkbox" data-initial="${p.id}" ${isInitial(p) ? 'checked' : ''}>${esc(labelText(p.name))}</label>`).join('')}</div>` : ui('<p class="note">尚無啟用的評估項目。</p>')}</section>`;
   $('#tabBody').innerHTML = ui`<div class="plan-edit"><div><h3>評估與復健項目設定</h3><p class="note">以下設定適用於 ${esc(clientLabel(c))}。從既有模板開始，或建立空白項目。停用項目仍保留歷史結果；新增個案時可複用這份設定。</p></div>
-    ${shortOutcomeGuide()}${initialPanel}${section('assessment', ui('評估項目'), c.plan)}${section('training', ui('復健項目'), trainingPlan(c))}</div>`;
+    ${initialPanel}${section('assessment', ui('評估項目'), c.plan)}${section('training', ui('復健項目'), trainingPlan(c))}</div>`;
   $('#initialPicks')?.addEventListener('change', e => setInitial(e.target));
 }
 // Saves one item's place in the initial assessment right away, like enabling or disabling an item.
@@ -4999,13 +5117,20 @@ async function setInitial(box) {
   clients[clients.findIndex(client => client.id === c.id)] = next;
   toast(box.checked ? ui('已列入初次評估項目。') : ui('已移出初次評估項目。'));
 }
-function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
+function itemForm(kind, key = null, fromEditor = false, duplicate = false, category = null, period = null) {
   const c = cur(), assessment = kind === 'assessment', listKey = assessment ? 'plan' : 'trainingPlan';
   const list = assessment ? c.plan : trainingPlan(c), old = list.find(item => itemKey(item, kind) === key);
   if (fromEditor) editing = collectSession();
   const creating = !old || duplicate, newKey = creating ? uid(assessment ? 'p' : 't') : key;
-  let draft = old ? clone(old) : assessment ? { name: '', domain: '', timing: 'assessment', fields: [{ id: uid('f'), label: ui('結果'), type: 'text' }] } : { label: '', acts: [], fields: [] };
-  if (assessment) draft.category = assessmentCategory(draft);
+  const blankDraft = () => assessment ? { name: '', domain: '', timing: period === 'short' ? 'session' : 'assessment',
+    functionCategory: ASSESSMENT_FUNCTIONS.includes(category) ? category : 'visual', outcomePeriod: period || 'long',
+    fields: period === 'short' ? shortFields([{ id: 'result', label: 'Result', type: 'text' }]) : [{ id: uid('f'), label: ui('結果'), type: 'text' }] } : { label: '', acts: [], fields: [] };
+  let draft = old ? clone(old) : blankDraft();
+  if (assessment) {
+    draft.functionCategory = !old && ASSESSMENT_FUNCTIONS.includes(category) ? category : assessmentFunction(draft);
+    draft.category = old ? assessmentCategory(draft) : draft.functionCategory === 'visual' ? 'visual' : 'functional';
+    draft.outcomePeriod = !old && ['short', 'long'].includes(period) ? period : assessmentPeriod(draft);
+  }
   draft[assessment ? 'id' : 'k'] = newKey;
   if (duplicate) { draft[assessment ? 'name' : 'label'] = labelText(draft.name || draft.label) + ui('（副本）'); draft.active = true; }
   draft.fields = fieldsFor(draft);
@@ -5019,7 +5144,12 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
   const read = () => {
     const nameKey = assessment ? 'name' : 'label';
     draft[nameKey] = readLabel($('#item-name').value, draft[nameKey]);
-    if (assessment) { draft.category = draft.copm ? 'functional' : $('#item-category').value; draft.domain = readLabel($('#item-domain').value, draft.domain); draft.timing = draft.copm ? 'bp' : $('#item-timing').value; draft.outcome = readLabel($('#item-outcome').value, draft.outcome); }
+    if (assessment) {
+      draft.functionCategory = draft.copm ? 'daily' : $('#item-category').value;
+      if (draft.functionCategory !== assessmentFunction(old || {})) draft.category = draft.functionCategory === 'visual' ? 'visual' : 'functional';
+      draft.outcomePeriod = draft.copm ? 'long' : $('#item-period').value;
+      draft.domain = readLabel($('#item-domain').value, draft.domain); draft.timing = draft.copm ? 'bp' : $('#item-timing').value; draft.outcome = readLabel($('#item-outcome').value, draft.outcome);
+    }
     else draft.acts = [...new Set($('#item-acts').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean).map(text => draft.acts.find(act => labelText(act) === text) || text))];
     draft.fields = [...form.querySelectorAll('.field-editor')].map((row, i) => {
       const get = suffix => $('#item-field-' + i + '-' + suffix)?.value || '';
@@ -5030,9 +5160,15 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
     });
   };
   const draw = () => {
-    form.innerHTML = ui`${creating && !duplicate ? ui`<label class="f" for="item-base">從模板開始<select id="item-base"><option value="">空白模板</option>${seeds.map((item, i) => `<option value="${i}" ${base === String(i) ? 'selected' : ''}>${esc(labelText(item.name || item.label))}</option>`).join('')}</select></label>` : ''}
+    const options = entries => entries.map(({ item, i }) => `<option value="${i}" ${base === String(i) ? 'selected' : ''}>${esc(assessment ? assessmentTemplateLabel(item) : labelText(item.label))}</option>`).join('');
+    const templateOptions = assessment ? ASSESSMENT_FUNCTIONS.map(category => ['short', 'long'].map(period => {
+      const entries = seeds.map((item, i) => ({ item, i })).filter(({ item }) => assessmentFunction(item) === category && assessmentPeriod(item) === period);
+      return entries.length ? `<optgroup label="${esc(assessmentFunctionLabel(category) + ' · ' + assessmentPeriodLabel(period))}">${options(entries)}</optgroup>` : '';
+    }).join('')).join('') : options(seeds.map((item, i) => ({ item, i })));
+    form.innerHTML = ui`${creating && !duplicate ? ui`<label class="f" for="item-base">從模板開始<select id="item-base"><option value="">空白模板</option>${templateOptions}</select></label>` : ''}
       <label class="f" for="item-name">項目名稱<input type="text" id="item-name" value="${val(labelText(draft.name || draft.label))}" maxlength="180" required></label>
-      ${assessment ? ui`<label class="f" for="item-category">分類<select id="item-category" aria-label="分類" ${draft.copm ? 'disabled' : ''}>${['visual', 'functional'].map(category => `<option value="${category}" ${assessmentCategory(draft) === category ? 'selected' : ''}>${esc(assessmentCategoryLabel(category))}</option>`).join('')}</select></label>
+      ${assessment ? ui`<div class="grid"><label class="f" for="item-category">功能分類<select id="item-category" aria-label="功能分類" ${draft.copm ? 'disabled' : ''}>${ASSESSMENT_FUNCTIONS.map(category => `<option value="${category}" ${assessmentFunction(draft) === category ? 'selected' : ''}>${esc(assessmentFunctionLabel(category))}</option>`).join('')}</select></label>
+        <label class="f" for="item-period">指標期程<select id="item-period" ${draft.copm ? 'disabled' : ''}>${['short', 'long'].map(period => `<option value="${period}" ${assessmentPeriod(draft) === period ? 'selected' : ''}>${esc(assessmentPeriodLabel(period))}</option>`).join('')}</select></label></div>
         <div class="grid"><label class="f" for="item-domain">評估領域<input type="text" id="item-domain" value="${val(labelText(draft.domain))}"></label>
         <label class="f" for="item-timing">評估時機<select id="item-timing" ${draft.copm ? 'disabled' : ''}>${Object.entries(TIMING).map(([k, text]) => `<option value="${k}" ${draft.timing === k ? 'selected' : ''}>${ui(text)}</option>`).join('')}</select></label></div>
         <label class="f" for="item-outcome">填寫說明<input type="text" id="item-outcome" value="${val(labelText(draft.outcome))}"></label>`
@@ -5051,8 +5187,8 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
   form.addEventListener('change', e => {
     if (e.target.id === 'item-base') {
       base = e.target.value;
-      draft = base === '' ? (assessment ? { name: '', timing: 'assessment', fields: [{ id: uid('f'), label: ui('結果'), type: 'text' }] } : { label: '', acts: [], fields: [] }) : clone(seeds[Number(base)]);
-      if (assessment) draft.category = assessmentCategory(draft);
+      draft = base === '' ? blankDraft() : clone(seeds[Number(base)]);
+      if (assessment) { draft.functionCategory = assessmentFunction(draft); draft.category = assessmentCategory(draft); draft.outcomePeriod = assessmentPeriod(draft); }
       draft[assessment ? 'id' : 'k'] = newKey; draft.fields = fieldsFor(draft).map(f => ({ ...f, id: uid('f') })); draw(); $('#item-name').focus();
     } else if (e.target.hasAttribute('data-field-type')) { read(); draw(); $('#item-field-' + e.target.closest('.field-editor').dataset.i + '-type').focus(); }
   });
@@ -5150,6 +5286,10 @@ function updateSym() {
     (() => { const l = lastRated(rows); return base && l && l.id !== base.id ? ui`<div class="metric-change ${rowTotal(l) - bt > 0 ? 'bad' : rowTotal(l) - bt < 0 ? 'good' : ''}"><dt>變化</dt><dd>${signed(rowTotal(l) - bt)}</dd></div>` : ''; })() +
     (rec && rec.recMin != null ? ui`<div><dt>恢復時間</dt><dd>${rec.recMin} 分鐘</dd></div>` : '');
   $('#addRec').hidden = !!rec;
+  const response = $('#sessionSymptomSummary'), last = lastRated(rows);
+  if (response) response.textContent = base && last
+    ? ui('症狀合計：{0} → {1}（變化 {2}）', bt, rowTotal(last), signed(rowTotal(last) - bt))
+    : ui('尚未填寫症狀評分；可回到評估區填寫。');
 }
 
 // Chip pickers follow the NTUHLowvision outpatient form: tick what was done, then only those items open for entry.
@@ -5158,19 +5298,19 @@ function pickGroups(groups) {
     ? `<div class="pick-label" id="${g.id}">${esc(g.title)}</div><div class="pick-group" role="group" aria-labelledby="${g.id}">${g.items.join('')}</div>`
     : `<div class="pick-group" role="group" aria-label="${esc(g.label)}">${g.items.join('')}</div>`).join('');
 }
-function assessHTML(c, s, category) {
-  const shown = assessmentItems(c, s).filter(p => assessmentCategory(p) === category && (p.active !== false || hasAssessmentData(s.assess?.[p.id])) && (!p.copm || COPM_VISITS.includes(s.visit)));
+function assessHTML(c, s, category, period) {
+  const shown = assessmentItems(c, s).filter(p => assessmentFunction(p) === category && assessmentPeriod(p) === period && (p.active !== false || hasAssessmentData(s.assess?.[p.id])) && (!p.copm || COPM_VISITS.includes(s.visit)));
   if (!shown.length) return '';
   const prevCopm = (() => { for (const x of byDate(sessions).reverse()) { if (x.id !== s.id && x.assess?.copm?.copm?.some(r => r.occ)) return x.assess.copm.copm; } return null; })();
   const planned = shown.filter(p => isPlanned(p, s.visit)), others = shown.filter(p => !isPlanned(p, s.visit));
   const chip = p => `<label class="pick"><input type="checkbox" id="ac-${p.id}" ${s.assess?.[p.id]?.done ? 'checked' : ''}>${esc(labelText(p.name))}</label>`;
   const picks = planned.length
-    ? pickGroups([{ id: 'assessPlanned-' + category, title: s.visit === 'baseline' ? ui('初次評估項目') : ui('本次應評估'), items: planned.map(chip) },
-      { id: 'assessOther-' + category, title: ui('其他項目'), items: others.map(chip) }])
-    : pickGroups([{ label: assessmentCategoryLabel(category), items: others.map(chip) }]);
+    ? pickGroups([{ id: 'assessPlanned-' + period + '-' + category, title: s.visit === 'baseline' ? ui('初次評估項目') : ui('本次應評估'), items: planned.map(chip) },
+      { id: 'assessOther-' + period + '-' + category, title: ui('其他項目'), items: others.map(chip) }])
+    : pickGroups([{ label: assessmentFunctionLabel(category), items: others.map(chip) }]);
   return picks + '<div class="picked">' + [...planned, ...others].map(p => {
     const a = s.assess?.[p.id] || {};
-    const detail = [p.domain, p.outcome].filter(Boolean).map(labelText).join(' · ');
+    const detail = labelText(p.domain);
     let inner;
     if (p.copm) {
       const rows = (a.copm && a.copm.length ? a.copm : (prevCopm || [])).map(r => ({ occ: r.occ, perf: a.copm ? r.perf : null, sat: a.copm ? r.sat : null }));
@@ -5182,13 +5322,42 @@ function assessHTML(c, s, category) {
         <dl class="score-summary" id="copmSum" aria-label="COPM 評分摘要"></dl>
         ${prevCopm && !a.copm ? ui('<p class="note" style="margin:0">已帶入上次 COPM 的職能活動，請對相同活動重新評分。</p>') : ''}`;
     } else {
-      inner = `<div class="grid">${fieldInputs(p, 'af-' + p.id, a.values)}</div>`;
+      inner = `<div class="grid">${fieldInputs(p, 'af-' + p.id, a.values)}</div>` + ui`<div class="row"><button type="button" class="btn small" data-action="measure-add" data-id="${p.id}" aria-label="${esc(ui('為 {0} 新增指標', labelText(p.name)))}">新增指標</button></div>`;
     }
     inner += ui`<label class="f" for="an-${p.id}">備註<input type="text" id="an-${p.id}" value="${val(a.notes)}"></label>`;
     return `<section class="as" id="as-${p.id}" data-id="${p.id}" aria-labelledby="as-${p.id}-h" ${a.done ? '' : 'hidden'}>
       <div class="as-head"><b id="as-${p.id}-h">${esc(labelText(p.name))}</b>${detail ? `<span>${esc(detail)}</span>` : ''}</div>
       <div class="as-body">${inner}</div></section>`;
   }).join('') + '</div>';
+}
+function measureForm(id) {
+  editing = collectSession();
+  const item = assessmentItems(cur(), editing).find(p => p.id === id);
+  if (!item || item.copm) return;
+  const m = modal(ui`<h3>${esc(ui('為 {0} 新增指標', labelText(item.name)))}</h3>
+    <form id="measureForm" class="item-form">
+      <p class="note">此指標只加入本次紀錄；其他病歷與項目設定不變。</p>
+      <label class="f" for="measure-name">指標名稱<input id="measure-name" type="text" maxlength="180" required></label>
+      <div class="grid"><label class="f" for="measure-type">類型<select id="measure-type"><option value="text">文字</option><option value="number">數值</option></select></label>
+        <label class="f" for="measure-unit">單位（選填）<input id="measure-unit" type="text" maxlength="40"></label></div>
+      <p id="measure-error" role="alert" hidden></p>
+      <div class="row" style="justify-content:flex-end"><button type="button" class="btn" id="measure-cancel">取消</button><button type="submit" class="btn app-primary">新增指標</button></div>
+    </form>`);
+  m.querySelector('#measure-cancel').onclick = closeModal;
+  m.querySelector('form').onsubmit = event => {
+    event.preventDefault();
+    const draft = clone(item), field = { id: uid('f'), label: $('#measure-name').value.trim(), type: $('#measure-type').value, unit: $('#measure-unit').value.trim() };
+    try {
+      if (!field.label) throw new Error(ui('請填寫指標名稱。'));
+      draft.fields = [...fieldsFor(item), field];
+      if (new Set(draft.fields.map(f => fieldLabel(f))).size !== draft.fields.length) throw new Error(ui('欄位名稱與單位不可重複。'));
+      validateItems([draft], 'assessment');
+      editing.assessmentPlan = [...(editing.assessmentPlan || []).filter(p => p.id !== id), draft];
+      dirty = true; closeModal(); renderEditor();
+      $('#af-' + id + '-' + (draft.fields.length - 1)).focus();
+    } catch (error) { $('#measure-error').hidden = false; $('#measure-error').textContent = error.message; }
+  };
+  $('#measure-name').focus();
 }
 function updateCopm() {
   const box = $('#copmSum'); if (!box) return;
@@ -5201,19 +5370,25 @@ function updateCopm() {
 function interventionPicks(approach) {
   return [...document.querySelectorAll(`#${approach}Picks input:checked`)].map(input => input.dataset.strategy);
 }
-function interventionHTML(mode, approach, picks = []) {
+function interventionHTML(mode, approach, picks = [], s) {
   const currentMode = mode || 'inperson', catalog = INTERVENTIONS[currentMode][approach];
-  const ids = [...new Set([...Object.keys(catalog), ...picks])];
+  const ids = [...new Set([...Object.keys(catalog), ...picks, ...(s?.interventions?.[approach]?.custom || []).map(item => item.id)])];
   return pickGroups([{ label: approachLabel(approach), items: ids.map(id => {
     const otherMode = Object.keys(INTERVENTIONS).find(key => key !== currentMode && Object.hasOwn(INTERVENTIONS[key][approach], id));
-    const label = strategyLabel(approach, id) + (otherMode ? ` (${serviceModeLabel(otherMode)})` : '');
+    const label = strategyLabel(approach, id, s) + (otherMode ? ` (${serviceModeLabel(otherMode)})` : '');
     return `<label class="pick"><input type="checkbox" data-strategy="${esc(id)}" ${picks.includes(id) ? 'checked' : ''}>${esc(label)}</label>`;
   }) }]);
 }
 function renderEditor() {
   const c = cur(), s = editing;
-  const visualAssess = assessHTML(c, s, 'visual'), functionalAssess = assessHTML(c, s, 'functional');
-  const optionalVisualSymptoms = !visualAssess && !(s.sym || []).some(r => rowTotal(r) != null || r.kind === 'rec' && r.recMin != null);
+  const assessmentSections = ['short', 'long'].map(period => {
+    const groups = ASSESSMENT_FUNCTIONS.map(category => {
+      const content = assessHTML(c, s, category, period);
+      return content ? `<section class="assessment-group" data-function="${category}" aria-labelledby="assess-${period}-${category}-h"><h4 id="assess-${period}-${category}-h">${esc(assessmentFunctionLabel(category))}</h4>${content}</section>` : '';
+    }).join('');
+    return ui`<section class="assessment-period sub" id="assess-${period}" aria-labelledby="assess-${period}-h"><div class="spread"><h3 id="assess-${period}-h">${period === 'short' ? ui('短期成效') : ui('長期評估')}</h3><button type="button" class="btn small" data-action="plan-add" data-editor="true" data-period="${period}">${period === 'short' ? ui('新增短期指標') : ui('新增長期評估')}</button></div>${groups || `<p class="note assessment-empty">${period === 'short' ? ui('尚未設定短期指標。') : ui('尚未設定長期評估。')}</p>`}</section>`;
+  }).join('');
+  const optionalVisualSymptoms = !assessmentItems(c, s).some(p => assessmentFunction(p) === 'visual' && p.active !== false) && !(s.sym || []).some(r => rowTotal(r) != null || r.kind === 'rec' && r.recMin != null);
   // 0–10 ratings use the same number boxes as the symptom table; an empty box means not rated.
   const rate = (id, v, label) => `<label class="f" for="${id}">${label}<input type="number" min="0" max="10" step="1" inputmode="numeric" id="${id}" value="${val(v)}"></label>`;
   s.training = s.training || {};
@@ -5225,8 +5400,8 @@ function renderEditor() {
     const d = s.training?.[t.k] || {};
     // the client's own typed activities from earlier sessions come back as options
     const custom = [...new Set([...sessions.flatMap(x => x.training?.[t.k]?.acts || []), ...(d.acts || [])])].filter(a => !(t.acts || []).some(existing => labelText(existing) === labelText(a)));
-    const allActs = [...new Map([...(t.acts || []), ...custom].map(a => [labelText(a), a])).values()];
-    const selected = a => (d.acts || []).find(x => labelText(x) === labelText(a));
+    const allActs = [...new Map([...(t.acts || []), ...(t.k === 'ocular' ? ['EyeDot Trainer'] : []), ...custom].map(a => [labelText(a), a])).values()];
+    const selected = a => (d.acts || []).find(x => labelText(x) === labelText(a)) ?? (a === 'EyeDot Trainer' && d.eyedot?.length ? a : undefined);
     return ui`<section class="tx" id="tx-${t.k}" aria-labelledby="tx-${t.k}-h" ${d.on ? '' : 'hidden'}>
       <h4 class="tx-head" id="tx-${t.k}-h">${esc(labelText(t.label))}</h4>
       <div class="tx-body">
@@ -5235,7 +5410,7 @@ function renderEditor() {
         <div class="act-score-box"><div class="pick-label">各活動表現（一項一個分數）</div>
           <div class="act-scores" id="tx-${t.k}-scores">${allActs.map((a, i) => actScoreRow(t.k, i, a, selected(a) != null, d.actScores?.[selected(a)])).join('')}</div></div>
         ${RUN_ITEMS[t.k] ? runsHTML(t.k, d.runs || []) : ''}
-        ${t.k === 'ocular' ? ui`<div class="sub" style="border-top:0;padding-top:4px">
+        ${t.k === 'ocular' ? ui`<div class="sub" id="eyeDotRecords" ${selected('EyeDot Trainer') != null || d.eyedot?.length ? '' : 'hidden'} style="border-top:0;padding-top:4px">
           <div class="spread"><h4>EyeDot Trainer 訓練紀錄</h4><div class="row"><button type="button" class="btn small" data-action="eye-help">模式說明</button>
             <button type="button" class="btn small" data-action="ed-add">新增紀錄</button></div></div>
           <div id="edWrap">${eyedotHTML(s.training.ocular.eyedot)}</div></div>` : ''}
@@ -5292,11 +5467,10 @@ function renderEditor() {
         <div class="sub" style="border-top:0;padding-top:0">
           <div class="row" style="justify-content:flex-end"><button type="button" class="btn small" data-action="plan-add" data-editor="true">＋ 新增評估項目</button></div>
           <p class="note" style="margin:0">勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。</p>
-          ${shortOutcomeGuide()}
         </div>
         <div id="assessList">
-        <section class="sub" style="border-top:0;padding-top:0" id="assess-visual" aria-labelledby="assess-visual-h">
-          <h3 id="assess-visual-h">視覺功能</h3>
+        ${assessmentSections}
+        <section class="sub" id="visualSymptoms">
           ${optionalVisualSymptoms ? ui('<details class="script" id="optionalVisualSymptoms"><summary>視覺相關症狀評分（選填）</summary><div class="body">') : ''}
           <div class="sub" style="border-top:0;padding-top:0">
           <div class="spread"><h4>症狀評分（NRS，0 至 10）</h4>
@@ -5313,15 +5487,7 @@ function renderEditor() {
           <dl class="score-summary" id="symSummary" aria-label="症狀分數"></dl>
           </div>
           ${optionalVisualSymptoms ? '</div></details>' : ''}
-          ${visualAssess}
         </section>
-        <section class="sub" id="assess-functional" aria-labelledby="assess-functional-h">
-          <h3 id="assess-functional-h">功能表現</h3>
-          ${functionalAssess}
-        </section>
-        <div class="sub" style="border-top:0;padding-top:0">
-          ${!visualAssess && !functionalAssess ? ui('<span class="muted">本次沒有可填寫的評估項目，可按「新增評估項目」建立。COPM 僅在基準與療程後評估顯示。</span>') : ''}
-        </div>
         </div>
       </div></section>
 
@@ -5332,12 +5498,15 @@ function renderEditor() {
           <p class="note">每項症狀各自連結推理、評估依據與介入處置。</p>
           <div class="clinical-links" id="clinicalLinks"></div>
         </div>
+        <details class="supplemental-notes" ${!s.clinicalLinks?.length || s.assessment || Object.values(s.peo || {}).some(Boolean) ? 'open' : ''}><summary>整體補充（選填）</summary>
+        <p class="note">各症狀已於上方分別記錄；此處補充跨症狀的資訊。</p>
         <div class="grid">
           <label class="f" for="s-person">個人<textarea id="s-person" placeholder="視覺功能、症狀、個人因素">${val(s.peo?.person)}</textarea></label>
           <label class="f" for="s-environment">環境<textarea id="s-environment" placeholder="居家、工作、數位環境、照明與設備">${val(s.peo?.environment)}</textarea></label>
           <label class="f" for="s-occupation">作業<textarea id="s-occupation" placeholder="日常作業表現、參與需求、COPM 目標">${val(s.peo?.occupation)}</textarea></label>
         </div>
         <label class="f" for="s-ass">臨床判斷與介入規劃<textarea id="s-ass">${val(s.assessment)}</textarea></label>
+        </details>
       </div></section>
 
       <section class="soap-sec"><div class="letter">P</div><div class="sec-body">
@@ -5353,10 +5522,13 @@ function renderEditor() {
         </div>
         ${['adaptation', 'compensation'].map(approach => ui`<div class="sub">
           <h4>${esc(approachLabel(approach))}</h4>
-          <div id="${approach}Picks">${interventionHTML(s.mode, approach, s.interventions?.[approach]?.picks)}</div>
+          <div id="${approach}Picks">${interventionHTML(s.mode, approach, s.interventions?.[approach]?.picks, s)}</div>
+          <div class="row strategy-entry"><input type="text" id="${approach}-new" maxlength="200" placeholder="輸入方案名稱" aria-label="${esc(ui('新增{0}方案', approachLabel(approach)))}"><button type="button" class="btn small" data-action="strategy-add" data-approach="${approach}">新增方案</button></div>
           <label class="f" for="s-${approach}-notes">${approach === 'adaptation' ? ui('調適備註') : ui('代償備註')}<textarea id="s-${approach}-notes">${val(s.interventions?.[approach]?.notes)}</textarea></label>
         </div>`).join('')}
+        <div class="sub" id="sessionResponse"><h4>本次反應</h4><p class="note" id="sessionSymptomSummary" aria-live="polite"></p><button type="button" class="btn small" data-action="edit-symptoms">編輯症狀評分</button>
         <div class="grid">${rate('s-tol', s.tolerance, ui('個案自評整體耐受度（0 分最差，10 分最佳）'))}</div>
+        <p class="note">整體耐受度為選填自評，與上方症狀 NRS 分數分開記錄，不互相換算。</p></div>
         <label class="f" for="s-plan">後續計畫<textarea id="s-plan">${val(s.plan)}</textarea></label>
         <div class="grid"><label class="f" for="s-next">下次復健日期<input type="date" id="s-next" value="${val(s.nextDate)}"></label></div>
       </div></section>
@@ -5371,7 +5543,7 @@ function renderEditor() {
     const t = e.target;
     if (t.id.startsWith('sy')) updateSym();
     if (t.id.startsWith('copm-') || t.id === 's-date') updateCopm();
-    if (t.dataset.clinical || /^(af-|an-|copm-)/.test(t.id)) updateClinicalEvidence();
+    if (t.dataset.clinical || /^(af-|an-|copm-|s-person|s-environment|s-occupation|s-ass)/.test(t.id)) updateClinicalEvidence();
   });
   form.addEventListener('change', e => {
     dirty = true;
@@ -5379,11 +5551,12 @@ function renderEditor() {
     if (t.id === 's-mode') {
       for (const approach of ['adaptation', 'compensation']) {
         const picks = interventionPicks(approach);
-        $('#' + approach + 'Picks').innerHTML = interventionHTML(t.value, approach, picks);
+        $('#' + approach + 'Picks').innerHTML = interventionHTML(t.value, approach, picks, editing);
       }
       renderClinicalLinks(collectSession());
     }
     if (t.id.startsWith('ac-')) setSectionEnabled($('#as-' + t.id.slice(3)), t.checked);
+    if (t.dataset.strategy || t.dataset.clinical === 'interventions') syncClinicalSelections(t);
     if (t.dataset.clinical || /^(ac-|af-)/.test(t.id)) updateClinicalEvidence();
     const m = t.id.match(/^tx-([A-Za-z0-9_-]+)-on$/);
     if (m) setSectionEnabled($('#tx-' + m[1]), t.checked);
@@ -5399,6 +5572,7 @@ function renderEditor() {
   });
   form.addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.target.id && /^tx-[A-Za-z0-9_-]+-new$/.test(e.target.id)) { e.preventDefault(); addActivity(e.target.dataset.k); }
+    if (e.key === 'Enter' && /^(adaptation|compensation)-new$/.test(e.target.id)) { e.preventDefault(); addStrategy(e.target.id.split('-')[0]); }
   });
   form.querySelectorAll('.as, .tx').forEach(box => setSectionEnabled(box, !box.hidden));
   renderClinicalLinks(s);
@@ -5412,7 +5586,26 @@ function actChip(k, i, a, on) {
 function actScoreRow(k, i, a, on, value) {
   return `<label class="f" id="tx-${k}-r${i}" for="tx-${k}-s${i}" ${on ? '' : 'hidden'}>${esc(labelText(a))}<input type="text" id="tx-${k}-s${i}" value="${val(value)}" placeholder="${esc(ui('例：85%、12 次、40 秒'))}" aria-label="${esc(ui('{0}的表現', labelText(a)))}"></label>`;
 }
-function showActScore(chip) { const row = document.getElementById(chip.dataset.score); if (row) row.hidden = !chip.checked; }
+function showActScore(chip) {
+  const row = document.getElementById(chip.dataset.score); if (row) row.hidden = !chip.checked;
+  if (chip.dataset.act === 'EyeDot Trainer' && $('#eyeDotRecords')) $('#eyeDotRecords').hidden = !chip.checked;
+}
+function addStrategy(approach) {
+  const input = $('#' + approach + '-new'), name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  if (name.length > 200) { toast(ui('方案名稱最多 200 字。')); return; }
+  editing = collectSession();
+  const data = editing.interventions[approach]; data.custom ||= [];
+  const existing = [...Object.values(INTERVENTIONS).flatMap(mode => Object.keys(mode[approach])), ...data.custom.map(item => item.id)]
+    .find(id => strategyLabel(approach, id, editing).toLocaleLowerCase() === name.toLocaleLowerCase());
+  const id = existing || uid('strategy');
+  if (!existing && data.custom.length >= 100) { toast(ui('自訂方案最多 100 項。')); return; }
+  if (!existing) data.custom.push({ id, name });
+  if (!data.picks.includes(id)) data.picks.push(id);
+  $('#' + approach + 'Picks').innerHTML = interventionHTML(editing.mode, approach, data.picks, editing);
+  input.value = ''; input.focus(); dirty = true;
+  renderClinicalLinks(editing);
+}
 function addActivity(k) {
   const inp = $(`#tx-${k}-new`), v = inp.value.trim(); if (!v) { inp.focus(); return; }
   const box = $(`#tx-${k}-acts`);
@@ -5503,7 +5696,7 @@ function collectSession() {
   s.date = $('#s-date').value; s.num = numOrNull($('#s-num').value); s.visit = $('#s-visit').value;
   if ($('#s-mode').value) s.mode = $('#s-mode').value; else delete s.mode;
   s.peo = { person: $('#s-person').value, environment: $('#s-environment').value, occupation: $('#s-occupation').value };
-  s.interventions = Object.fromEntries(['adaptation', 'compensation'].map(approach => [approach, { picks: interventionPicks(approach), notes: $('#s-' + approach + '-notes').value }]));
+  s.interventions = Object.fromEntries(['adaptation', 'compensation'].map(approach => [approach, { ...s.interventions?.[approach], picks: interventionPicks(approach), notes: $('#s-' + approach + '-notes').value }]));
   s.clinician = $('#s-clin').value.trim(); s.duration = numOrNull($('#s-dur').value);
   s.subjective = $('#s-subj').value; s.objective = $('#s-obj').value; s.feedback = $('#s-fb').value;
   const links = readClinicalLinks();
@@ -5627,7 +5820,7 @@ function noteText(c, s, list = sessions) {
     const d = s.interventions?.[approach];
     if (d?.picks?.length || d?.notes) {
       L.push('', approachLabel(approach));
-      (d.picks || []).forEach(id => L.push('  [x] ' + strategyLabel(approach, id)));
+      (d.picks || []).forEach(id => L.push('  [x] ' + strategyLabel(approach, id, s)));
       if (d.notes) L.push(ui('備註') + ui('：') + d.notes);
     }
   }
@@ -5835,17 +6028,17 @@ function buildWorkbook(list) {
         'Training': trainingItems(c, s).filter(t => s.training?.[t.k]?.on).map(t => labelText(t.label)).join(ui('、')),
         'Other treatment / home program': s.otherTx || '', 'Service mode': serviceModeLabel(s.mode),
         'PEO – Person': s.peo?.person || '', 'PEO – Environment': s.peo?.environment || '', 'PEO – Occupation': s.peo?.occupation || '',
-        'Adaptation': (s.interventions?.adaptation?.picks || []).map(id => strategyLabel('adaptation', id)).join(ui('、')), 'Adaptation notes': s.interventions?.adaptation?.notes || '',
-        'Compensation': (s.interventions?.compensation?.picks || []).map(id => strategyLabel('compensation', id)).join(ui('、')), 'Compensation notes': s.interventions?.compensation?.notes || '' });
+        'Adaptation': (s.interventions?.adaptation?.picks || []).map(id => strategyLabel('adaptation', id, s)).join(ui('、')), 'Adaptation notes': s.interventions?.adaptation?.notes || '',
+        'Compensation': (s.interventions?.compensation?.picks || []).map(id => strategyLabel('compensation', id, s)).join(ui('、')), 'Compensation notes': s.interventions?.compensation?.notes || '' });
       for (const approach of ['adaptation', 'compensation']) for (const strategy of s.interventions?.[approach]?.picks || []) {
-        S['Interventions'].push({ ...sid, 'Service mode': serviceModeLabel(s.mode), 'Approach': approachLabel(approach), 'Strategy ID': strategy, 'Strategy label': strategyLabel(approach, strategy) });
+        S['Interventions'].push({ ...sid, 'Service mode': serviceModeLabel(s.mode), 'Approach': approachLabel(approach), 'Strategy ID': strategy, 'Strategy label': strategyLabel(approach, strategy, s) });
       }
       for (const link of s.visit === 'absent' ? [] : s.clinicalLinks || []) {
         const peo = { person: ui('個人'), environment: ui('環境'), occupation: ui('作業') };
         S['Clinical links'].push({ ...sid, 'Link ID': link.id, 'Category': assessmentCategoryLabel(link.category), 'Symptom': link.symptom,
           'PEO': link.peo.map(key => peo[key]).join(ui('、')), 'Reasoning': link.reasoning,
           'Evidence IDs': link.evidence.join('; '), 'Evidence': clinicalEvidenceText(c, s, link.evidence).join('\n'), 'Evidence notes': link.evidenceNotes,
-          'Intervention IDs': link.interventions.join('; '), 'Interventions': link.interventions.map(clinicalInterventionLabel).join(ui('、')), 'Intervention notes': link.interventionNotes });
+          'Intervention IDs': link.interventions.join('; '), 'Interventions': link.interventions.map(id => clinicalInterventionLabel(id, s)).join(ui('、')), 'Intervention notes': link.interventionNotes });
       }
       const base = firstRated(s.sym), bt = rowTotal(base);
       for (const r of s.sym || []) {
@@ -6033,7 +6226,7 @@ function soapFormSheet(c, s, list = sessions) {
     const d = s.interventions?.[approach];
     if (d?.picks?.length || d?.notes) {
       add([approachLabel(approach)], 'sub', [[0, W - 1]]);
-      (d.picks || []).forEach(id => text('[x] ' + strategyLabel(approach, id)));
+      (d.picks || []).forEach(id => text('[x] ' + strategyLabel(approach, id, s)));
       if (d.notes) { add([ui('備註')], 'sub', [[0, W - 1]]); text(d.notes); }
     }
   }
@@ -6695,6 +6888,11 @@ document.addEventListener('click', async e => {
   if (a === 'pick-folder' || a === 'change-folder') { await connectFolder(null); return; }
   if (a === 'reconnect') { await connectFolder(pendingHandle); return; }
   if (a === 'storage-settings') { storageSettings(); return; }
+  if (a === 'strategy-add') { addStrategy(b.dataset.approach); return; }
+  if (a === 'edit-symptoms') {
+    const optional = $('#optionalVisualSymptoms'); if (optional) optional.open = true;
+    $('#symWrap input')?.focus(); return;
+  }
   if (a === 'eye-help') {
     const m = modal(ui`<h3>模式說明</h3><p class="note">此程式不會開啟外部網站。若需要線上說明，請自行複製以下網址。</p><input id="modeDocURL" type="text" readonly aria-label="模式說明網址" value="https://eyedottrainer.com/#modes"><div class="row"><button type="button" class="btn" id="modeCopy">複製網址</button><button type="button" class="btn" id="modeClose">關閉視窗</button></div>`);
     m.querySelector('#modeCopy').onclick = async () => {
@@ -6802,7 +7000,8 @@ document.addEventListener('click', async e => {
   else if (a === 'ed-del') { editing.training.ocular.eyedot = readEyedot().filter(r => r.id !== b.dataset.id); $('#edWrap').innerHTML = eyedotHTML(editing.training.ocular.eyedot); }
   else if (a === 'sym-rec') { editing.sym = readSym(); if (!editing.sym.some(r => r.kind === 'rec')) editing.sym.push({ id: uid('r'), kind: 'rec', scores: {}, recMin: null }); rerenderSym(); }
   else if (a === 'sym-del') { editing.sym = readSym().filter(r => r.id !== b.dataset.id); rerenderSym(); }
-  else if (a === 'plan-add') itemForm('assessment', null, b.dataset.editor === 'true');
+  else if (a === 'plan-add') itemForm('assessment', null, b.dataset.editor === 'true', false, b.dataset.category, b.dataset.period);
+  else if (a === 'measure-add') measureForm(b.dataset.id);
   else if (a === 'training-add') itemForm('training', null, b.dataset.editor === 'true');
   else if (a === 'item-edit' || a === 'item-copy') itemForm(b.dataset.kind, b.dataset.id, false, a === 'item-copy');
   else if (a === 'item-toggle') {

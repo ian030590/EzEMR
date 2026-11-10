@@ -143,9 +143,10 @@ const output = path.join(root, '.tmp', 'verification');
     const shortIds = await page.evaluate(() => SHORT_TERM_ITEMS.map(item => item.id));
     for (const locale of ['zh-TW', 'en']) {
       await choose(locale);
-      await page.locator('.short-guide > summary').click();
-      assert.match(await page.locator('.short-guide').innerText(), /24–72/);
-      assert.match(await page.locator('.short-guide').innerText(), /MCID/);
+      assert.equal(await page.locator('.short-guide').count(), 0);
+      assert.deepEqual(await page.locator('.assessment-period > .spread > h3').allTextContents(), locale === 'en' ? ['Short-term outcomes', 'Long-term assessments'] : ['短期成效', '長期評估']);
+      assert.equal(await page.locator('#assess-short .pick input').count(), 14);
+      assert.equal(await page.locator('#assess-long [id^="ac-st_"]').count(), 0);
       for (const id of shortIds) {
         await page.locator('#ac-' + id).check();
         const panel = page.locator('#as-' + id);
@@ -155,10 +156,9 @@ const output = path.join(root, '.tmp', 'verification');
         if (locale === 'en') await checkEnglish('#as-' + id);
         await page.locator('#ac-' + id).uncheck();
       }
-      if (locale === 'en') await checkEnglish('.short-guide');
-      await page.locator('.short-guide > summary').click();
+      if (locale === 'en') await checkEnglish('#assessList');
     }
-    console.log('PASS: All 14 short-term templates, five measurement stages, clinical guidance and accessible field labels support both languages');
+    console.log('PASS: Separate short/long groups, all 14 short-term templates, five measurement stages and accessible field labels support both languages without in-record guidance');
     // Clinical flow: mode-specific lists, the legacy empty choice, PEO labels and both themes.
     for (const locale of ['zh-TW', 'en']) {
       await choose(locale);
@@ -166,7 +166,7 @@ const output = path.join(root, '.tmp', 'verification');
       assert.equal(await page.locator('#s-mode option:checked').innerText(), locale === 'en' ? 'Not specified' : '未指定');
       assert.deepEqual(await page.locator('.soap-sec .sec-title > h3').allTextContents(), locale === 'en'
         ? ['Subjective', 'Assessment', 'PEO clinical reasoning', 'Intervention and plan'] : ['主觀描述', '評估', 'PEO 臨床推理', '介入與計畫']);
-      assert.deepEqual(await page.locator('#assessList > section > h3').allTextContents(), locale === 'en' ? ['Visual function', 'Functional performance'] : ['視覺功能', '功能表現']);
+      assert.deepEqual(await page.locator('#assess-long .assessment-group > h4').allTextContents(), locale === 'en' ? ['Visual function', 'Functional vision', 'Daily living function', 'Cognitive function'] : ['視覺功能', '功能性視覺', '日常生活功能', '認知功能']);
       await page.locator('#ac-va').check(); await page.locator('#ac-self_report').check();
       await page.locator('#ac-copm').check();
       await page.locator('#adaptationPicks [data-strategy="workstation_setup"]').check();
@@ -201,6 +201,37 @@ const output = path.join(root, '.tmp', 'verification');
     await page.locator('#s-mode').selectOption('inperson');
     await page.evaluate(() => document.documentElement.dataset.theme = 'light');
     console.log('PASS: Bilingual PEO/intervention sections, unspecified/in-person/telerehab modes and retained cross-mode strategies fit 320/360/768/1280px in light and dark themes');
+    for (const locale of ['zh-TW', 'en']) {
+      await choose(locale);
+      await page.locator('#tx-ocular-on').check();
+      assert.equal(await page.locator('#eyeDotRecords').isVisible(), false);
+      await page.locator('#tx-ocular-acts [data-act="EyeDot Trainer"]').check();
+      assert.equal(await page.locator('#eyeDotRecords').isVisible(), true);
+      await action('ed-add').click();
+      if (locale === 'en') await checkEnglish('#eyeDotRecords');
+      await page.locator('#edWrap [data-action="ed-del"]').click();
+      await page.locator('#tx-ocular-acts [data-act="EyeDot Trainer"]').uncheck();
+      await page.locator('#tx-ocular-on').uncheck();
+      await page.locator('#ac-func').check();
+      await page.locator('[data-action="measure-add"][data-id="func"]').click();
+      assert.equal(await page.locator('#measure-name').isVisible(), true);
+      if (locale === 'en') await checkEnglish('.modal');
+      await page.keyboard.press('Escape');
+      await page.locator('#ac-func').uncheck();
+      for (const period of ['short', 'long']) {
+        await page.locator(`[data-action="plan-add"][data-period="${period}"]`).click();
+        assert.equal(await page.locator('#item-period').inputValue(), period);
+        assert.deepEqual(await page.locator('#item-category option').allTextContents(), locale === 'en' ? ['Visual function', 'Functional vision', 'Motor function', 'Daily living function', 'Cognitive function'] : ['視覺功能', '功能性視覺', '動作功能', '日常生活功能', '認知功能']);
+        const optgroups = await page.locator('#item-base optgroup').evaluateAll(nodes => nodes.map(node => node.label));
+        assert.deepEqual(optgroups, locale === 'en' ? ['Visual function · Short-term measures', 'Visual function · Long-term measures', 'Functional vision · Short-term measures', 'Functional vision · Long-term measures', 'Motor function · Short-term measures', 'Daily living function · Long-term measures', 'Cognitive function · Short-term measures', 'Cognitive function · Long-term measures'] : ['視覺功能 · 短期指標', '視覺功能 · 長期指標', '功能性視覺 · 短期指標', '功能性視覺 · 長期指標', '動作功能 · 短期指標', '日常生活功能 · 長期指標', '認知功能 · 短期指標', '認知功能 · 長期指標']);
+        if (locale === 'en') await checkEnglish('.modal');
+        await page.keyboard.press('Escape');
+      }
+      assert.equal(await page.locator('#adaptation-new').getAttribute('placeholder'), locale === 'en' ? 'Enter plan name' : '輸入方案名稱');
+      assert.equal(await page.locator('#sessionResponse h4').innerText(), locale === 'en' ? 'Session response' : '本次反應');
+      if (locale === 'en') await checkEnglish('#sessionResponse');
+    }
+    console.log('PASS: Selectable EyeDot records, measure dialog, custom-plan entry and linked session response support both languages');
     // A training test record added by hand: its card, result boxes and folded settings are in English.
     await page.locator('#tx-ocular-on').check();
     await page.locator('#tx-ocular-run-item').selectOption('fixation'); await action('run-add').click();
@@ -243,7 +274,8 @@ const output = path.join(root, '.tmp', 'verification');
     const record = await page.evaluate(() => JSON.stringify(sessions[0]));
     await choose('en');
     assert.equal(await page.locator('#toolbarSave [data-label]').innerText(), 'Save');
-    assert.match(await page.locator('#fileMenu [data-action="save-session"] [data-label]').textContent(), /Save.*CSV.*PDF/i);
+    assert.equal(await page.locator('#fileMenu [data-action="save-session"] [data-label]').textContent(), 'Save record');
+    assert.match(await page.locator('#fileMenu [data-action="save-session"]').getAttribute('title'), /Save.*CSV.*PDF/i);
     assert.equal(await page.evaluate(() => JSON.stringify(cur())), client);
     assert.equal(await page.evaluate(() => JSON.stringify(sessions[0])), record);
     assert.doesNotMatch(await page.locator('.sess .session-meta').first().innerText(), /times/);
