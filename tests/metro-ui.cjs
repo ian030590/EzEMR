@@ -145,7 +145,7 @@ const output = path.resolve(__dirname, '..', '.tmp', 'verification', 'metro-ui')
             const style = getComputedStyle(node), rect = node.getBoundingClientRect();
             return { width: rect.width, height: rect.height, font: parseFloat(style.fontSize) };
           }));
-          assert.ok(sizes.every(size => size.width >= 44 && size.height >= 44 && size.font === 13));
+          assert.ok(sizes.every(size => size.width >= 44 && size.height >= 44 && size.font === 14));
           if (width === 1280) assert.equal((await page.locator('.app-chrome').boundingBox()).height, 61, 'Metro controls retain 8px outer spacing and 44px control height');
           await equalButtons('.menubar, .tool-group:visible');
           for (const name of ['file', 'client', 'view', 'export']) {
@@ -159,7 +159,7 @@ const output = path.resolve(__dirname, '..', '.tmp', 'verification', 'metro-ui')
       }
       assert.deepEqual(errors, []);
       assert.deepEqual(requests, [], 'The local UI initializes and works without any HTTP request');
-      evidence.push(`${locale}: Metro controls, menus and editor fit 320/360/768/1280px in both themes with 13px text, equal targets, outer spacing and zero HTTP requests`);
+      evidence.push(`${locale}: Metro controls, menus and editor fit 320/360/768/1280px in both themes with 14px text, equal targets, outer spacing and zero HTTP requests`);
       await context.close();
     }
     await fs.writeFile(path.join(output, 'results.json'), JSON.stringify(evidence, null, 2));

@@ -189,6 +189,7 @@ const check = message => { evidence.push(message); console.log('PASS: ' + messag
         assert.match(await findings.innerText(), /0\.42 synthetic result/);
         await findings.locator('summary').click();
         check(`${locale}: latest attended record, explicit per-symptom links, selected-record evidence, missing evidence and unfabricated legacy summaries`);
+        assert.equal(await page.locator('.clinical-map-head').count(), 0, 'Stacked clinical sections have no duplicate horizontal header');
 
         for (const theme of ['light', 'dark']) {
           await page.evaluate(theme => { document.documentElement.dataset.theme = theme; renderTheme(); }, theme);
@@ -203,17 +204,13 @@ const check = message => { evidence.push(message); console.log('PASS: ' + messag
             await page.setViewportSize({ width, height: 900 });
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${locale} ${theme} dashboard at ${width}px`);
             const cells = await reading.locator('.clinical-map-cell').evaluateAll(nodes => nodes.map(node => {
-              const rect = node.getBoundingClientRect();
-              return { x: rect.x, y: rect.y, width: rect.width, bottom: rect.bottom };
+              const rect = node.getBoundingClientRect(), heading = node.querySelector('h4'), title = heading.getBoundingClientRect();
+              return { x: rect.x, y: rect.y, width: rect.width, bottom: rect.bottom, heading: heading.textContent, headingWidth: title.width, headingHeight: title.height, rowWidth: node.parentElement.getBoundingClientRect().width };
             }));
-            const available = await page.locator('#patientDashboard').evaluate(node => node.clientWidth - parseFloat(getComputedStyle(node).paddingLeft) - parseFloat(getComputedStyle(node).paddingRight));
-            if (available < 46 * 16) {
-              assert.ok(cells.every(cell => Math.abs(cell.x - cells[0].x) < 1 && Math.abs(cell.width - cells[0].width) < 1), `${locale} ${theme} ${width}px: symptoms, reasoning and interventions each use the full row`);
-              assert.ok(cells.slice(1).every((cell, index) => cell.y >= cells[index].bottom - 1), 'Narrow layouts preserve symptom, reasoning, intervention reading order');
-            } else {
-              assert.ok(cells.every(cell => cell.width >= 185 && Math.abs(cell.y - cells[0].y) < 1), `${locale} ${theme} ${width}px: symptoms, evidence and interventions align in readable columns`);
-              assert.ok(cells[1].width >= 235, 'Reasoning and assessment evidence receive more reading width');
-            }
+            assert.deepEqual(cells.map(cell => cell.heading), en ? ['Symptoms and function', 'Reasoning and evidence', 'Intervention and plan'] : ['症狀與功能', '推理與依據', '介入與計畫']);
+            assert.ok(cells.every(cell => Math.abs(cell.x - cells[0].x) < 1 && Math.abs(cell.width - cell.rowWidth) < 1), `${locale} ${theme} ${width}px: symptoms, reasoning and interventions each use the full row: ${JSON.stringify(cells)}`);
+            assert.ok(cells.slice(1).every((cell, index) => cell.y >= cells[index].bottom - 1), 'Every viewport preserves symptom, reasoning, intervention reading order');
+            assert.ok(cells.every(cell => cell.headingWidth > 1 && cell.headingHeight >= 16), 'Each stacked section keeps its visible heading');
             if (width >= 1280) {
               const chrome = await page.locator('.app-chrome').evaluate(node => {
                 const box = node.getBoundingClientRect(), input = node.querySelector('#clientSearch').getBoundingClientRect();
@@ -231,11 +228,12 @@ const check = message => { evidence.push(message); console.log('PASS: ' + messag
             await page.keyboard.press('Escape');
           }
           await page.locator('#patientDashboard').evaluate(node => node.style.maxWidth = '700px');
-          const constrained = await reading.locator('.clinical-map-cell').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().x));
-          assert.ok(constrained.every(x => Math.abs(x - constrained[0]) < 1), 'A narrow dashboard stacks even inside a wide browser window');
+          const constrained = await reading.locator('.clinical-map-cell').evaluateAll(nodes => nodes.map(node => ({ x: node.getBoundingClientRect().x, y: node.getBoundingClientRect().y, bottom: node.getBoundingClientRect().bottom, width: node.getBoundingClientRect().width })));
+          assert.ok(constrained.every(cell => Math.abs(cell.x - constrained[0].x) < 1 && Math.abs(cell.width - constrained[0].width) < 1), 'A constrained dashboard keeps full-width sections inside a wide browser window');
+          assert.ok(constrained.slice(1).every((cell, index) => cell.y >= constrained[index].bottom - 1), 'Constrained panels retain the same vertical reading order');
           await page.locator('#patientDashboard').evaluate(node => node.style.maxWidth = '');
         }
-        check(`${locale}: compact desktop chrome and clinical columns adapt to available width in both themes; constrained panels preserve reading order`);
+        check(`${locale}: compact desktop chrome and full-width clinical sections stack at every viewport in both themes, with visible headings and preserved reading order in constrained panels`);
         await page.setViewportSize({ width: 1280, height: 900 });
         await page.locator('#dashboard-session').focus();
         assert.equal(await page.locator('#dashboard-session').evaluate(node => getComputedStyle(node).outlineStyle), 'solid');

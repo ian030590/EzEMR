@@ -54,7 +54,7 @@
   </div>
 </div>
 <div class="patient-search" id="patientSearch">
-  <label for="clientSearch"><span class="sr-only">搜尋個案</span><input type="search" id="clientSearch" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="clientList" placeholder="姓名、病歷號或診斷" autocomplete="off"></label>
+  <label for="clientSearch"><span class="sr-only">搜尋個案</span><input type="search" id="clientSearch" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="clientList" placeholder="姓名／病歷號／診斷" autocomplete="off"></label>
   <button class="btn small" data-action="new-client">新增個案</button>
   <div class="patient-search-popup" id="clientSearchPopup" hidden>
     <p class="patient-search-status" id="clientSearchStatus" role="status"></p>
@@ -101,6 +101,8 @@
   <p class="note" style="flex:1;min-width:0;margin:0">目前顯示病歷副本。連接病歷資料夾後可讀取最新檔案並直接儲存。</p>
   <button class="btn small" id="integratedDataConnect" data-action="pick-folder">連接病歷資料夾</button>
 </div>
+
+<div id="toastHost"></div>
 
 <div class="app">
   <main class="main" id="main"></main>

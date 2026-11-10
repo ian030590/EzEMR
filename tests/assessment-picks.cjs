@@ -9,6 +9,8 @@ const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 const evidence = [];
+const shortVisual = ['st_search', 'st_neglect', 'st_npc', 'st_pfv', 'st_gaze', 'st_tolerance', 'st_load'].map(id => 'ac-' + id);
+const shortFunctional = ['st_reading', 'st_coordination', 'st_tug', 'st_10mwt', 'st_bbt', 'st_9hpt', 'st_cop'].map(id => 'ac-' + id);
 const check = name => { evidence.push(name); console.log('PASS: ' + name); };
 
 (async () => {
@@ -56,7 +58,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     // Item settings: choose the initial assessment battery.
     await page.locator('#tab-plan').click();
     assert.equal(await page.locator('#initialHeading').innerText(), '初次評估項目');
-    assert.equal(await page.locator('#initialPicks input').count(), 24);
+    assert.equal(await page.locator('#initialPicks input').count(), 38);
     assert.equal(await page.locator('#initialPicks input:checked').count(), 0);
     assert.equal(await page.evaluate(() => cur().plan.every(p => p.initial === false)), true);
     for (const id of await page.evaluate(() => cur().plan.map(p => p.id))) {
@@ -83,8 +85,8 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     assert.equal(await page.locator('#s-visit').inputValue(), 'baseline');
     assert.equal(await page.locator('#assessPlanned-visual').innerText(), '初次評估項目');
     assert.equal(await page.locator('#assessPlanned-functional').innerText(), '初次評估項目');
-    assert.deepEqual(await groupIds('assessPlanned'), ['ac-pursuit', 'ac-fixation', 'ac-saccade', 'ac-vor', 'ac-npc', 'ac-ufov_divided', 'ac-ufov_selective', 'ac-record_review', 'ac-optometry_record', 'ac-ot_record', 'ac-va', 'ac-near_va', 'ac-refraction', 'ac-vf', 'ac-cs', 'ac-color', 'ac-stereo']);
-    assert.deepEqual(await groupIds('assessPlanned', 'functional'), ['ac-copm', 'ac-func', 'ac-self_report', 'ac-ot_assessment', 'ac-daily_task', 'ac-participation']);
+    assert.deepEqual(await groupIds('assessPlanned'), ['ac-pursuit', 'ac-fixation', 'ac-saccade', 'ac-vor', 'ac-npc', 'ac-ufov_divided', 'ac-ufov_selective', 'ac-record_review', 'ac-optometry_record', 'ac-ot_record', 'ac-va', 'ac-near_va', 'ac-refraction', 'ac-vf', 'ac-cs', 'ac-color', 'ac-stereo', ...shortVisual]);
+    assert.deepEqual(await groupIds('assessPlanned', 'functional'), ['ac-copm', 'ac-func', 'ac-self_report', 'ac-ot_assessment', 'ac-daily_task', 'ac-participation', ...shortFunctional]);
     assert.deepEqual(await groupIds('assessOther'), ['ac-ufov_speed']);
     assert.equal(await page.locator('#assessList .as:visible').count(), 0);
     await page.locator('#ac-saccade').check();
@@ -142,11 +144,12 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     assert.deepEqual((await attnTable.locator('tbody td').allInnerTexts()).slice(1, 4), ['92%', '0', '3 errors']);
     check('Progress tracking shows one column per activity with that visit\'s score');
 
-    // Later visits: post-rehabilitation lists initial items due by timing; treatment lists none as due.
+    // Treatment visits include session measures; later assessments use the selected initial items and timing.
     await action('new-session').click();
     assert.equal(await page.locator('#s-visit').inputValue(), 'treatment');
-    assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 0);
-    assert.deepEqual(await page.locator('#assessList .pick-group').evaluateAll(groups => groups.map(group => group.getAttribute('aria-label'))), ['視覺功能', '功能性視覺']);
+    assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 2);
+    assert.deepEqual(await groupIds('assessPlanned'), shortVisual);
+    assert.deepEqual(await groupIds('assessPlanned', 'functional'), shortFunctional);
     assert.equal(await page.locator('#ac-copm').count(), 0);
     await page.locator('#s-visit').selectOption('post');
     assert.equal(await page.locator('#assessPlanned-visual').innerText(), '本次應評估');
@@ -162,7 +165,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     await page.setViewportSize({ width: 360, height: 900 }); await page.emulateMedia({ colorScheme: 'dark' });
     await page.screenshot({ path: path.join(output, 'picks-editor-dark-360.png'), fullPage: true });
     await page.setViewportSize({ width: 1280, height: 900 }); await page.emulateMedia({ colorScheme: 'light' });
-    check('Treatment visits show no due group; post-rehabilitation lists initial items due by timing; no horizontal overflow at 320 to 1280px');
+    check('Treatment visits list short-term session measures as due; post-rehabilitation lists initial items due by timing; no horizontal overflow at 320 to 1280px');
 
     // English editor and settings, keeping the draft.
     await page.locator('#tx-attn-s1').fill('95%');

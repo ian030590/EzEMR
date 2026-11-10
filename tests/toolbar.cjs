@@ -124,13 +124,18 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     assert.equal(await page.locator('.client-btn').count(), 0);
     check('Toolbar Import opens the file chooser and restores CSV; Export downloads the roster; Ctrl+O cancellation preserves the current client');
 
+    await page.addStyleTag({ content: 'html { scrollbar-gutter: stable; }' });
     for (const locale of ['zh-TW', 'en']) {
       await page.locator('#languageSelect').selectOption(locale);
       for (const theme of ['light', 'dark']) {
         await page.evaluate(theme => { document.documentElement.dataset.theme = theme; renderTheme(); }, theme);
-        for (const width of [320, 360, 768, 1280]) {
+        for (const width of [320, 360, 600, 768, 900, 1024, 1100, 1280, 1440]) {
           await page.setViewportSize({ width, height: 800 });
-          if (width === 1280) assert.ok((await page.locator('.app-chrome').boundingBox()).height <= 68, `${locale} ${theme}: desktop browsing chrome stays within 68px`);
+          await page.waitForFunction(width => innerWidth === width, width);
+          const browse = await page.locator('.app-chrome').evaluate(chrome => ({ height: chrome.getBoundingClientRect().height, searchWidth: chrome.querySelector('#clientSearch').getBoundingClientRect().width }));
+          assert.ok(browse.searchWidth <= 224, `${locale} ${theme} ${width}px: search stays within its useful width`);
+          if (width >= 900) assert.ok(browse.height <= 68, `${locale} ${theme}: desktop browsing controls stay in one row`);
+          if (width === 600 || width === 768) assert.ok(browse.height <= 120, `${locale} ${theme}: tablet browsing uses two rows`);
           for (const name of ['file', 'client', 'view', 'export']) {
             await openMenu(name);
             const rect = await page.locator(`#${name}Menu`).boundingBox();
@@ -139,7 +144,14 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
             await page.keyboard.press('Escape');
           }
           await action('new-session').click();
-          if (width === 1280) assert.ok((await page.locator('.app-chrome').boundingBox()).height <= 68, `${locale} ${theme}: desktop editing chrome stays within 68px`);
+          const editingHeader = await page.locator('.app-chrome').boundingBox();
+          if (width >= 1280) assert.ok(editingHeader.height <= 68, `${locale} ${theme}: desktop editing controls stay in one row`);
+          if (width >= 768 && width <= 1100) assert.ok(editingHeader.height <= 120, `${locale} ${theme} ${width}px: editing controls use at most two rows`);
+          assert.ok((await page.locator('#clientSearch').boundingBox()).width <= 224, 'Search shrinks before displacing command controls');
+          if (width >= 768) {
+            const tools = await page.locator('.command-toolbar button:visible').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().y));
+            assert.ok(tools.every(y => Math.abs(y - tools[0]) < 1), `${locale} ${theme} ${width}px: all editing tools share one row`);
+          }
           const spacing = await page.locator('.app-chrome').evaluate(chrome => {
             const outer = chrome.getBoundingClientRect();
             return ['#clientSearch', '#languageSelect', '#patientSearch > .btn'].map(selector => {
@@ -177,7 +189,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     await page.waitForFunction(() => document.querySelector('#exportMenu').hidden);
     check('A sticky menu stays open after focus-related scroll events and closes when the page actually scrolls');
     assert.deepEqual(errors, []);
-    check('Both languages fit light/dark 320/360/768/1280px layouts; desktop chrome is compact, targets are at least 44px and Save remains visible while scrolling');
+    check('Both languages fit light/dark 320–1440px layouts; search is at most 224px, commands keep their row at 768–1440px, targets are at least 44px and Save remains visible while scrolling');
     await fs.writeFile(path.join(output, 'toolbar-results.json'), JSON.stringify(evidence, null, 2));
   } finally { await browser.close(); await new Promise(resolve => server.close(resolve)); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -97,6 +97,7 @@ const output = path.join(root, '.tmp', 'verification');
     await checkEnglish('.tabs');
     assert.equal(await page.locator('#tab-dashboard').getAttribute('aria-selected'), 'true');
     await checkEnglish('#patientDashboard');
+    assert.equal(await page.locator('.clinical-map-head').count(), 0, 'Clinical sections use their own headings instead of a horizontal table header');
     assert.equal(await page.locator('.client-head [data-action="new-session"]').innerText(), 'New record');
     for (const locale of ['zh-TW', 'en']) {
       await choose(locale);
@@ -139,6 +140,25 @@ const output = path.join(root, '.tmp', 'verification');
     await checkEnglish('#planEdit'); await checkEnglish('#trainingEdit');
     await action('new-session').click();
     await checkEnglish('#soapForm');
+    const shortIds = await page.evaluate(() => SHORT_TERM_ITEMS.map(item => item.id));
+    for (const locale of ['zh-TW', 'en']) {
+      await choose(locale);
+      await page.locator('.short-guide > summary').click();
+      assert.match(await page.locator('.short-guide').innerText(), /24–72/);
+      assert.match(await page.locator('.short-guide').innerText(), /MCID/);
+      for (const id of shortIds) {
+        await page.locator('#ac-' + id).check();
+        const panel = page.locator('#as-' + id);
+        assert.equal(await panel.locator('.short-stage').count(), 5);
+        for (const summary of await panel.locator('.short-stage > summary').all()) await summary.click();
+        assert.match(await panel.locator('legend').first().innerText(), locale === 'en' ? /Pre 1/ : /訓練前 1/);
+        if (locale === 'en') await checkEnglish('#as-' + id);
+        await page.locator('#ac-' + id).uncheck();
+      }
+      if (locale === 'en') await checkEnglish('.short-guide');
+      await page.locator('.short-guide > summary').click();
+    }
+    console.log('PASS: All 14 short-term templates, five measurement stages, clinical guidance and accessible field labels support both languages');
     // Clinical flow: mode-specific lists, the legacy empty choice, PEO labels and both themes.
     for (const locale of ['zh-TW', 'en']) {
       await choose(locale);
@@ -146,7 +166,7 @@ const output = path.join(root, '.tmp', 'verification');
       assert.equal(await page.locator('#s-mode option:checked').innerText(), locale === 'en' ? 'Not specified' : '未指定');
       assert.deepEqual(await page.locator('.soap-sec .sec-title > h3').allTextContents(), locale === 'en'
         ? ['Subjective', 'Assessment', 'PEO clinical reasoning', 'Intervention and plan'] : ['主觀描述', '評估', 'PEO 臨床推理', '介入與計畫']);
-      assert.deepEqual(await page.locator('#assessList > section > h3').allTextContents(), locale === 'en' ? ['Visual function', 'Functional vision'] : ['視覺功能', '功能性視覺']);
+      assert.deepEqual(await page.locator('#assessList > section > h3').allTextContents(), locale === 'en' ? ['Visual function', 'Functional performance'] : ['視覺功能', '功能表現']);
       await page.locator('#ac-va').check(); await page.locator('#ac-self_report').check();
       await page.locator('#ac-copm').check();
       await page.locator('#adaptationPicks [data-strategy="workstation_setup"]').check();
@@ -265,6 +285,14 @@ const output = path.join(root, '.tmp', 'verification');
     await page.locator('#tab-outcomes').click();
     for (const locale of ['zh-TW', 'en']) {
       await choose(locale);
+      await page.locator('#tab-dashboard').click();
+      assert.deepEqual(await page.locator('#clinicalMap h4').allTextContents(), locale === 'en' ? ['Symptoms and function', 'Reasoning and evidence', 'Intervention and plan'] : ['症狀與功能', '推理與依據', '介入與計畫']);
+      await page.locator('#tab-outcomes').click();
+      const hint = locale === 'en' ? 'Scroll the table horizontally, or focus it and use the left and right arrow keys.' : '表格可左右捲動，或聚焦後使用左右方向鍵。';
+      assert.equal(await page.locator('.table-scroll-hint').first().innerText(), hint);
+      for (const label of await page.locator('#tabBody .scroll[role="region"]').evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label')))) assert.ok(label.endsWith(hint), 'Table region accessible names include the translated scrolling help');
+      assert.ok((await page.locator('#tabBody .table-scroll-hint').allTextContents()).every(text => text === hint), 'Every table scrolling hint uses the current interface language');
+      assert.ok((await page.locator('#tabBody').innerText()).includes('觀察原文'), 'Clinical observations retain their original language');
       for (const width of [320, 768, 1280]) {
         await page.setViewportSize({ width, height: 900 });
         const gaps = await page.locator('#tabBody > .panel').evaluateAll(panels => panels.slice(1).map((panel, i) => panel.getBoundingClientRect().top - panels[i].getBoundingClientRect().bottom));

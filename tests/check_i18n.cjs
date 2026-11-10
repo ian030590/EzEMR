@@ -65,11 +65,11 @@ function validate(html) {
     assert.ok(Object.hasOwn(labels, label) || shared.has(label), `Source assessment needs a Chinese LABELS entry: ${label}`);
   }
   // Built-in items are assembled from helpers, so check the evaluated plan: names, domains, notes, field labels and select options.
-  const planSource = ['numField', 'asSetting', 'OT_OPTIONS', 'otResults', 'otSettings', 'completedTargets', 'ufovFields', 'UFOV_OUTCOME', 'DEVICE_ITEMS', 'DEFAULT_PLAN', 'TRAIN', 'RUN_ACTS'].map(key => definitions.get(key).text).join('\n');
-  const built = vm.runInNewContext(`${planSource}\n({ plan: DEFAULT_PLAN, train: TRAIN, runActs: RUN_ACTS })`);
+  const planSource = ['numField', 'asSetting', 'OT_OPTIONS', 'otResults', 'otSettings', 'completedTargets', 'ufovFields', 'UFOV_OUTCOME', 'DEVICE_ITEMS', 'SHORT_PHASES', 'shortFields', 'SHORT_TERM_ITEMS', 'DEFAULT_PLAN', 'TRAIN', 'RUN_ACTS'].map(key => definitions.get(key).text).join('\n');
+  const built = vm.runInNewContext(`${planSource}\n({ plan: DEFAULT_PLAN, train: TRAIN, runActs: RUN_ACTS, phases: SHORT_PHASES })`);
   const builtLabels = [
     ...built.plan.flatMap(item => [item.name, item.domain, item.outcome, ...(item.fields || []).flatMap(field => typeof field === 'string' ? [field] : [field.label, ...(field.options || [])])]),
-    ...built.train.flatMap(item => [item.label, ...(item.acts || [])]), ...Object.values(built.runActs)
+    ...built.train.flatMap(item => [item.label, ...(item.acts || [])]), ...Object.values(built.runActs), ...Object.values(built.phases)
   ].filter(Boolean);
   for (const label of builtLabels) assert.ok(Object.hasOwn(labels, label) || shared.has(label), `Built-in item needs a Chinese LABELS entry: ${label}`);
   const translatorSource = ['UI_EN', 'uiPattern', 'ui'].map(key => definitions.get(key).text).join('\n');

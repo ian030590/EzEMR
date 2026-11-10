@@ -1176,7 +1176,7 @@ Code:
   --f-body: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
   --text-small: .875rem;
   --text-label: .9375rem;
-  --text-control: .8125rem;
+  --text-control: .875rem;
   --control-pad: 2px 10px;
   --control-height-normal: 44px;
   --control-height-small: 44px;
@@ -1229,7 +1229,7 @@ Code:
   --control-line: #718591;
 }
 * { box-sizing: border-box; }
-html { font-size: 100%; scroll-padding-top: 7rem; }
+html { font-size: 100%; scroll-padding-top: calc(var(--chrome-height, 61px) + 12px); }
 html:lang(en) { --leading-body: 1.4; }
 body { background: var(--bg); color: var(--ink); font: 1rem/var(--leading-body) var(--f-body); margin: 0; word-break: normal; overflow-wrap: break-word; line-break: strict; }
 h1, h2, h3 { font-weight: 700; text-wrap: balance; margin: 0; line-height: var(--leading-heading); letter-spacing: normal; }
@@ -1240,7 +1240,7 @@ h4 { margin: 0; font-size: 1rem; font-weight: 700; line-height: var(--leading-he
 button, input, select, textarea { font: inherit; font-size: var(--text-control); color: inherit; }
 button, select { line-height: 1.5; }
 input, textarea { font-size: var(--text-control); }
-input, select, textarea { scroll-margin-block: 7rem 4rem; }
+input, select, textarea { scroll-margin-block: 12px 4rem; }
 a { color: var(--accent); text-underline-offset: 3px; }
 summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(--text-control); }
 /* Metro resets focused controls, including roving menu items with tabindex=-1. */
@@ -1250,7 +1250,7 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .eyebrow { font-size: var(--text-small); color: var(--muted); font-weight: 600; }
 .muted { color: var(--muted); }
 
-.app-chrome { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: grid; grid-template-columns: auto auto minmax(160px, 1fr) auto; align-items: center; gap: var(--control-gap); padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--line); }
+.app-chrome { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: var(--control-gap); padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--line); }
 .topbar { display: contents; }
 .topbar::before, .topbar::after { content: none; }
 .brand { grid-column: 1; grid-row: 1; }
@@ -1262,12 +1262,12 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .status.local { color: var(--warn); }
 .language-control { display: flex; align-items: center; gap: 8px; font-size: var(--text-small); color: var(--muted); }
 .language-control select { width: auto; max-width: 100%; min-height: 44px; background: var(--surface); padding: var(--control-pad); }
-.command-area { grid-column: 2; grid-row: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.command-area { grid-column: 2; grid-row: 1; display: flex; align-items: center; gap: 8px; min-width: max-content; }
 .menubar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--control-gap); padding-right: 8px; border-right: 1px solid var(--line); }
 .menu-trigger, .tool-button { min-width: 44px; min-height: 44px; height: auto; padding: var(--control-pad); margin: 0; font-size: var(--text-control); white-space: nowrap; }
 .menu-trigger:hover, .menu-trigger[aria-expanded="true"], .tool-button:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
 .tool-button:disabled, .command-menu button:disabled { color: var(--muted); opacity: .6; cursor: default; }
-.command-toolbar { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: var(--control-gap); }
+.command-toolbar { display: flex; min-width: 0; flex-wrap: nowrap; align-items: center; gap: var(--control-gap); }
 .tool-group { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; grid-auto-rows: 1fr; gap: var(--control-gap); align-items: stretch; min-width: 0; max-width: 100%; }
 .tool-group:not([hidden]) ~ .tool-group { border-left: 1px solid var(--line); padding-left: 8px; }
 .tool-button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
@@ -1291,8 +1291,8 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .command-menu hr { border: 0; border-top: 1px solid var(--line); margin: 5px; }
 .command-menu .menu-label { display: block; padding: 5px 10px; color: var(--muted); font-size: var(--text-small); }
 
-.patient-search { grid-column: 3; grid-row: 1; position: relative; display: flex; align-items: center; gap: var(--control-gap); min-width: 0; }
-.patient-search > label { flex: 1; min-width: 0; }
+.patient-search { grid-column: 3; grid-row: 1; position: relative; display: flex; align-items: center; gap: var(--control-gap); min-width: 0; width: 100%; max-width: 320px; justify-self: end; }
+.patient-search > label { flex: 1; min-width: 0; max-width: 224px; }
 .patient-search > .btn { flex: none; }
 .patient-search-popup { position: absolute; top: calc(100% + 4px); right: 0; width: max(100%, 340px); max-width: calc(100vw - 24px); background: var(--surface); border: 1px solid var(--control-line); border-radius: var(--r); box-shadow: var(--shadow-float); overflow: hidden; }
 .patient-search-status { margin: 0; padding: 8px 10px; font-size: var(--text-control); color: var(--muted); border-bottom: 1px solid var(--line); }
@@ -1344,7 +1344,7 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .client-stats dt { color: var(--muted); font-size: var(--text-small); }
 .client-stats dd { margin: 0; font-size: var(--text-small); font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--line); overflow-x: auto; }
-.dashboard { display: grid; gap: 12px; container-type: inline-size; container-name: patient-dashboard; }
+.dashboard { display: grid; gap: 12px; }
 .dashboard-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .dashboard-head h3 { font-size: 1.125rem; }
 .dashboard-head .f { flex: 0 1 340px; }
@@ -1355,7 +1355,6 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .dashboard-score-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 8px; }
 .dashboard-score-head h4 { font-size: var(--text-label); }
 .clinical-map { border: 1px solid var(--line); border-radius: var(--r); overflow: clip; }
-.clinical-map-head { display: none; }
 .clinical-map-row { display: grid; grid-template-columns: minmax(0, 1fr); }
 .clinical-map-row + .clinical-map-row { border-top: 1px solid var(--control-line); }
 .clinical-map-cell { padding: 10px 12px; min-width: 0; overflow-wrap: anywhere; }
@@ -1394,22 +1393,14 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
   .clinical-link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .clinical-link-grid > .clinical-link-reasoning { grid-column: 1 / -1; }
 }
-@container patient-dashboard (min-width: 46rem) {
-  .clinical-map-head, .clinical-map-row { grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr) minmax(0, 1fr); }
-  .clinical-map-head { display: grid; background: var(--sunk); border-bottom: 1px solid var(--line); font-weight: 700; }
-  .clinical-map-head > span { padding: 8px 12px; }
-  .clinical-map-head > span + span { border-left: 1px solid var(--line); }
-  .clinical-map-cell + .clinical-map-cell { border-top: 0; border-left: 1px solid var(--line); }
-  .clinical-map-cell h4 { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
-}
 @media (max-width: 480px) {
   .clinical-link { padding: 12px; }
 }
 .tab { background: none; border: 0; border-bottom: 2px solid transparent; min-height: 44px; padding: 6px 10px; cursor: pointer; color: var(--muted); font-weight: 600; white-space: nowrap; }
 .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
 
-.btn { min-height: 44px; height: auto; padding: var(--control-pad); margin: 0; font-weight: 600; font-size: var(--text-control); white-space: normal; }
-.btn:disabled { opacity: .65; cursor: wait; }
+.btn { min-width: 44px; min-height: 44px; height: auto; padding: var(--control-pad); margin: 0; font-weight: 600; font-size: var(--text-control); white-space: normal; }
+.btn:disabled { opacity: .65; cursor: not-allowed; }
 .btn:hover { border-color: var(--accent); }
 .btn:not(.app-primary):not(.solid):not(.link):hover { background: var(--sunk); }
 .btn.app-primary { --button-background: var(--accent); --button-color: var(--accent-ink); }
@@ -1421,6 +1412,9 @@ summary { min-height: 44px; padding-block: 8px; cursor: pointer; font-size: var(
 .btn.x { border: 0; background: none; color: var(--muted); min-width: 44px; padding: 2px 6px; font-size: 1.25rem; line-height: 1; }
 .btn.x:hover { color: var(--bad); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 0; }
+/* These are action rows, so Metro's full-width grid cells do not apply. */
+.row > * { flex: 0 1 auto; max-width: 100%; }
+.row > .btn { display: inline-flex; align-items: center; justify-content: center; padding: var(--control-pad); }
 .spread { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
 
 label.f { display: grid; gap: 4px; font-size: var(--text-small); font-weight: 600; color: var(--muted); min-width: 0; }
@@ -1461,7 +1455,8 @@ textarea { min-height: 88px; resize: vertical; line-height: var(--leading-body);
 .vf-center { grid-area: eye; z-index: 1; justify-self: center; padding: 4px; background: var(--sunk); color: var(--ink); font-size: 1.25rem; font-weight: 600; }
 @media (max-width: 560px) { .vf-entry { padding: 12px; } .vf-eyes { gap: 20px; } .vf-cross { gap: 10px 6px; } }
 
-.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); }
+/* Metro's scroll utility forces both scrollbars, even when the table fits. */
+.scroll { overflow: auto !important; border: 1px solid var(--line); border-radius: var(--r); }
 table.sym, table.out { border-collapse: collapse; width: 100%; font-size: var(--text-label); font-variant-numeric: tabular-nums; }
 table.sym { min-width: 720px; }
 table.sym th, table.sym td, table.out th, table.out td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: center; vertical-align: middle; }
@@ -1475,7 +1470,11 @@ table.sym tr.blk td.tp { box-shadow: inset 3px 0 0 var(--line); }
 table.sym input.num { width: 3.5em; min-width: 44px; padding: 4px 2px; text-align: center; }
 table.sym input.num.flag { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); font-weight: 600; }
 table.sym tr:last-child td, table.out tr:last-child td { border-bottom: 0; }
-table.out td:first-child, table.out th:first-child { text-align: left; padding-left: 10px; white-space: nowrap; }
+table.out td:first-child, table.out th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); text-align: left; padding-left: 10px; white-space: nowrap; }
+table.out thead th:first-child { z-index: 2; background: var(--sunk); }
+table.out th { min-width: 96px; }
+.table-scroll-hint { display: none; }
+.scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .tpname { font-weight: 600; }
 .tpsub { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 3px; font-size: var(--text-small); color: var(--muted); }
 .tpsub input { width: 5em; }
@@ -1528,6 +1527,27 @@ input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent);
 .grid > details.settings { grid-column: 1 / -1; border: 1px solid var(--line); border-radius: var(--r); background: var(--sunk); min-width: 0; }
 details.settings > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; padding: 6px 8px; font-weight: 600; font-size: var(--text-control); }
 details.settings > .grid { padding: 4px 12px 12px; }
+.grid > .short-stage { grid-column: 1 / -1; min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: var(--r); padding: 8px 12px 12px; }
+.short-stage > legend { font-size: var(--text-control); font-weight: 600; padding: 0 4px; max-width: 100%; }
+.short-stage > .grid > .f:first-child { grid-column: 1 / -1; }
+.grid > details.short-stage { padding: 0; }
+.short-guide { margin-top: 10px; }
+.short-guide .body > p { margin: 0; }
+.short-record { margin-top: 12px; min-width: 0; }
+.short-record + .short-record { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 16px; }
+.short-record h4 { margin: 0 0 8px; }
+.short-out th, .short-out td { min-width: 90px; }
+.short-out th:first-child { white-space: normal; min-width: 110px; width: 140px; }
+.short-out th[scope="row"] { text-align: left; font-weight: 600; }
+.short-out .short-context { text-align: left; min-width: 160px; max-width: 320px; overflow-wrap: anywhere; }
+.short-notes > summary { cursor: pointer; min-height: 44px; display: list-item; list-style-position: inside; padding: 12px 0; font-size: var(--text-control); font-weight: 600; }
+.short-scroll-hint { display: none; }
+.short-facts { margin: 0; display: grid; gap: 8px; }
+.short-facts > div { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(0, 3fr); gap: 8px; overflow-wrap: anywhere; }
+.short-facts dt { color: var(--muted); }
+.short-facts dd { margin: 0; white-space: pre-wrap; }
+@media (max-width: 560px) { .short-facts > div { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
+@media (max-width: 560px) { .short-scroll-hint { display: block; margin: 0 0 8px; } }
 .runs { display: flex; flex-direction: column; gap: 10px; }
 .run { border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .run-head { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
@@ -1625,15 +1645,17 @@ table.sym.ed select:disabled { opacity: .45; }
 .field-editor textarea { min-height: 64px; }
 @media (max-width: 600px) { .field-editor .field-top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .field-top .field-name { grid-column: 1 / -1; } }
 
-.overlay { position: fixed; inset: 0; background: rgba(10,18,24,.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
-.modal { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-float); padding: 28px; width: min(520px, 100%); max-height: 90dvh; overflow: auto; display: flex; flex-direction: column; gap: 20px; }
+.editor-copy-action { display: none; }
+.modal-open { overflow: hidden; padding-right: var(--modal-scrollbar-width, 0px); }
+.overlay { position: fixed; inset: 0; background: rgba(10,18,24,.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; overscroll-behavior: contain; }
+.modal { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-float); padding: 28px; width: min(520px, 100%); max-height: min(90dvh, calc(100dvh - 32px)); overflow: auto; overscroll-behavior: contain; scroll-padding-block: 16px; display: flex; flex-direction: column; gap: 20px; }
 .modal .row:has(> .btn + .btn) { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; align-items: stretch; gap: var(--control-gap); }
 fieldset.es { border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(--muted); padding: 0 4px; }
 .es-row { display: grid; grid-template-columns: 7.5em minmax(0, 2fr) 8.5em minmax(0, 1.5fr) auto; gap: 6px; align-items: center; }
 @media (max-width: 600px) { .es-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .es-row input[id^="es-proc"], .es-row input[id^="es-notes"] { grid-column: 1 / -1; } }
-.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: var(--text-label); z-index: 60; width: max-content; max-width: calc(100% - 32px); }
-.note { font-size: var(--text-small); color: var(--muted); }
+.toast { position: static; inset: auto; transform: none; z-index: auto; margin: 8px 16px 0; padding: 10px 16px; border-radius: 8px; background: var(--ink); color: var(--bg); font-size: var(--text-label); width: fit-content; max-width: calc(100% - 32px); overflow-wrap: anywhere; }
+.note { font-size: var(--text-small); color: var(--muted); max-width: 75ch; }
 .facts, .nm, .status, .note { overflow-wrap: anywhere; }
 [hidden] { display: none !important; }
 .filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: end; gap: 12px; padding: 18px 20px; }
@@ -1653,12 +1675,18 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
 .connect-notes p { margin: 0 0 8px; }
 .toast { white-space: pre-wrap; }
 @media (max-width: 1100px) { .storage-connect { grid-template-columns: minmax(0, 1fr); } .storage-preview { grid-column: 1; } }
+@media (min-width: 861px) and (max-width: 1199px) {
+  .app-chrome:has(#saveTools:not([hidden])) { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .app-chrome:has(#saveTools:not([hidden])) .command-area { grid-column: 1 / -1; grid-row: 2; }
+  .app-chrome:has(#saveTools:not([hidden])) .patient-search { grid-column: 2; grid-row: 1; }
+  .app-chrome:has(#saveTools:not([hidden])) .topbar-tools { grid-column: 3; grid-row: 1; }
+}
 @media (max-width: 860px) {
   .app-chrome { grid-template-columns: auto minmax(0, 1fr); gap: var(--control-gap); padding-inline: 12px; }
   .topbar-tools { grid-column: 2; justify-content: flex-end; gap: 8px; }
-  .command-area { grid-column: 1 / -1; grid-row: 2; gap: 4px; flex-wrap: wrap; }
-  .command-toolbar { flex: 1; }
-  .tool-group { grid-auto-flow: row; }
+  .command-area { grid-column: 1 / -1; grid-row: 2; gap: 4px; flex-wrap: wrap; min-width: 0; }
+  .command-toolbar { flex: 0 1 auto; flex-wrap: wrap; }
+  .tool-group:not([hidden]) ~ .tool-group { padding-left: 4px; }
   .menubar { padding-right: 4px; }
   .patient-search { grid-column: 1 / -1; grid-row: 3; }
   .patient-search-popup { width: 100%; }
@@ -1668,10 +1696,15 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
   :root { --control-pad: 2px 8px; }
   .panel { padding: 12px; }
   .main { padding: 10px 8px 24px; gap: 8px; }
-  .command-toolbar { gap: var(--control-gap); flex-basis: 100%; }
+  .command-toolbar { gap: var(--control-gap); }
+  .command-toolbar:has(#saveTools:not([hidden])) { display: grid; grid-template-columns: auto minmax(0, 1fr); width: 100%; }
+  #saveTools { grid-column: 1; grid-row: 1; }
+  #saveTools + .tool-group { grid-column: 2; grid-row: 1; }
+  #draftTools { grid-column: 1 / -1; grid-row: 2; border-left: 0; padding-left: 0; }
+  #draftTools { display: none !important; }
+  .editor-copy-action { display: inline-flex; }
   .menubar { padding: 0; }
   .tool-button { gap: 6px; white-space: normal; }
-  .tool-group:not([hidden]) ~ .tool-group { padding-left: 4px; }
   .btn, .btn.small, .btn.x, .tab, select, input:not([type="checkbox"]):not([type="range"]) { min-height: 44px; }
   .btn.x { min-width: 44px; }
   .filters { grid-template-columns: minmax(0, 1fr); }
@@ -1689,7 +1722,27 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
   .session-actions, .session-absent .session-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .session-actions > .btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .chart select { max-width: 100%; }
+  .table-scroll-hint { display: block; margin: 8px 0; }
   .copm { grid-template-columns: minmax(0, 1fr) 4.2em 4.2em; }
+}
+@media (min-width: 350px) and (max-width: 860px) {
+  .app-chrome { grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px; padding-inline: 8px; }
+  .brand h1 { font-size: 1rem; }
+  .topbar-tools { grid-column: 3; }
+  .language-control select { width: 82px; padding-inline: 4px; }
+  .command-area { display: contents; }
+  .menubar { grid-column: 2; grid-row: 1; gap: 4px; border: 0; padding: 0; justify-self: start; }
+  .menubar .menu-trigger { padding-inline: 4px; }
+  .command-toolbar { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (min-width: 561px) and (max-width: 860px) {
+  .app-chrome { grid-template-columns: auto auto minmax(0, 1fr) auto; gap: 4px; padding-inline: 8px; }
+  .topbar-tools { grid-column: 4; grid-row: 1; }
+  .command-area { display: contents; }
+  .menubar { grid-column: 2; grid-row: 1; }
+  .command-toolbar { grid-column: 1 / -1; grid-row: 2; flex-wrap: nowrap; }
+  .tool-button { padding-inline: 6px; }
+  .patient-search { grid-column: 3; grid-row: 1; justify-self: end; }
 }
 @media (prefers-reduced-motion: no-preference) { .btn, .client-btn, .act { transition: border-color .15s, background .15s; } }
 </style>
@@ -1729,7 +1782,7 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
   </div>
 </div>
 <div class="patient-search" id="patientSearch">
-  <label for="clientSearch"><span class="sr-only">搜尋個案</span><input type="search" id="clientSearch" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="clientList" placeholder="姓名、病歷號或診斷" autocomplete="off"></label>
+  <label for="clientSearch"><span class="sr-only">搜尋個案</span><input type="search" id="clientSearch" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="clientList" placeholder="姓名／病歷號／診斷" autocomplete="off"></label>
   <button class="btn small" data-action="new-client">新增個案</button>
   <div class="patient-search-popup" id="clientSearchPopup" hidden>
     <p class="patient-search-status" id="clientSearchStatus" role="status"></p>
@@ -1777,6 +1830,8 @@ fieldset.es legend { font-size: var(--text-small); font-weight: 600; color: var(
   <button class="btn small" id="integratedDataConnect" data-action="pick-folder">連接病歷資料夾</button>
 </div>
 
+<div id="toastHost"></div>
+
 <div class="app">
   <main class="main" id="main"></main>
 </div>
@@ -1788,6 +1843,27 @@ if (window.XLSX) XLSX.read = XLSX.readFile = XLSX.readFileSync = () => { throw n
 let language = 'zh-TW';
 try { if (localStorage.getItem('ezrehab-language') === 'en') language = 'en'; } catch (_) {}
 const UI_EN = {
+  "功能表現": "Functional performance",
+  "評估分類必須為視覺功能或功能表現。": "Assessment category must be visual function or functional performance.",
+  "測量時點": "Measurement stage",
+  "測驗條件與備註": "Test conditions and notes",
+  "視覺相關症狀評分（選填）": "Vision-related symptom ratings (optional)",
+  "可左右捲動查看更多指標與測量時間。": "Scroll horizontally for more measures and measurement times.",
+  "症狀與耐受性": "Symptoms and tolerability",
+  "症狀分數為 0–10；屬耐受性結果。": "Symptom scores range from 0–10 and describe tolerability.",
+  "短期結果為摘要；完整條件與測量時間請開啟此筆紀錄。": "Short-term results are summarised here. Open this record for full conditions and measurement times.",
+  "短期成效指標與施測流程": "Short-term outcomes and measurement workflow",
+  "功能成效與耐受性分開記錄。立即成效為訓練後即刻至約 30 分鐘；短期追蹤可納入 24–72 小時。各時點請填實際測量時間，訓練後註明距訓練結束幾分鐘，追蹤註明日期與時間。": "Record functional efficacy and tolerability separately. Immediate outcomes cover the end of training to about 30 minutes; short-term follow-up may include 24–72 hours. Enter the actual measurement time at each stage, minutes since training ended for post-training tests, and date/time for follow-up.",
+  "先選一項與訓練目標直接對應的客觀主要指標，再選次要指標及症狀。新個案已包含短期模板；舊個案可按「新增評估項目」，從模板選取。": "Choose one objective primary outcome that matches the training goal, then secondary measures and symptoms. New clients include short-term templates; for existing clients, use Add assessment and choose a template.",
+  "訓練前 1 → 訓練前 2（建議使用等值題型，估計波動與練習效應）→ 訓練（記錄內容、時間、難度、休息與不適）→ 訓練後立即 → 恢復期 15–30 分鐘及／或 24–72 小時追蹤。空白表示未測，不當成 0。": "Pre 1 > Pre 2 (recommended: equivalent forms to estimate variability and practice effects) > training (record content, duration, difficulty, breaks and adverse events) > immediate post > recovery at 15–30 minutes and/or follow-up at 24–72 hours. Blank means unmeasured, not zero.",
+  "建議主要／次要／耐受性組合": "Suggested primary / secondary / tolerability measures",
+  "搜尋：完成時間或漏答數／正確率與左右漏答／眼睛疲勞、頭痛。忽略：刪除測驗漏答數／時間與線段平分偏差／頭痛、暈眩、不適。": "Search: time or omissions / accuracy and left-right omissions / eye fatigue and headache. Neglect: cancellation omissions / time and bisection deviation / headache, dizziness and discomfort.",
+  "閱讀：速度／錯誤率與理解／眼睛疲勞。集合：NPC 或 PFV／另一項雙眼視覺指標／眼部不適、頭痛。視覺動作：命中率或時間／反應時間與誤差／疲勞與不適。": "Reading: speed / error rate and comprehension / eye fatigue. Convergence: NPC or PFV / the other binocular measure / eye discomfort and headache. Visual–motor: hit rate or time / reaction time and error / fatigue and discomfort.",
+  "搜尋可採 Bells、Star／Letter Cancellation 或固定找物任務；時間、正確率與反應時間可能只是任務表現指標，須完整記錄流程與計分規則，不能當作已標準化量表。": "Search may use Bells, Star/Letter Cancellation or a fixed object-search task. Time, accuracy and reaction time may be task performance measures; document procedures and scoring rather than assuming they are standardised scales.",
+  "Barthel Index、FIM、NEI VFQ-25、CBS、MVPT 不宜作單次立即成效主要指標；視力、視野與對比敏感度應依疾病及訓練目標決定。施測方便不代表對單次變化敏感。": "Barthel Index, FIM, NEI VFQ-25, CBS and MVPT are not preferred primary measures of immediate single-session outcomes. Select acuity, visual field and contrast sensitivity according to the disease and training target. Convenience does not establish sensitivity to single-session change.",
+  "症狀下降不能單獨證明療效；功能改善與暫時不適可能同時存在。固定負荷症狀誘發量＝負荷後分數－該次負荷前分數。VOMS 是篩檢工具。": "Symptom reduction alone does not prove efficacy; improved function and temporary discomfort may coexist. Fixed-load symptom provocation = score after the load minus score before that load. VOMS is a screening tool.",
+  "改善方向依族群、疾病與測試條件而定。研究須查核信效度、MDC、MCID（如有）及授權，不能假設都有單次 MCID；若要推論介入造成改善，宜加入休息、常規治療等合理對照。此整理不是臨床指引或系統性回顧。": "Improvement direction depends on population, disease and test conditions. Research requires checking validity, reliability, MDC, MCID (if available) and licensing; do not assume a single-session MCID exists. Use a reasonable comparison such as rest or usual care to support causal inference. This summary is not a clinical guideline or systematic review.",
+  "{0}：{1}": "{0}: {1}",
   "模式說明": "Mode details",
   "模式說明網址": "Mode documentation URL",
   "複製網址": "Copy URL",
@@ -2176,7 +2252,7 @@ const UI_EN = {
   "周邊燈板": "Peripheral light board",
   "周邊覺察": "Peripheral awareness",
   "姓名": "Name",
-  "姓名、病歷號或診斷": "Name, medical record number, or diagnosis",
+  "姓名／病歷號／診斷": "Name, ID, or diagnosis",
   "尚未改約": "Not rescheduled",
   "尚未取得權限，請重新選擇副本資料夾。": "Permission has not been granted. Select the copy folder again.",
   "尚未指定": "Not selected",
@@ -2697,6 +2773,7 @@ const UI_EN = {
   "匯入舊版 SOAP 資料夾…": "Import legacy SOAP folder...",
   "症狀圖表，可左右捲動": "Symptom chart, scroll horizontally",
   "症狀評分表，可左右捲動": "Symptom ratings, scroll horizontally",
+  "表格可左右捲動，或聚焦後使用左右方向鍵。": "Scroll the table horizontally, or focus it and use the left and right arrow keys.",
   "資料來源：": "Source records: ",
   "資料來源": "Source records",
   "收案資料（依來源保留）：": "Intake data (as in source): ",
@@ -2943,6 +3020,60 @@ const RUN_ITEMS = { ocular: ['pursuit', 'fixation', 'saccade', 'vor'], periph: [
 // The training activity each test run counts toward; the activity keeps the latest run's main score.
 const RUN_ACTS = { pursuit: 'Smooth pursuit tracking', fixation: 'Fixation', saccade: 'Saccades', vor: 'Gaze stabilisation (VOR)',
   ufov_speed: 'UFOV subtest 1 – processing speed', ufov_divided: 'UFOV subtest 2 – divided attention', ufov_selective: 'UFOV subtest 3 – selective attention' };
+const SHORT_PHASES = { pre: 'Pre 1', pre2: 'Pre 2 (optional)', post: 'Immediate post', recovery: 'Recovery (optional)', followup: '24–72 h follow-up (optional)' };
+const shortFields = measures => [
+  ...Object.entries(SHORT_PHASES).flatMap(([phase]) => [
+    { id: phase + '_context', label: 'Measurement time / equivalent form', type: 'text', phase },
+    ...measures.map(field => ({ ...field, id: phase + '_' + field.id, phase }))
+  ]),
+  ...[{ id: 'protocol', label: 'Tool / procedure / scoring / test conditions', type: 'textarea' },
+    { id: 'primary', label: 'Primary outcome (choose one)', type: 'text' },
+    { id: 'intervention', label: 'Training / duration / difficulty / breaks / comparison condition', type: 'textarea' }
+  ].map(asSetting)
+];
+const SHORT_TERM_ITEMS = [
+  { id: 'st_search', category: 'visual', domain: 'Short-term functional outcomes', name: 'Visual search (short-term)',
+    outcome: 'Generally seek less time, more accuracy and fewer omissions/errors. Report time and accuracy together. Keep difficulty fixed and use equivalent stimuli to reduce recall and speed–accuracy trade-offs.',
+    measures: [numField('time_s', 'Completion time (s)', { min: 0 }), numField('correct', 'Correct targets (n)', { min: 0, step: 1 }),
+      numField('omissions', 'Omissions (n)', { min: 0, step: 1 }), numField('errors', 'Errors (n)', { min: 0, step: 1 }), numField('accuracy', 'Accuracy (%)', { min: 0, max: 100 })] },
+  { id: 'st_neglect', category: 'visual', domain: 'Short-term functional outcomes', name: 'Spatial neglect / attention (short-term)',
+    outcome: 'Record cancellation omissions, left/right distribution and time. Record signed bisection deviation and its direction; less absolute deviation is generally better. Bisection alone does not describe all neglect.',
+    measures: [numField('omissions', 'Omissions (n)', { min: 0, step: 1 }), numField('left', 'Left-side omissions (n)', { min: 0, step: 1 }),
+      numField('right', 'Right-side omissions (n)', { min: 0, step: 1 }), numField('time_s', 'Completion time (s)', { min: 0 }), numField('bisection_mm', 'Signed line-bisection deviation (mm)')] },
+  { id: 'st_reading', category: 'functional', domain: 'Short-term functional outcomes', name: 'Reading performance (short-term)',
+    outcome: 'Use MNREAD or equivalent passages. Specify characters/min or words/min; keep font, size, contrast and lighting constant. Generally seek faster reading with fewer errors; report both.',
+    measures: [numField('speed', 'Reading speed (characters/min or words/min)', { min: 0 }), numField('errors', 'Reading errors (n)', { min: 0, step: 1 }),
+      numField('error_rate', 'Reading error rate (%)', { min: 0, max: 100 }), numField('comprehension', 'Comprehension (%)', { min: 0, max: 100 })] },
+  { id: 'st_npc', category: 'visual', domain: 'Short-term functional outcomes', name: 'Near point of convergence (short-term NPC)',
+    outcome: 'Record repeated NPC trials and their mean with symptoms. A shorter distance is generally better for convergence goals; use a consistent target and procedure.',
+    measures: [{ id: 'trials', label: 'Repeated trials / procedure', type: 'text' }, numField('break_cm', 'Mean NPC break (cm)', { min: 0 }), numField('recovery_cm', 'Mean NPC recovery (cm)', { min: 0 })] },
+  { id: 'st_pfv', category: 'visual', domain: 'Short-term functional outcomes', name: 'Positive fusional vergence (short-term PFV)',
+    outcome: 'Keep test distance and blur, break and recovery criteria consistent. Greater PFV may be better when it matches the training goal; monitor symptoms separately.',
+    measures: [numField('blur', 'PFV blur (Δ)', { min: 0 }), numField('break', 'PFV break (Δ)', { min: 0 }), numField('recovery', 'PFV recovery (Δ)', { min: 0 })] },
+  { id: 'st_coordination', category: 'functional', domain: 'Short-term functional outcomes', name: 'Visual–motor coordination (short-term)',
+    outcome: 'Use the same relevant pointing or eye–hand task. Generally seek shorter time, fewer errors and more hits; control familiarisation and device latency.',
+    measures: [numField('time_s', 'Completion time (s)', { min: 0 }), numField('rt_ms', 'Reaction time (ms)', { min: 0 }),
+      numField('hit_rate', 'Hit rate (%)', { min: 0, max: 100 }), numField('error', 'Task error (specify unit)', { min: 0 })] },
+  { id: 'st_gaze', category: 'visual', domain: 'Short-term functional outcomes', name: 'Fixation / saccade control (short-term)',
+    outcome: 'Eye-tracker measures require suitable equipment and need not be the first outpatient choice. Record parameter definitions and units; improvement depends on the chosen parameter.',
+    measures: [{ id: 'stability', label: 'Fixation stability (specify parameter / unit)', type: 'text' }, numField('latency_ms', 'Saccade latency (ms)', { min: 0 }),
+      { id: 'precision', label: 'Saccade precision (specify parameter / unit)', type: 'text' }] },
+  ...[
+    ['st_tug', 'Timed Up and Go (short-term TUG)', 'Generally seek a shorter completion time; keep chair, walking aid, assistance and procedure consistent.', [numField('time_s', 'Completion time (s)', { min: 0 })]],
+    ['st_10mwt', '10-Meter Walk Test (short-term 10MWT)', 'Generally seek faster walking speed. Keep pace instructions, timed distance, walking aid and assistance consistent.', [numField('speed_ms', 'Walking speed (m/s)', { min: 0 })]],
+    ['st_bbt', 'Box and Block Test (short-term BBT)', 'Record blocks transferred in 60 seconds and the tested hand. More blocks is generally better; keep the protocol consistent.', [numField('blocks', 'Blocks transferred in 60 s (n)', { min: 0, step: 1 }), { id: 'hand', label: 'Tested hand', type: 'text' }]],
+    ['st_9hpt', 'Nine-Hole Peg Test (short-term 9HPT)', 'Record completion time and the tested hand. A shorter time is generally better; keep the protocol consistent.', [numField('time_s', 'Completion time (s)', { min: 0 }), { id: 'hand', label: 'Tested hand', type: 'text' }]],
+    ['st_cop', 'Postural control (short-term COP)', 'Requires measurement equipment. Define the task, device, units and parameter; improvement direction depends on the task.', [numField('distance', 'COP sway distance (specify unit)', { min: 0 }), numField('velocity', 'COP sway velocity (specify unit)', { min: 0 })]]
+  ].map(([id, name, outcome, measures]) => ({ id, name, outcome, measures, category: 'functional', domain: 'Short-term functional outcomes' })),
+  { id: 'st_tolerance', category: 'visual', domain: 'Short-term tolerability / safety', name: 'Symptoms / recovery (short-term tolerability)',
+    outcome: 'Rate each current symptom from 0–10 for tolerability/safety, separately from functional efficacy. Symptoms can rise while function improves. Record baseline symptoms, adverse events and recovery to a predefined baseline range; VOMS is screening, not a validated single-session efficacy test.',
+    measures: ['Eye fatigue', 'Headache', 'Eye soreness', 'Dizziness', 'Nausea', 'Pain'].map((label, i) => numField('symptom_' + i, label, { min: 0, max: 10 })),
+    extra: [{ id: 'baseline_range', label: 'Predefined symptom baseline range', type: 'text' }, numField('recovery_min', 'Time to baseline range (min)', { min: 0 }), { id: 'events', label: 'Adverse events / symptom context', type: 'textarea' }] },
+  { id: 'st_load', category: 'visual', domain: 'Short-term tolerability / safety', name: 'Fixed-load symptom provocation (short-term tolerability)',
+    outcome: 'Provocation = symptom score after a fixed load minus score before that load. Specify the symptom and identical load. A smaller increase alone does not prove efficacy; consider baseline, ceiling, natural recovery and retesting.',
+    measures: [numField('before_load', 'Symptom before fixed load (0–10)', { min: 0, max: 10 }), numField('after_load', 'Symptom after fixed load (0–10)', { min: 0, max: 10 })],
+    extra: [{ id: 'symptom', label: 'Symptom and fixed-load protocol', type: 'textarea' }] }
+].map(({ measures, extra = [], ...item }) => ({ ...item, timing: 'session', fields: [...shortFields(measures), ...extra] }));
 const DEFAULT_PLAN = [
   { id: 'copm', category: 'functional', domain: 'Occupational performance & satisfaction', name: 'COPM', timing: 'bp', copm: true,
     outcome: 'Performance and satisfaction ratings for the same priority occupations; change scores' },
@@ -2968,14 +3099,15 @@ const DEFAULT_PLAN = [
     fields: [...['OU', 'OD', 'OS'].map(eye => ({ id: eye.toLowerCase(), label: eye, type: 'text' })), { id: 'test', label: 'Test type (as recorded)', type: 'text' }] })),
   { id: 'stereo', category: 'visual', domain: 'Visual function', name: 'Stereopsis', timing: 'assessment',
     fields: [{ id: 'arcsec', label: 'Result (arcsec)', type: 'number', min: 0 }, { id: 'test', label: 'Test type (as recorded)', type: 'text' }] },
-  { id: 'self_report', category: 'functional', domain: 'Functional vision', name: 'Self-report questionnaire', timing: 'milestone',
+  { id: 'self_report', category: 'functional', domain: 'Functional performance', name: 'Self-report questionnaire', timing: 'milestone',
     fields: [{ id: 'questionnaire', label: 'Questionnaire', type: 'text' }, { id: 'score', label: 'Score', type: 'text' }, { id: 'findings', label: 'Key findings', type: 'textarea' }] },
-  { id: 'ot_assessment', category: 'functional', domain: 'Functional vision', name: 'OT assessment', timing: 'assessment',
+  { id: 'ot_assessment', category: 'functional', domain: 'Functional performance', name: 'OT assessment', timing: 'assessment',
     fields: [{ id: 'method', label: 'Tool / method', type: 'text' }, { id: 'findings', label: 'Findings', type: 'textarea' }] },
-  { id: 'daily_task', category: 'functional', domain: 'Functional vision', name: 'Daily task performance', timing: 'assessment',
+  { id: 'daily_task', category: 'functional', domain: 'Functional performance', name: 'Daily task performance', timing: 'assessment',
     fields: [{ id: 'task', label: 'Task / measure', type: 'text' }, { id: 'performance', label: 'Performance / observation', type: 'textarea' }] },
-  { id: 'participation', category: 'functional', domain: 'Functional vision', name: 'Participation needs', timing: 'assessment',
-    fields: [{ id: 'needs', label: 'Needs and roles', type: 'textarea' }, { id: 'priority', label: 'Priority', type: 'text' }] }
+  { id: 'participation', category: 'functional', domain: 'Functional performance', name: 'Participation needs', timing: 'assessment',
+    fields: [{ id: 'needs', label: 'Needs and roles', type: 'textarea' }, { id: 'priority', label: 'Priority', type: 'text' }] },
+  ...SHORT_TERM_ITEMS
 ];
 const OLD_DEFAULT_NAMES = ['VOMS (Vestibular/Ocular Motor Screening)', 'Near point of convergence (NPC)', 'King-Devick test', 'DEM (Developmental Eye Movement)'];
 
@@ -2991,9 +3123,46 @@ const TRAIN = [
 ];
 const BLOCK_SUGGEST = ['Saccade task (eye tracker)', 'Fixation task (eye tracker)', 'Smooth-pursuit task (eye tracker)', 'Peripheral-stimulus task', 'Convergence (NPC) testing', 'UFOV', 'Work-related functional vision task', ...TRAIN.map(t => t.label)];
 const LABELS = {
+  'Pre 1': '訓練前 1', 'Pre 2 (optional)': '訓練前 2（選用）', 'Immediate post': '訓練後立即', 'Recovery (optional)': '恢復期（選用）', '24–72 h follow-up (optional)': '24–72 小時追蹤（選用）',
+  'Short-term functional outcomes': '短期功能成效', 'Short-term tolerability / safety': '短期耐受性／安全性',
+  'Visual search (short-term)': '視覺搜尋（短期）', 'Spatial neglect / attention (short-term)': '空間忽略／注意（短期）',
+  'Reading performance (short-term)': '閱讀表現（短期）', 'Near point of convergence (short-term NPC)': '集合近點（短期 NPC）',
+  'Positive fusional vergence (short-term PFV)': '正融像輻輳（短期 PFV）', 'Visual–motor coordination (short-term)': '視覺動作協調（短期）',
+  'Fixation / saccade control (short-term)': '注視／掃視控制（短期）', 'Timed Up and Go (short-term TUG)': '計時起走測試（短期 TUG）',
+  '10-Meter Walk Test (short-term 10MWT)': '十公尺步行測試（短期 10MWT）', 'Box and Block Test (short-term BBT)': '盒子與積木測試（短期 BBT）',
+  'Nine-Hole Peg Test (short-term 9HPT)': '九孔插棒測試（短期 9HPT）', 'Postural control (short-term COP)': '姿勢控制（短期 COP）',
+  'Symptoms / recovery (short-term tolerability)': '症狀／恢復（短期耐受性）', 'Fixed-load symptom provocation (short-term tolerability)': '固定負荷症狀誘發（短期耐受性）',
+  'Measurement time / equivalent form': '實際測量時間／等值題型', 'Tool / procedure / scoring / test conditions': '工具／流程／計分規則／測試條件',
+  'Primary outcome (choose one)': '主要結果指標（擇一）', 'Training / duration / difficulty / breaks / comparison condition': '訓練內容／時間／難度／休息／對照條件',
+  'Completion time (s)': '完成時間（秒）', 'Correct targets (n)': '正確目標數', 'Omissions (n)': '漏答數', 'Errors (n)': '錯誤數',
+  'Accuracy (%)': '正確率（%）', 'Left-side omissions (n)': '左側漏答數', 'Right-side omissions (n)': '右側漏答數', 'Signed line-bisection deviation (mm)': '線段平分偏移（mm，含正負方向）',
+  'Reading speed (characters/min or words/min)': '閱讀速度（字／分或 words/min）', 'Reading errors (n)': '閱讀錯誤數', 'Reading error rate (%)': '閱讀錯誤率（%）', 'Comprehension (%)': '理解正確率（%）',
+  'Repeated trials / procedure': '重複測量各次結果／流程', 'Mean NPC break (cm)': 'NPC 破裂點平均（cm）', 'Mean NPC recovery (cm)': 'NPC 恢復點平均（cm）',
+  'PFV blur (Δ)': 'PFV 模糊點（Δ）', 'PFV break (Δ)': 'PFV 破裂點（Δ）', 'PFV recovery (Δ)': 'PFV 恢復點（Δ）',
+  'Reaction time (ms)': '反應時間（ms）', 'Hit rate (%)': '命中率（%）', 'Task error (specify unit)': '任務誤差（請註明單位）',
+  'Fixation stability (specify parameter / unit)': '注視穩定度（請註明參數／單位）', 'Saccade latency (ms)': '掃視潛時（ms）', 'Saccade precision (specify parameter / unit)': '掃視精準度（請註明參數／單位）',
+  'Walking speed (m/s)': '步行速度（m/s）', 'Blocks transferred in 60 s (n)': '60 秒搬移方塊數', 'Tested hand': '施測手側',
+  'COP sway distance (specify unit)': 'COP 擺動距離（請註明單位）', 'COP sway velocity (specify unit)': 'COP 擺動速度（請註明單位）',
+  'Eye fatigue': '眼睛疲勞', 'Headache': '頭痛', 'Eye soreness': '眼睛痠痛', 'Dizziness': '暈眩', 'Nausea': '噁心', 'Pain': '疼痛',
+  'Predefined symptom baseline range': '預設症狀基線範圍', 'Time to baseline range (min)': '回到基線範圍的時間（分鐘）', 'Adverse events / symptom context': '不適事件／症狀背景',
+  'Symptom before fixed load (0–10)': '固定負荷前症狀（0–10）', 'Symptom after fixed load (0–10)': '固定負荷後症狀（0–10）', 'Symptom and fixed-load protocol': '症狀名稱與固定負荷施測流程',
+  'Generally seek less time, more accuracy and fewer omissions/errors. Report time and accuracy together. Keep difficulty fixed and use equivalent stimuli to reduce recall and speed–accuracy trade-offs.': '完成時間通常下降、正確率上升、漏答／錯誤下降；時間與準確性應一起報告。固定難度並使用等值刺激，減少記憶與速度、準確度取捨的影響。',
+  'Record cancellation omissions, left/right distribution and time. Record signed bisection deviation and its direction; less absolute deviation is generally better. Bisection alone does not describe all neglect.': '記錄刪除測驗的漏答數、左右分布與完成時間。線段平分記錄含方向的偏移，通常絕對偏移減少較佳；不能單獨代表所有忽略症狀。',
+  'Use MNREAD or equivalent passages. Specify characters/min or words/min; keep font, size, contrast and lighting constant. Generally seek faster reading with fewer errors; report both.': '使用 MNREAD 或等難度短文，註明字／分或 words/min；固定字體、字級、對比與照明。速度通常上升、錯誤下降，兩者一起記錄。',
+  'Record repeated NPC trials and their mean with symptoms. A shorter distance is generally better for convergence goals; use a consistent target and procedure.': '記錄 NPC 多次測量及平均，搭配症狀評分。集合訓練通常以距離縮短為改善方向；固定目標及測量流程。',
+  'Keep test distance and blur, break and recovery criteria consistent. Greater PFV may be better when it matches the training goal; monitor symptoms separately.': '固定測試距離與模糊、破裂、恢復判定標準。符合訓練目標時 PFV 增加可能較佳；症狀另作耐受性監測。',
+  'Use the same relevant pointing or eye–hand task. Generally seek shorter time, fewer errors and more hits; control familiarisation and device latency.': '使用相同且與訓練相關的點按或眼手協調任務。通常時間／誤差下降、命中率上升；控制熟悉度與設備延遲。',
+  'Eye-tracker measures require suitable equipment and need not be the first outpatient choice. Record parameter definitions and units; improvement depends on the chosen parameter.': '眼動儀指標需要適合的設備；記錄參數定義與單位，改善方向依參數而定，一般門診不必優先選用。',
+  'Generally seek a shorter completion time; keep chair, walking aid, assistance and procedure consistent.': '完成時間通常下降；固定椅子、輔具、協助程度與施測流程。',
+  'Generally seek faster walking speed. Keep pace instructions, timed distance, walking aid and assistance consistent.': '步行速度通常上升；固定速度指示、計時距離、輔具與協助程度。',
+  'Record blocks transferred in 60 seconds and the tested hand. More blocks is generally better; keep the protocol consistent.': '記錄 60 秒搬移方塊數與施測手側；數量通常上升較佳，固定施測流程。',
+  'Record completion time and the tested hand. A shorter time is generally better; keep the protocol consistent.': '記錄完成時間與施測手側；時間通常下降較佳，固定施測流程。',
+  'Requires measurement equipment. Define the task, device, units and parameter; improvement direction depends on the task.': '需量測設備；註明任務、設備、單位與參數，改善方向依任務而定。',
+  'Rate each current symptom from 0–10 for tolerability/safety, separately from functional efficacy. Symptoms can rise while function improves. Record baseline symptoms, adverse events and recovery to a predefined baseline range; VOMS is screening, not a validated single-session efficacy test.': '各症狀以 0–10 分別記錄，作為耐受性／安全性而非功能療效。功能改善時症狀仍可能暫增；記錄原有症狀、不適事件與回到預設基線範圍的時間。VOMS 屬篩檢，不能直接視為已驗證的單次療效測試。',
+  'Provocation = symptom score after a fixed load minus score before that load. Specify the symptom and identical load. A smaller increase alone does not prove efficacy; consider baseline, ceiling, natural recovery and retesting.': '症狀誘發量＝固定負荷後分數－該次負荷前分數。註明症狀並固定相同負荷；誘發量較小不能單獨證明療效，須考量基線、天花板效應、自然恢復與重測。',
   'Oculomotor training (Sol)': '眼球動作訓練（Sol）', 'Visual perception': '視覺知覺', 'Paper-based visual exercises': '紙本視覺練習',
   'Oculomotor training (Tobii / webcam)': '眼球動作訓練（Tobii／網路攝影機）', 'Visual processing training': '視覺處理訓練', 'Home-based practice modules': '居家視覺練習模組',
-  'Visual function': '視覺功能', 'Functional vision': '功能性視覺',
+  'Visual function': '視覺功能', 'Functional vision': '功能性視覺', 'Functional performance': '功能表現',
   'Medical record review': '病歷資料', 'Optometry record': '視光紀錄', 'OT assessment record': '職能治療評估紀錄',
   'Visual acuity': '視力', 'Near visual acuity': '近距離視力', 'Refraction': '屈光', 'Visual field': '視野',
   'Contrast sensitivity': '對比敏感度', 'Color vision': '色覺', 'Stereopsis': '立體視',
@@ -3114,10 +3283,12 @@ const fmtDate = d => { if (!d) return '-'; const t = new Date(d + 'T00:00:00'); 
 const nrs = v => (v === '' || v == null || isNaN(+v)) ? null : Math.max(0, Math.min(10, Math.round(+v)));
 const numOrNull = v => (v === '' || v == null || isNaN(+v)) ? null : +v;
 const signed = d => (d > 0 ? '+' : '') + (Math.round(d * 10) / 10);
+let toastTimer = 0;
 function toast(msg) {
-  document.querySelectorAll('.toast').forEach(t => t.remove());
-  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t);
-  setTimeout(() => t.remove(), 6500);
+  const host = $('#toastHost'); host.replaceChildren();
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; host.appendChild(t);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { if (t.isConnected) t.remove(); }, 5000);
 }
 const systemTheme = matchMedia('(prefers-color-scheme: dark)');
 const isDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : systemTheme.matches;
@@ -3128,27 +3299,40 @@ function renderTheme() {
 }
 systemTheme.addEventListener('change', renderTheme);
 renderTheme();
-let modalDismiss = null, modalFocus = null;
+let modalDismiss = null, modalFocus = null, modalBackground = [];
+const modalControls = m => [...m.querySelectorAll('button, input, select, textarea, a[href], summary, [tabindex]')].filter(el => !el.disabled && el.tabIndex >= 0 && el.getClientRects().length);
 function modal(html, onDismiss = null) {
   const layer = $('#layer');
   if (layer.firstChild) closeModal();
   modalDismiss = onDismiss; modalFocus = document.activeElement;
   layer.innerHTML = `<div class="overlay"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
+  modalBackground = [...document.body.children].filter(el => el !== layer).map(el => ({ el, inert: el.inert }));
+  for (const { el } of modalBackground) el.inert = true;
+  document.body.style.setProperty('--modal-scrollbar-width', (innerWidth - document.documentElement.clientWidth) + 'px');
+  document.body.classList.add('modal-open');
   $('#languageSelect').disabled = true;
   const heading = layer.querySelector('h3');
   if (heading) { heading.id = 'dialogTitle'; layer.querySelector('.modal').setAttribute('aria-labelledby', heading.id); }
-  const first = layer.querySelector('input, textarea, button'); if (first) first.focus();
+  const dialog = layer.querySelector('.modal'); dialog.tabIndex = -1;
+  (modalControls(dialog)[0] || dialog).focus({ preventScroll: true });
   return layer.querySelector('.modal');
 }
-const closeModal = (result = false) => { const done = modalDismiss; modalDismiss = null; $('#layer').innerHTML = ''; $('#languageSelect').disabled = savingSession || savingItems; modalFocus?.focus(); if (done) done(result); };
+const closeModal = (result = false) => {
+  const done = modalDismiss; modalDismiss = null; $('#layer').innerHTML = '';
+  for (const { el, inert } of modalBackground) el.inert = inert;
+  modalBackground = []; document.body.classList.remove('modal-open');
+  $('#languageSelect').disabled = savingSession || savingItems;
+  modalFocus?.focus({ preventScroll: true }); if (done) done(result);
+};
 document.addEventListener('keydown', e => {
   const m = $('#layer .modal'); if (!m) return;
   if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
   if (e.key === 'Tab') {
-    const controls = [...m.querySelectorAll('button, input, select, textarea, a[href]')].filter(el => !el.disabled && el.getClientRects().length);
+    const controls = modalControls(m);
     const first = controls[0], last = controls[controls.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+    if (!first) { e.preventDefault(); m.focus(); }
+    else if (e.shiftKey && (document.activeElement === first || document.activeElement === m)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || document.activeElement === m)) { e.preventDefault(); first.focus(); }
   }
 });
 function ask(message, okLabel = ui('刪除')) {
@@ -3364,7 +3548,7 @@ function validateItems(items, kind) {
     if (!id(key) || used.has(key) || typeof name !== 'string' || !name.trim()) throw new Error(ui('項目名稱或識別碼格式錯誤'));
     used.add(key);
     if (kind === 'assessment' && (!Object.hasOwn(TIMING, item.timing || 'assessment') || (item.copm && key !== 'copm'))) throw new Error(ui('評估時機或 COPM 模板格式錯誤'));
-    if (kind === 'assessment' && item.category !== undefined && !['visual', 'functional'].includes(item.category)) throw new Error(ui('評估分類必須為視覺功能或功能性視覺。'));
+    if (kind === 'assessment' && item.category !== undefined && !['visual', 'functional'].includes(item.category)) throw new Error(ui('評估分類必須為視覺功能或功能表現。'));
     if (kind === 'training' && (item.acts != null && (!Array.isArray(item.acts) || item.acts.some(a => typeof a !== 'string')))) throw new Error(ui('復健活動清單格式錯誤'));
     if (item.fields != null && !Array.isArray(item.fields)) throw new Error(ui('結果欄位格式錯誤'));
     const fieldIds = new Set();
@@ -4088,6 +4272,9 @@ function renderCommands() {
   const tabStop = tools.find(b => b === document.activeElement) || tools.find(b => b.tabIndex === 0) || tools[0];
   for (const b of tools) b.tabIndex = b === tabStop ? 0 : -1;
 }
+new ResizeObserver(([entry]) => {
+  document.documentElement.style.setProperty('--chrome-height', entry.target.getBoundingClientRect().height + 'px');
+}).observe($('#applicationBar'));
 for (const key of document.querySelectorAll('[data-shortcut]')) {
   key.textContent = (/Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl+') + key.dataset.shortcut;
 }
@@ -4163,7 +4350,7 @@ const trainingPlan = c => Array.isArray(c.trainingPlan) ? c.trainingPlan : TRAIN
 const itemKey = (item, kind) => kind === 'assessment' ? item.id : item.k;
 const assessmentCategory = item => item.copm || item.id === 'copm' ? 'functional'
   : item.category || (['func', 'self_report', 'ot_assessment', 'daily_task', 'participation'].includes(item.id) ? 'functional' : 'visual');
-const assessmentCategoryLabel = category => category === 'functional' ? ui('功能性視覺') : ui('視覺功能');
+const assessmentCategoryLabel = category => category === 'functional' ? ui('功能表現') : ui('視覺功能');
 const hasAssessmentData = a => !!(a && (a.done || a.notes || a.copm?.length || Object.keys(a.values || {}).length));
 const hasTrainingData = d => !!(d && (d.on || d.acts?.length || d.eyedot?.length || d.program || d.dur != null || d.level || d.perf || d.diff != null || d.notes || Object.keys(d.values || {}).length || Object.keys(d.actScores || {}).length || d.runs?.length));
 // Items without an explicit choice stay in the initial assessment, as before this setting existed.
@@ -4177,10 +4364,11 @@ const VF_FIELDS = ['OD', 'OS', 'OU'].flatMap(eye => ['superior', 'inferior', ...
   .map(direction => ({ id: eye.toLowerCase() + '_' + direction, label: eye + ' ' + direction, type: 'text' })));
 const isVisualField = item => (item.id === 'vf' && item.name === 'Visual field') || (item.id === 'src_vf' && item.name === 'Visual field (source workbook)');
 function fieldsFor(item) {
-  const fields = (item.fields || []).map(f => typeof f === 'string' ? { id: f, label: labelText(f), type: 'text' } : f);
+  const fields = (item.fields || []).map(f => typeof f === 'string' ? { id: f, label: f, type: 'text' } : f);
   return item.id === 'vf' && isVisualField(item) ? [...fields, ...VF_FIELDS.filter(f => !fields.some(existing => existing.id === f.id))] : fields;
 }
-const fieldLabel = f => labelText(f.label) + (f.unit ? `（${f.unit}）` : '');
+const phaseLabel = phase => labelText(SHORT_PHASES[phase] || phase);
+const fieldLabel = f => (f.phase ? ui('{0}：{1}', phaseLabel(f.phase), labelText(f.label)) : labelText(f.label)) + (f.unit ? `（${f.unit}）` : '');
 function resultEntries(item, values) {
   const fields = fieldsFor(item);
   // Canonical select values such as "Evaluation" are shown in the interface language.
@@ -4215,13 +4403,14 @@ function fieldInputs(item, prefix, values = {}) {
   values = values || {};
   const boxes = fieldsFor(item).map((f, i) => {
     const id = prefix + '-' + i, value = Object.hasOwn(values, f.id) ? values[f.id] : null, type = f.type || 'text';
+    const accessible = f.phase ? `aria-label="${esc(fieldLabel(f))}"` : '';
     let input;
-    if (type === 'textarea') input = `<textarea id="${id}">${val(value)}</textarea>`;
+    if (type === 'textarea') input = `<textarea id="${id}" ${accessible}>${val(value)}</textarea>`;
     else if (type === 'select') {
       const options = [...new Set([...(f.options || []), ...(hasValue(value) ? [String(value)] : [])])];
-      input = ui`<select id="${id}"><option value="">請選擇</option>${options.map(option => `<option value="${esc(option)}" ${String(value) === option ? 'selected' : ''}>${esc(labelText(option))}</option>`).join('')}</select>`;
-    } else input = `<input type="${type === 'number' ? 'number' : 'text'}" id="${id}" value="${val(value)}" ${type === 'number' ? `step="${val(f.step ?? 'any')}" ${f.min != null ? `min="${val(f.min)}"` : ''} ${f.max != null ? `max="${val(f.max)}"` : ''}` : ''}>`;
-    return { f, html: `<label class="f" for="${id}">${esc(fieldLabel(f))}${input}</label>` };
+      input = ui`<select id="${id}" ${accessible}><option value="">請選擇</option>${options.map(option => `<option value="${esc(option)}" ${String(value) === option ? 'selected' : ''}>${esc(labelText(option))}</option>`).join('')}</select>`;
+    } else input = `<input type="${type === 'number' ? 'number' : 'text'}" id="${id}" ${accessible} value="${val(value)}" ${type === 'number' ? `step="${val(f.step ?? 'any')}" ${f.min != null ? `min="${val(f.min)}"` : ''} ${f.max != null ? `max="${val(f.max)}"` : ''}` : ''}>`;
+    return { f, html: `<label class="f" for="${id}">${esc(fieldLabel({ ...f, phase: undefined }))}${input}</label>` };
   });
   const directions = isVisualField(item) ? boxes.filter(b => VF_FIELDS.some(f => f.label === b.f.label)) : [];
   const cross = directions.length === 12 ? `<div class="vf-entry"><p class="note">${ui('依面對病人的方向排列；雙眼的左、右以病人為準。可填角度或質性描述，空白代表未記錄。')}</p><div class="vf-eyes">${[
@@ -4230,8 +4419,15 @@ function fieldInputs(item, prefix, values = {}) {
     ['superior', 'top'], [left, 'left'], [right, 'right'], ['inferior', 'bottom']
   ].map(([direction, position]) => directions.find(b => b.f.label === eye + ' ' + direction).html.replace('class="f"', `class="f vf-${position}"`)).join('')}<span class="vf-center" aria-hidden="true">${eye}</span></div></fieldset>`).join('')}</div></div>` : '';
   const settings = boxes.filter(b => b.f.group === 'setting');
+  const phases = [...new Set(boxes.filter(b => b.f.phase && b.f.group !== 'setting').map(b => b.f.phase))];
+  const stages = phases.map(phase => {
+    const contents = `<div class="grid">${boxes.filter(b => b.f.phase === phase && b.f.group !== 'setting').map(b => b.html).join('')}</div>`;
+    return ['pre', 'post'].includes(phase)
+      ? `<fieldset class="short-stage"><legend>${esc(phaseLabel(phase))}</legend>${contents}</fieldset>`
+      : `<details class="settings short-stage" ${boxes.some(b => b.f.phase === phase && hasValue(values[b.f.id])) ? 'open' : ''}><summary>${esc(phaseLabel(phase))}</summary>${contents}</details>`;
+  }).join('');
   const count = settings.filter(b => hasValue(values[b.f.id])).length;
-  return cross + boxes.filter(b => b.f.group !== 'setting' && (!cross || !directions.includes(b))).map(b => b.html).join('') + (settings.length
+  return cross + stages + boxes.filter(b => !b.f.phase && b.f.group !== 'setting' && (!cross || !directions.includes(b))).map(b => b.html).join('') + (settings.length
     ? `<details class="settings" id="${prefix}-settings"><summary>${count ? ui('測驗設定（已填 {0} 項）', count) : ui('測驗設定')}</summary><div class="grid">${settings.map(b => b.html).join('')}</div></details>` : '');
 }
 // Settings of one result as a short line, e.g. "Evaluation · White dot · 60 arcmin".
@@ -4289,15 +4485,23 @@ function clinicalInterventionLabel(id) {
   const item = clinicalInterventions().find(item => item.id === id);
   return item ? [serviceModeLabel(item.mode), item.approach === 'remediation' ? ui('復能') : approachLabel(item.approach), item.label].join(' / ') : id;
 }
-function clinicalEvidenceText(c, s, ids) {
+function clinicalEvidenceText(c, s, ids, compact = false) {
   const items = assessmentItems(c, s);
   return ids.map(id => {
     const item = items.find(item => item.id === id), data = s.assess?.[id];
     if (!item) return id + ui('：') + ui('本次紀錄找不到此評估');
     const name = labelText(item.name);
     if (!data?.done) return name + ui('：') + ui('本次未勾選施測');
-    const results = item.copm ? (data.copm || []).map(row => [row.occ, ui('表現') + ' ' + (row.perf ?? '-'), ui('滿意度') + ' ' + (row.sat ?? '-')].join(' / '))
+    let results = item.copm ? (data.copm || []).map(row => [row.occ, ui('表現') + ' ' + (row.perf ?? '-'), ui('滿意度') + ' ' + (row.sat ?? '-')].join(' / '))
       : resultEntries(item, data.values).map(([label, value]) => label + ui('：') + value);
+    const fields = fieldsFor(item);
+    if (compact && fields.some(f => f.phase)) {
+      const measures = fields.filter(f => f.phase && f.group !== 'setting' && f.label !== 'Measurement time / equivalent form' && f.label !== LABELS['Measurement time / equivalent form'] && hasValue(data.values?.[f.id]));
+      results = [...new Set(measures.map(f => f.phase))].map(phase => phaseLabel(phase) + ui('：') + measures.filter(f => f.phase === phase)
+        .map(f => fieldLabel({ ...f, phase: undefined }) + ui('：') + shownValue(f, data.values[f.id])).join(ui('、')));
+      const extra = Object.fromEntries(Object.entries(data.values || {}).filter(([id]) => !fields.some(f => f.id === id && (f.phase || f.group === 'setting'))));
+      results.push(...resultEntries({ fields: fields.filter(f => !f.phase && f.group !== 'setting') }, extra).map(([label, value]) => label + ui('：') + value));
+    }
     if (data.notes) results.push(ui('備註') + ui('：') + data.notes);
     return name + ui('：') + (results.length ? results.join(ui('；')) : ui('尚未填寫結果'));
   });
@@ -4390,7 +4594,7 @@ function renderDashboard() {
     map = s.clinicalLinks.map(link => row(
       `<span class="eyebrow">${esc(assessmentCategoryLabel(link.category))}</span><p class="clinical-symptom clinical-note">${esc(link.symptom)}</p>`,
       (link.peo.length ? `<span class="eyebrow">${link.peo.map(key => esc(peoLabel(key))).join(' / ')}</span>` : '') + text(link.reasoning, ui('尚未填寫推理')) +
-        (link.evidence.length ? ul(clinicalEvidenceText(c, s, link.evidence)) : link.evidenceNotes ? '' : text('', ui('尚未連結評估依據'))) + (link.evidenceNotes ? text(link.evidenceNotes) : ''),
+        (link.evidence.length ? ul(clinicalEvidenceText(c, s, link.evidence, true)) : link.evidenceNotes ? '' : text('', ui('尚未連結評估依據'))) + (link.evidenceNotes ? text(link.evidenceNotes) : ''),
       (link.interventions.length ? ul(link.interventions.map(clinicalInterventionLabel)) : link.interventionNotes ? '' : text('', ui('尚未記錄介入處置'))) + (link.interventionNotes ? text(link.interventionNotes) : ''), link.id)).join('');
   } else {
     const reasoning = ['person', 'environment', 'occupation'].filter(key => s.peo?.[key]).map(key => peoLabel(key) + ui('：') + s.peo[key]);
@@ -4407,6 +4611,9 @@ function renderDashboard() {
   const rated = ratedRows(s.sym), first = rated[0], last = rated.at(-1);
   const ratings = SYMS.filter(sym => rated.some(row => row.scores?.[sym.k] != null));
   const assessments = assessmentItems(c, s).filter(p => s.assess?.[p.id]?.done);
+  const tolerability = assessments.filter(item => (item.id === 'st_tolerance' || item.domain === 'Short-term tolerability / safety' || item.domain === LABELS['Short-term tolerability / safety']) &&
+    fieldsFor(item).some(f => f.phase && f.min === 0 && f.max === 10 && hasValue(s.assess[item.id].values?.[f.id])));
+  const showTolerability = !ratings.length && tolerability.length;
   const latest = byDate(sessions).at(-1);
   box.innerHTML = ui`<section class="panel dashboard" id="patientDashboard">
     <div class="dashboard-head"><h3>本次狀態</h3>
@@ -4414,18 +4621,19 @@ function renderDashboard() {
       <button class="btn small" data-action="open-session" data-id="${esc(s.id)}">開啟此筆紀錄</button>
     </div>
     <div class="dashboard-context"><span class="record-state ${s !== records[0] ? 'historical' : ''}">${s === records[0] ? ui('最近出席') : ui('歷次紀錄')}</span><span>${serviceModeLabel(s.mode)}${s.clinician ? ' / ' + esc(s.clinician) : ''}</span>${s.tolerance != null ? `<span>${ui('耐受度')} ${esc(s.tolerance)}/10</span>` : ''}${s.nextDate ? `<span>${ui('下次復健')} ${esc(fmtDate(s.nextDate))}</span>` : ''}${!s.clinicalLinks?.length ? ui('<span class="clinical-missing" role="status">尚未逐項連結</span>') : ''}${latest?.visit === 'absent' ? `<span class="clinical-missing" role="status">${ui('最近一次紀錄為缺席：{0}', esc(fmtDate(latest.date)))}</span>` : ''}</div>
-    <section aria-label="症狀分數"><div class="dashboard-score-head"><h4>症狀分數</h4><span class="note">${ratings.length ? esc(tpName(first)) + (last !== first ? ' → ' + esc(tpName(last)) + ' · ' + ui('本次變化') : '') + ' · ' : ''}分數越低，症狀越少</span></div>
+    <section aria-label="症狀分數"><div class="dashboard-score-head"><h4>${showTolerability ? ui('症狀與耐受性') : ui('症狀分數')}</h4><span class="note">${showTolerability ? ui('症狀分數為 0–10；屬耐受性結果。') : (ratings.length ? esc(tpName(first)) + (last !== first ? ' → ' + esc(tpName(last)) + ' · ' + ui('本次變化') : '') + ' · ' : '') + ui('分數越低，症狀越少')}</span></div>
       ${ratings.length ? `<dl class="dashboard-ratings">${ratings.map(sym => {
         const from = first.scores?.[sym.k], to = last.scores?.[sym.k];
         const change = last !== first && from != null && to != null ? to - from : null;
         return `<div><dt>${language === 'en' ? sym.en : sym.zh}</dt><dd><span>${esc(from ?? '-')}${last !== first ? ' → ' + esc(to ?? '-') : ''}</span>${change != null ? `<span class="rating-change ${change > 0 ? 'bad' : change < 0 ? 'good' : ''}" title="${esc(ui('本次變化') + ' ' + signed(change))}" aria-label="${esc(ui('本次變化') + ' ' + signed(change))}">${signed(change)}</span>` : ''}</dd></div>`;
-      }).join('')}</dl>` : ui('<p class="note" style="margin:0">尚未填寫症狀評分</p>')}
+      }).join('')}</dl>` : showTolerability ? `<div id="dashboardTolerability">${ul(clinicalEvidenceText(c, s, tolerability.map(item => item.id), true))}</div>` : ui('<p class="note" style="margin:0">尚未填寫症狀評分</p>')}
     </section>
-    <div id="clinicalMap" class="clinical-map"><div class="clinical-map-head" aria-hidden="true"><span>症狀與功能</span><span>推理與依據</span><span>介入與計畫</span></div>${map}</div>
+    <div id="clinicalMap" class="clinical-map">${map}</div>
+    ${assessments.some(item => fieldsFor(item).some(f => f.phase)) ? ui('<p class="note">短期結果為摘要；完整條件與測量時間請開啟此筆紀錄。</p>') : ''}
     <section aria-label="本次量化與評估摘要">
       ${assessments.length ? ['visual', 'functional'].map(category => {
         const items = assessments.filter(p => assessmentCategory(p) === category);
-        return items.length ? `<details class="dashboard-findings"><summary>${assessmentCategoryLabel(category)} (${items.length})</summary>${clinicalEvidenceText(c, s, items.map(p => p.id)).map(line => `<div class="clinical-note">${esc(line)}</div>`).join('')}</details>` : '';
+        return items.length ? `<details class="dashboard-findings"><summary>${assessmentCategoryLabel(category)} (${items.length})</summary>${clinicalEvidenceText(c, s, items.map(p => p.id), true).map(line => `<div class="clinical-note">${esc(line)}</div>`).join('')}</details>` : '';
       }).join('') : ui('<p class="note">尚無已勾選的評估結果</p>')}
     </section>
   </section>`;
@@ -4634,14 +4842,41 @@ function chartSVG(list) {
   return ui`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="每次復健的首次與復健後症狀評分">${g}${line('pre', 'var(--pre)')}${line('end', 'var(--accent)')}</svg>`;
 }
 
+function stagedOutcomesHTML(item, rows, definition) {
+  const recordHTML = rows.map(s => {
+    const current = definition(s), fields = fieldsFor(current), a = s.assess[item.id], values = a.values || {};
+    const isContext = f => f.label === 'Measurement time / equivalent form' || f.label === LABELS['Measurement time / equivalent form'];
+    const measureLabel = f => fieldLabel({ ...f, phase: undefined });
+    const phases = [...new Set(fields.filter(f => f.phase && f.group !== 'setting' && hasValue(values[f.id])).map(f => f.phase))];
+    const measured = new Set(fields.filter(f => f.phase && hasValue(values[f.id])).map(measureLabel));
+    const metrics = [...new Map(fields.filter(f => f.phase && f.group !== 'setting' && !isContext(f) && measured.has(measureLabel(f))).map(f => [measureLabel(f), f])).values()];
+    const hasContext = fields.some(f => f.phase && isContext(f) && hasValue(values[f.id]));
+    const extra = resultEntries({ fields: fields.filter(f => !f.phase || f.group === 'setting') },
+      Object.fromEntries(Object.entries(values).filter(([key, value]) => hasValue(value) && !fields.some(f => f.id === key && f.phase && f.group !== 'setting'))));
+    if (a.notes) extra.push([ui('備註'), a.notes]);
+    const facts = extra.length ? `<dl class="short-facts">${extra.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>` : '';
+    const table = phases.length ? ui`${metrics.length + Number(hasContext) > 1 ? ui('<p class="note short-scroll-hint">可左右捲動查看更多指標與測量時間。</p>') : ''}<div class="scroll" tabindex="0" role="region" aria-label="${esc(labelText(current.name) + ' / ' + fmtDate(s.date))}"><table class="out short-out"><thead><tr><th scope="col">測量時點</th>${metrics.map(f => `<th scope="col">${esc(measureLabel(f))}</th>`).join('')}${hasContext ? `<th scope="col">${esc(labelText('Measurement time / equivalent form'))}</th>` : ''}</tr></thead><tbody>
+      ${phases.map(phase => {
+        const stageFields = fields.filter(f => f.phase === phase && f.group !== 'setting');
+        const context = stageFields.find(isContext);
+        return `<tr><th scope="row">${esc(phaseLabel(phase))}</th>${metrics.map(metric => {
+          const f = stageFields.find(f => !isContext(f) && measureLabel(f) === measureLabel(metric));
+          return `<td>${esc(f ? shownValue(f, values[f.id]) : '-')}</td>`;
+        }).join('')}${hasContext ? `<td class="short-context">${esc(context ? shownValue(context, values[context.id]) : '-')}</td>` : ''}</tr>`;
+      }).join('')}</tbody></table></div>` : !fields.some(f => f.phase) && facts ? '' : ui('<p class="note">尚未填寫結果</p>');
+    const notes = facts ? fields.some(f => f.phase) ? ui`<details class="short-notes"><summary>測驗條件與備註</summary>${facts}</details>` : facts : '';
+    return `<article class="short-record"><h4>${fmtDate(s.date)} · ${esc(visitLabel(s.visit))}</h4>${table}${notes}</article>`;
+  }).join('');
+  return `<section class="panel short-outcomes" data-item-id="${esc(item.id)}"><h3>${esc(labelText(item.name))}</h3><p class="note">${esc(labelText(item.domain))}</p>${recordHTML}</section>`;
+}
 function renderOutcomes() {
   const c = cur(), asc = byDate(filteredSessions());
   const parts = [];
   // Symptoms summary
-  const symRows = asc.filter(s => (s.sym || []).length);
+  const symRows = asc.filter(s => (s.sym || []).some(r => rowTotal(r) != null || r.kind === 'rec' && r.recMin != null));
   if (symRows.length) {
     parts.push(ui`<section class="panel"><h3>症狀評分（0 至 10）</h3><p class="note" style="margin:4px 0 10px">復健前 → 復健後；有記錄時另顯示恢復時間。</p>
-      <div class="scroll"><table class="out"><thead><tr><th>日期</th>${SYMS.map(s => `<th>${s.en}</th>`).join('')}<th>總分</th><th>恢復時間</th></tr></thead><tbody>
+      <div class="scroll"><table class="out"><thead><tr><th>日期</th>${SYMS.map(s => `<th>${language === 'en' ? s.en : s.zh}</th>`).join('')}<th>總分</th><th>恢復時間</th></tr></thead><tbody>
       ${symRows.map(s => { const p = firstRated(s.sym), e = findRow(s, 'end') || lastRated(s.sym), r = findRow(s, 'rec');
         const cell = k => { const a = symVal(p, k), b = symVal(e, k); return `${esc(a ?? '–')} → ${esc(b ?? '–')}`; };
         return `<tr><td>${fmtDate(s.date)}</td>${SK.map(k => `<td>${cell(k)}</td>`).join('')}<td><b>${cell('total')}</b></td><td>${r ? (r.recMin != null ? esc(r.recMin) + ui(' 分鐘') : ui('已記錄')) : '-'}</td></tr>`; }).join('')}
@@ -4665,6 +4900,7 @@ function renderOutcomes() {
         </tbody></table></div></section>`);
     } else {
       const def = s => assessmentItems(c, s).find(p => p.id === item.id) || item;
+      if (rows.some(s => fieldsFor(def(s)).some(f => f.phase))) { parts.push(stagedOutcomesHTML(item, rows, def)); continue; }
       const fields = [...new Map(rows.flatMap(s => fieldsFor(def(s))).map(f => [f.id, f])).values()].filter(f => f.group !== 'setting');
       const settings = rows.some(s => settingSummary(def(s), s.assess[item.id].values));
       parts.push(ui`<section class="panel"><h3>${esc(labelText(item.name))}</h3><p class="note" style="margin:4px 0 10px">${esc(labelText(item.domain))}</p>
@@ -4705,8 +4941,28 @@ function renderOutcomes() {
       </tbody></table></div></section>`);
   }
   $('#tabBody').innerHTML = parts.join('') || ui`<section class="panel empty"><h3>尚無追蹤結果</h3><p>在復健紀錄中填寫症狀評分、評估或復健結果並儲存後，即可在此比較。</p></section>`;
+  for (const region of $('#tabBody').querySelectorAll('.scroll')) {
+    region.tabIndex = 0; region.setAttribute('role', 'region');
+    const hint = ui('表格可左右捲動，或聚焦後使用左右方向鍵。');
+    region.setAttribute('aria-label', region.closest('section').querySelector('h3').textContent + ': ' + hint);
+    region.insertAdjacentHTML('beforebegin', `<p class="note table-scroll-hint">${esc(hint)}</p>`);
+  }
 }
 
+function shortOutcomeGuide() {
+  return ui`<details class="script short-guide"><summary>短期成效指標與施測流程</summary><div class="body">
+    <p>功能成效與耐受性分開記錄。立即成效為訓練後即刻至約 30 分鐘；短期追蹤可納入 24–72 小時。各時點請填實際測量時間，訓練後註明距訓練結束幾分鐘，追蹤註明日期與時間。</p>
+    <p>先選一項與訓練目標直接對應的客觀主要指標，再選次要指標及症狀。新個案已包含短期模板；舊個案可按「新增評估項目」，從模板選取。</p>
+    <p>訓練前 1 → 訓練前 2（建議使用等值題型，估計波動與練習效應）→ 訓練（記錄內容、時間、難度、休息與不適）→ 訓練後立即 → 恢復期 15–30 分鐘及／或 24–72 小時追蹤。空白表示未測，不當成 0。</p>
+    <strong>建議主要／次要／耐受性組合</strong>
+    <p>搜尋：完成時間或漏答數／正確率與左右漏答／眼睛疲勞、頭痛。忽略：刪除測驗漏答數／時間與線段平分偏差／頭痛、暈眩、不適。</p>
+    <p>閱讀：速度／錯誤率與理解／眼睛疲勞。集合：NPC 或 PFV／另一項雙眼視覺指標／眼部不適、頭痛。視覺動作：命中率或時間／反應時間與誤差／疲勞與不適。</p>
+    <p>搜尋可採 Bells、Star／Letter Cancellation 或固定找物任務；時間、正確率與反應時間可能只是任務表現指標，須完整記錄流程與計分規則，不能當作已標準化量表。</p>
+    <p>症狀下降不能單獨證明療效；功能改善與暫時不適可能同時存在。固定負荷症狀誘發量＝負荷後分數－該次負荷前分數。VOMS 是篩檢工具。</p>
+    <p>Barthel Index、FIM、NEI VFQ-25、CBS、MVPT 不宜作單次立即成效主要指標；視力、視野與對比敏感度應依疾病及訓練目標決定。施測方便不代表對單次變化敏感。</p>
+    <p>改善方向依族群、疾病與測試條件而定。研究須查核信效度、MDC、MCID（如有）及授權，不能假設都有單次 MCID；若要推論介入造成改善，宜加入休息、常規治療等合理對照。此整理不是臨床指引或系統性回顧。</p>
+  </div></details>`;
+}
 function renderPlan() {
   const c = cur();
   const section = (kind, title, items) => ui`<section class="panel">
@@ -4726,7 +4982,7 @@ function renderPlan() {
     <p class="note">勾選初次評估（基準評估）要施測的項目。填寫基準評估時，這些項目列在最前面；療程後與追蹤評估只列出其中依評估時機應再評估的項目。實際施測後，再於病歷中勾選並填寫。</p>
     ${initialItems.length ? `<div class="pick-group" id="initialPicks" role="group" aria-labelledby="initialHeading" style="margin-top:12px">${initialItems.map(p => `<label class="pick"><input type="checkbox" data-initial="${p.id}" ${isInitial(p) ? 'checked' : ''}>${esc(labelText(p.name))}</label>`).join('')}</div>` : ui('<p class="note">尚無啟用的評估項目。</p>')}</section>`;
   $('#tabBody').innerHTML = ui`<div class="plan-edit"><div><h3>評估與復健項目設定</h3><p class="note">以下設定適用於 ${esc(clientLabel(c))}。從既有模板開始，或建立空白項目。停用項目仍保留歷史結果；新增個案時可複用這份設定。</p></div>
-    ${initialPanel}${section('assessment', ui('評估項目'), c.plan)}${section('training', ui('復健項目'), trainingPlan(c))}</div>`;
+    ${shortOutcomeGuide()}${initialPanel}${section('assessment', ui('評估項目'), c.plan)}${section('training', ui('復健項目'), trainingPlan(c))}</div>`;
   $('#initialPicks')?.addEventListener('change', e => setInitial(e.target));
 }
 // Saves one item's place in the initial assessment right away, like enabling or disabling an item.
@@ -4759,13 +5015,15 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
   const m = modal(`<h3>${heading}</h3><form id="itemForm" class="item-form"></form>`);
   m.style.width = 'min(760px, 100%)';
   const form = m.querySelector('form');
+  const readLabel = (value, previous) => value.trim() === labelText(previous) ? previous || '' : value.trim();
   const read = () => {
-    draft[assessment ? 'name' : 'label'] = $('#item-name').value.trim();
-    if (assessment) { draft.category = draft.copm ? 'functional' : $('#item-category').value; draft.domain = $('#item-domain').value.trim(); draft.timing = draft.copm ? 'bp' : $('#item-timing').value; draft.outcome = $('#item-outcome').value.trim(); }
-    else draft.acts = [...new Set($('#item-acts').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean))];
+    const nameKey = assessment ? 'name' : 'label';
+    draft[nameKey] = readLabel($('#item-name').value, draft[nameKey]);
+    if (assessment) { draft.category = draft.copm ? 'functional' : $('#item-category').value; draft.domain = readLabel($('#item-domain').value, draft.domain); draft.timing = draft.copm ? 'bp' : $('#item-timing').value; draft.outcome = readLabel($('#item-outcome').value, draft.outcome); }
+    else draft.acts = [...new Set($('#item-acts').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean).map(text => draft.acts.find(act => labelText(act) === text) || text))];
     draft.fields = [...form.querySelectorAll('.field-editor')].map((row, i) => {
       const get = suffix => $('#item-field-' + i + '-' + suffix)?.value || '';
-      const field = { id: draft.fields[i].id, label: get('label').trim(), type: get('type'), unit: get('unit').trim(), ...(draft.fields[i].group ? { group: draft.fields[i].group } : {}) };
+      const field = { id: draft.fields[i].id, label: readLabel(get('label'), draft.fields[i].label), type: get('type'), unit: get('unit').trim(), ...(draft.fields[i].group ? { group: draft.fields[i].group } : {}), ...(draft.fields[i].phase ? { phase: draft.fields[i].phase } : {}) };
       if (field.type === 'select') field.options = [...new Set(get('options').split(/\r?\n/).map(s => s.trim()).filter(Boolean))];
       if (field.type === 'number') for (const prop of ['min', 'max', 'step']) if (get(prop).trim()) field[prop] = Number(get(prop));
       return field;
@@ -4780,7 +5038,7 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false) {
         <label class="f" for="item-outcome">填寫說明<input type="text" id="item-outcome" value="${val(labelText(draft.outcome))}"></label>`
         : ui`<label class="f" for="item-acts">可選活動（每行一項）<textarea id="item-acts">${esc((draft.acts || []).map(labelText).join('\n'))}</textarea></label><p class="note" style="margin:0">已包含設備、時間、設定、表現、難度與觀察。下方可增加其他欄位。</p>`}
       ${draft.copm ? ui('<p class="note">COPM 保留專用的職能活動、表現與滿意度表格，以及基準比較。評估時機固定為基準與療程後。</p>') : ui`<div><h4>${assessment ? ui('結果欄位') : ui('其他結果欄位')}</h4><div id="item-fields">${draft.fields.map((f, i) => ui`<div class="field-editor" data-i="${i}">
-        <div class="field-top"><label class="f field-name" for="item-field-${i}-label">欄位名稱<input type="text" id="item-field-${i}-label" value="${val(labelText(f.label))}" required></label>
+        ${f.phase ? `<strong>${esc(phaseLabel(f.phase))}</strong>` : ''}<div class="field-top"><label class="f field-name" for="item-field-${i}-label">欄位名稱<input type="text" id="item-field-${i}-label" value="${val(labelText(f.label))}" required></label>
         <label class="f" for="item-field-${i}-type">類型<select id="item-field-${i}-type" data-field-type>${Object.entries(FIELD_TYPES).map(([k, text]) => `<option value="${k}" ${(f.type || 'text') === k ? 'selected' : ''}>${ui(text)}</option>`).join('')}</select></label>
         <label class="f" for="item-field-${i}-unit">單位（選填）<input type="text" id="item-field-${i}-unit" value="${val(f.unit)}"></label>
         <button type="button" class="btn small danger" data-item-action="remove" data-i="${i}" aria-label="${esc(ui('移除第 {0} 個欄位', i + 1))}">移除</button></div>
@@ -4955,6 +5213,7 @@ function interventionHTML(mode, approach, picks = []) {
 function renderEditor() {
   const c = cur(), s = editing;
   const visualAssess = assessHTML(c, s, 'visual'), functionalAssess = assessHTML(c, s, 'functional');
+  const optionalVisualSymptoms = !visualAssess && !(s.sym || []).some(r => rowTotal(r) != null || r.kind === 'rec' && r.recMin != null);
   // 0–10 ratings use the same number boxes as the symptom table; an empty box means not rated.
   const rate = (id, v, label) => `<label class="f" for="${id}">${label}<input type="number" min="0" max="10" step="1" inputmode="numeric" id="${id}" value="${val(v)}"></label>`;
   s.training = s.training || {};
@@ -5033,10 +5292,12 @@ function renderEditor() {
         <div class="sub" style="border-top:0;padding-top:0">
           <div class="row" style="justify-content:flex-end"><button type="button" class="btn small" data-action="plan-add" data-editor="true">＋ 新增評估項目</button></div>
           <p class="note" style="margin:0">勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。</p>
+          ${shortOutcomeGuide()}
         </div>
         <div id="assessList">
         <section class="sub" style="border-top:0;padding-top:0" id="assess-visual" aria-labelledby="assess-visual-h">
           <h3 id="assess-visual-h">視覺功能</h3>
+          ${optionalVisualSymptoms ? ui('<details class="script" id="optionalVisualSymptoms"><summary>視覺相關症狀評分（選填）</summary><div class="body">') : ''}
           <div class="sub" style="border-top:0;padding-top:0">
           <div class="spread"><h4>症狀評分（NRS，0 至 10）</h4>
             <div class="row"><button type="button" class="btn small" data-action="sym-rec" id="addRec">＋ 新增恢復後評分</button></div></div>
@@ -5047,13 +5308,15 @@ function renderEditor() {
             <p style="margin:0"><b>療程後／下一項測驗前：</b>我們再評一次。請照您現在的感覺給分，跟剛才一樣也沒關係，沒有不舒服就給 0 分。</p>
             <p class="note" style="margin:0">每次使用相同說明與分數端點；各項症狀分開記錄。「疲勞」指眼睛疲勞，不是全身疲倦。</p>
           </div></details>
+          <p class="note table-scroll-hint">表格可左右捲動，或聚焦後使用左右方向鍵。</p>
           <div class="scroll" id="symWrap" tabindex="0" role="region" aria-label="${ui('症狀評分表，可左右捲動')}">${symTableHTML()}</div>
           <dl class="score-summary" id="symSummary" aria-label="症狀分數"></dl>
           </div>
+          ${optionalVisualSymptoms ? '</div></details>' : ''}
           ${visualAssess}
         </section>
         <section class="sub" id="assess-functional" aria-labelledby="assess-functional-h">
-          <h3 id="assess-functional-h">功能性視覺</h3>
+          <h3 id="assess-functional-h">功能表現</h3>
           ${functionalAssess}
         </section>
         <div class="sub" style="border-top:0;padding-top:0">
@@ -5098,7 +5361,7 @@ function renderEditor() {
         <div class="grid"><label class="f" for="s-next">下次復健日期<input type="date" id="s-next" value="${val(s.nextDate)}"></label></div>
       </div></section>
       </div>
-      <div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-action="cancel-edit">取消</button><button type="button" class="btn app-primary" data-action="save-session">儲存 CSV + PDF</button></div>
+      <div class="row" style="justify-content:flex-end"><button type="button" class="btn editor-copy-action" data-action="copy-editing">複製病歷</button><button type="button" class="btn" data-action="cancel-edit">取消</button><button type="button" class="btn app-primary" data-action="save-session">儲存 CSV + PDF</button></div>
     </form>`;
 
   const form = $('#soapForm');

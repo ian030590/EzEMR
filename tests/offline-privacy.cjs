@@ -230,9 +230,11 @@ function zipEntries(bytes) {
         const form = document.createElement('form'); form.action = base; form.method = 'POST';
         const field = document.createElement('input'); field.name = 'clinicalNote'; field.value = token; form.append(field); document.body.append(form);
         __privacyNative.formSubmit.call(form);
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
         return { result, violations: __privacyViolations };
       }, sentinel);
+      // CSP violations are queued tasks; two animation frames can finish before form-action is reported.
+      await probes.page.waitForFunction(() => __privacyViolations.some(violation => violation.directive === 'form-action'));
+      native.violations = await probes.page.evaluate(() => __privacyViolations);
       assert.notEqual(native.result.fetch, 'allowed'); assert.notEqual(native.result.xhr, 'allowed');
       assert.equal(native.result.image, 'blocked'); assert.equal(native.result.script, 'blocked');
       for (const directive of ['connect-src', 'img-src', 'script-src-elem', 'form-action']) assert.ok(native.violations.some(violation => violation.directive === directive), `${directive} is independently enforced by the browser`);

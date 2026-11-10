@@ -280,6 +280,8 @@ const diplopiaOnly = file('TEST-SCORES_manual-1.json', JSON.stringify({ record_t
     await action('new-client').click();
     await page.locator('#cf-name').fill('Other fixture'); await page.locator('#cf-ref').fill('OTHER-1');
     await page.locator('#cForm [type="submit"]').click(); await page.waitForSelector('.client-summary');
+    await page.waitForSelector('#cForm', { state: 'detached' });
+    await page.waitForFunction(() => cur()?.ref === 'OTHER-1' && patientReady);
     await page.locator('#clientSearch').fill('TEST-SCORES');
     await page.locator('.client-btn', { hasText: 'Score import fixture' }).click();
     await page.waitForFunction(() => cur()?.ref === 'TEST-SCORES');
