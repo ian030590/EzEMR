@@ -10,12 +10,13 @@
 
 EzEMR is a browser-based rehabilitation record tool for client information, SOAP notes, symptom scores, assessments, training results, and progress tracking. Open [EzEMR.html](EzEMR.html) directly in desktop Chrome or Edge. No server, build step, or application installation is required.
 
-EzEMR supports English and Traditional Chinese. The application entry file is `EzEMR.html`.
+EzEMR supports English and Traditional Chinese. `EzEMR.html` is the generated distribution; development sources are kept separately in `src/`, with third-party libraries in `vendor/`.
 
 ## 🗂 Features
 
-- Manage client details, diagnoses, referral reasons, and eye surgery history; filter the client list by name, medical record number, or diagnosis.
-- Work in three tabs for each client: **Rehabilitation records**, **Progress tracking**, and **Item settings**.
+- Manage client details, diagnoses, referral reasons, and eye surgery history; search from the header by name, medical record number, or diagnosis.
+- Choose the profile fields required for every patient under **Settings → Profile fields...**.
+- Open each client in **Patient dashboard**, with **Rehabilitation records**, **Progress tracking**, and **Item settings** alongside it.
 - Record SOAP notes, baseline assessments, treatment sessions, post-rehabilitation assessments, follow-ups, and absences.
 - Choose each client's initial assessment items, then tick the assessments and training items actually done in a record; only ticked items open for entry and are saved. Each training activity has its own score.
 - Track Eye fatigue, Blurred vision, Dizziness, Headache, and Nausea, with symptom charts and filters by record type and date.
@@ -33,7 +34,7 @@ EzEMR supports English and Traditional Chinese. The application entry file is `E
 2. Select **English** in the language selector. Traditional Chinese is the default, and the browser remembers your choice. Switching languages preserves the current SOAP draft.
 3. The first screen asks where to keep your records. For a new collection, choose **Use a Data folder beside the HTML**. When first saving a client, select the folder containing the HTML and allow file editing; the app creates `Data` inside that folder. For existing records, choose **Open an existing record folder** and select the folder containing `clients.csv`. You can change this later under **File → Storage location...**.
 4. Choose **New client** and enter the name, medical record number, and other details. To look around first, choose **Load example client (demonstration data)** on the welcome screen.
-5. Select the client, then choose **New record** from the toolbar. Fill in the SOAP note and symptom scores. Under **Assessments** and **Rehabilitation items**, tick what was done this visit to open its fields, then enter the results.
+5. Select the client, then choose **New record** beside the patient's name in the main area. Fill in the SOAP note and symptom scores. Under **Assessments** and **Rehabilitation items**, tick what was done this visit to open its fields, then enter the results.
 6. Choose **Save**, or press `Ctrl+S` / `⌘S`. The session CSV, PDF, and TXT files are written to that client's folder.
 7. When reopening the HTML, the app reconnects to the previously selected record folder if the browser still grants access. Otherwise, the first screen offers to reconnect that folder or choose another one.
 
@@ -49,28 +50,51 @@ The browser requires you to select and authorize a folder. It cannot infer the H
 | --- | --- |
 | File | Save, import CSV/Excel/backups/test score files or a legacy SOAP folder, choose a storage location, open or reload a record folder, and configure a second copy folder. |
 | Client | Create or edit clients and add rehabilitation records. |
-| View | Switch between light and dark appearance. |
-| Toolbar | Add a record, save, import, and open the export menu. Copy-note and cancel actions appear while editing. |
+| Settings | Choose required profile fields, switch appearance, and open storage settings. |
+| Patient header | Add a record or edit the selected client's details. |
+| Toolbar | Import and open the export menu. Save, copy-note, and cancel actions appear while editing. |
 | Export | Export one client's Excel workbook, all clients' Excel workbook, `clients.csv`, or a full JSON backup. |
 | Ctrl+S / ⌘S | Save the current record. Disabled when there is no record to save. |
 | Ctrl+O / ⌘O | Open a record folder. |
 | Arrow keys, Enter, Escape, Tab | Navigate menus; Escape closes a menu or dialog. |
 
-On wider screens, the toolbar stays visible while scrolling; on narrow screens, it scrolls with the page. Use **Filter clients** in the client list to find a client, and the arrow keys, Home, and End to move between the client's tabs.
+The header stays available while scrolling and contains client search alongside the title, menus, tools, and language selector. There is no sidebar or full client roster. Enter a name, medical record number, or diagnosis to show up to eight matches; an empty search shows none. Use Up/Down and Enter to select a result, or Escape to close the results. Switching clients protects unsaved drafts, and a late response from an earlier selection cannot replace the current client's records. Controls use 13px text and shared 2px vertical padding while retaining 44px targets. The header leaves 8px around controls and is 61px high on desktop. Adjacent actions have equal sizes and gaps. Storage details are available under **File → Storage location...** instead of occupying header space.
 
-The client summary shows the total record count, the latest record date, and the next session date from the latest record. **Rehabilitation records** shows the symptom chart and the record history, newest first; on wide screens the chart sits beside the history, and on narrow screens above it. Filters by record type and date change only the listed records, not the summary. **Progress tracking** shows symptom changes, assessment results, COPM comparisons, and training records. **Item settings** manages the client's assessment and rehabilitation templates.
+The client summary shows identity and diagnosis, the total record count, the latest record date, and the next session date from the latest record. Background details and source documents are folded below it. **Patient dashboard** opens when you select a client, with symptom scores before the selected visit's symptoms, clinical reasoning and evidence, and interventions. It defaults to the latest attended visit; its record selector excludes absences and marks older selections. A warning identifies the latest record when it is an absence, including clients with no attended records. Each selected visit keeps its own results and reasoning.
 
-Under **View**, the initial appearance follows the system setting; manual changes are remembered in the current browser. The light appearance uses white work surfaces, a pale gray background, teal accents, and thin separators. The dark appearance uses the same visual hierarchy. Noto Sans TC uses an installed font or the optional local file `EzEMR-assets/NotoSansTC-VF.ttf`, with system fonts as a fallback.
+**Rehabilitation records** shows the symptom chart and the record history, newest first; on wide screens the chart sits beside the history, and on narrow screens above it. Each record aligns before-session score, after-session score, and change in three labelled columns. Subtest scores, assessment count, recovery, tolerance, and training items have separate groups; absence records use labelled reason, notification, and rescheduling fields. The editor's symptom and COPM summaries also use labelled score groups. Filters by record type and date change only the listed records, not the summary. **Progress tracking** shows symptom changes, assessment results, COPM comparisons, and training records. **Item settings** manages the client's assessment and rehabilitation templates.
+
+Under **Settings**, the initial appearance follows the system setting; manual changes are remembered in the current browser. Both appearances use the same visual hierarchy. Noto Sans TC uses an installed font, with system fonts as a fallback; Metro icon fonts are embedded.
+
+### Required profile fields
+
+Open **Settings → Profile fields...** to select required fields for every patient in the current record folder, or every patient in browser storage. The catalog has 14 fields: name, medical record number, national ID number, date of birth, sex, smoking, alcohol use, betel nut use, occupation, religion, chronic conditions, phone, address, and allergies. Name and medical record number are selected by default.
+
+Selected fields are required when saving patient details or rehabilitation records. Existing records remain readable after a new requirement is added; an incomplete patient profile must be completed before writing records. Unselected fields are hidden from entry and existing values are retained. An unnamed patient is shown with a generated display label; this does not replace stored data. Folder settings are saved in `settings.json`; browser storage keeps its own settings. Full JSON backups include the settings. CSV retains the existing column schema and stores added profile values in its existing extra-fields payload.
 
 ## Clinical reasoning and record structure
 
+### Patient dashboard and linked clinical reasoning
+
+The dashboard follows the supplied Visual Rehabilitation Service Framework: **Visual function / Functional vision assessment → Person–Environment–Occupation (PEO) reasoning → In-person / Telerehab intervention → qualitative and quantitative reports**. In the A section of a record, add a clinical link for each main symptom or functional difficulty. Choose its assessment category, enter the clinical reasoning, mark the PEO areas involved, link that record's assessment results as evidence, and select the related Remediation, Adaptation, or Compensation strategies. Free-text evidence and intervention notes retain the clinician's original wording. The dashboard places these links side by side so their relationship is explicit.
+
+Linked evidence uses the results in the selected record, including its saved assessment definitions. A link whose assessment was not recorded shows a missing-evidence message. Switching service mode preserves previously selected strategies. Older records without clinical links show their recorded symptoms, reasoning, and interventions separately; the app does not invent relationships between them. No clinical inference or intervention selection is automated. The framework has no separate symptom taxonomy: Visual function and Functional vision are used as the link categories. Its in-person Remediation entry pairs the Chinese term for visual perception with the inconsistent English label “Visual field training”; this application uses **Visual perception** for that entry.
+
+Clinical links are stored in the session's `clinicalLinks` array, including stable assessment and intervention IDs. The existing CSV schema and JSON backups preserve these fields. TXT, PDF and the Excel SOAP form include the link text; the Excel workbook adds a **Clinical links** sheet with one row per symptom. Draft links retained in absent visits are excluded from clinical reports. Assessment results and clinical notes are never translated when the interface language changes.
+
 The editor follows the clinic's assessment-to-intervention flow while keeping SOAP: **S Subjective**, **O Assessment** (observations, symptom NRS, assessments), **A PEO clinical reasoning**, and **P Intervention and plan**. Person, Environment, and Occupation findings guide clinical judgement and intervention planning. P contains **Remediation** (the existing rehabilitation items, activity scores, test runs, EyeDot, and other treatment/home program), **Adaptation**, **Compensation**, tolerance, next steps, and the next session date.
 
-Choose **In-person** or **Telerehab** in the basic information. New records default to In-person; older records without a mode show **Not specified** until you choose one. Adaptation and Compensation each have mode-specific checkboxes and notes. Changing mode retains checked strategies from the other mode, marked with that mode's name, and preserves the rest of the draft. Remediation uses the existing training items rather than a separate checklist.
+Choose **In-person** or **Telerehab** in the basic information. New records default to In-person; older records without a mode show **Not specified** until you choose one. Adaptation and Compensation each have mode-specific checkboxes and notes. Changing mode retains checked strategies from the other mode, marked with that mode's name, and preserves the rest of the draft. In P, Remediation records training activities and results. The symptom links in A document the framework's intervention categories and the treatment or plan for each symptom.
 
 Sessions store `mode` as `inperson`, `telerehab`, or an unset value; `peo` contains optional string fields `person`, `environment`, and `occupation`. `interventions.adaptation` and `interventions.compensation` each hold `picks` (stable ASCII strategy IDs) and optional `notes`. Missing new fields stay missing when an old record is loaded; saving in the editor can add these fields, with mode remaining unset unless selected. Unknown valid strategy IDs remain readable as their original IDs. Language switching changes labels only, preserving clinical text and stored values.
 
 The existing local-folder CSV schema serializes these nested fields without additional columns; CSV reload and full JSON backups retain them. TXT, PDF, and the SOAP form workbook follow the same clinical flow. The Excel **SOAP notes** sheet appends service mode, PEO, adaptation, and compensation columns after the existing columns. Its **Interventions** sheet provides one row per checked strategy with client, session, mode, approach, strategy ID, and translated label for quantitative reporting.
+
+### Symptom scores and provenance
+
+Eye fatigue, Blurred vision, Dizziness, Headache and Nausea, with their 0-to-10 questions, already appear in the first application commit (`af3ec91`). The code refers to symptom rating instructions, but the tracked project includes neither that document nor a citation for this exact five-item combination. The supplied service-framework slide does not specify these five symptoms. The aggregate is an unweighted sum of entered ratings: blank items are excluded, and all-blank ratings produce no total. The available project history does not establish this aggregate as a validated scale.
+
+Dashboard scores compare the first and last rated timepoints within the selected visit, excluding recovery ratings. Signed differences are green when lower, red when higher, and neutral when unchanged; **Visit change** identifies their scope. Missing ratings remain blank markers and have no calculated difference. These colors indicate direction, without assigning severity or inferring a clinical conclusion. Record cards retain **Change from first** for the difference between the first rating and the end-of-session rating; the prism-diopter symbol stays on the clinical measurement fields.
 
 ## Customize assessments and rehabilitation items
 
@@ -88,6 +112,12 @@ O starts with observations, then **Visual function** (symptom NRS first) and **F
 The standard template adds Medical record review, Optometry record, OT assessment record, Visual acuity, Refraction, Near visual acuity, Visual field, Contrast sensitivity, Color vision, and Stereopsis to Visual function. Functional vision includes Self-report questionnaire, OT assessment, Daily task performance, Participation needs, and the existing COPM and Work-related functional vision task. Record reviews and the questionnaire use milestone timing; the other new items use assessment timing. New clients using the standard template or created by Excel import start with no initial assessment items ticked; choose them under **Item settings**. Existing clients and items without a stored choice stay included; a client created from another client keeps that client's choices.
 
 Existing clients keep their stored templates. To add a new built-in item, open **Item settings → Add assessment → Start from template**, choose the item, and save. Its category is carried into the new item and can be changed in the item dialog. Category IDs are `visual` or `functional`; older items without a category default to Visual function, except COPM, the work-related functional task, and the new functional items. Language changes do not alter stored definitions, results, or local-folder CSV filenames or schema.
+
+### Visual field entry
+
+The built-in **Visual field** assessment follows NTUHLowvision's cross-shaped entry layout. As you face the patient, OD is on the left of the screen and OS on the right, with nasal fields toward the middle and temporal fields toward the outside. OU sits below; the patient's right is on the left of the screen. Each eye has four direction fields, for twelve free-text entries in total. Enter degrees or a qualitative description; blank means not recorded, and `0` is retained as a result. On narrow screens, the three crosses stack vertically.
+
+The test/method, legacy OD and OS entries, summary, and custom fields remain available. Imported source-workbook visual fields use the same layout while retaining their original field IDs and results. Language switching preserves entered text. The app does not interpret the visual field or generate clinical conclusions.
 
 ### Initial assessment items
 
@@ -217,19 +247,21 @@ The import stops if a file's subject ID matches the medical record number of a d
 
 Excel import expects the source workbook's intake roster, assessment records, and rehabilitation records sheets and their existing column layout. It is not a general importer for arbitrary Excel files. Imported data retains worksheet names, row numbers, and original field values; client and record views show source details and medical history where available.
 
-The legacy SOAP folder command under **File** reads JSON records grouped with their `client.json`. Select the parent folder containing the client subfolders. The importer skips `_archive`, keeps the latest `updated` version of duplicate session IDs, merges matching clients and sessions, and reports conflicting data. Back up the destination before merging source data.
+The legacy SOAP folder command under **File** reads JSON records grouped with their `client.json`. Select the parent folder containing the client subfolders. The importer skips `_archive`, keeps the latest `updated` version of duplicate session IDs, merges matching clients and sessions, and reports conflicting data. Equal names with different medical record numbers remain separate. When a number is missing, name matching must identify exactly one client with no conflicting birth date; the first known number fills a blank legacy number, and a reused internal client ID with a different number stops the import. JSON backup restore rejects duplicate client IDs or repeated session IDs within one client before the first write. Back up the destination before merging source data.
 
 ### Legacy records
 
-Legacy `client.json` files and JSON session records can still be read. If no roster exists, saving a client creates `clients.csv`. When a roster exists, it is authoritative; an invalid roster stops loading to avoid overwriting it.
+Legacy `client.json` files and JSON session records can still be read. If no roster exists, saving a client creates `clients.csv`. When a roster exists, it is authoritative; an invalid roster stops loading to avoid overwriting it. Malformed or unreadable legacy JSON reports a filename and stops loading; a missing optional JSON file still falls back normally. Editing a client's medical record number keeps the existing folder and its files.
 
 Editing an old record creates CSV, PDF, and TXT files and retains the original JSON. When both CSV and JSON represent the same session, CSV takes precedence.
 
 ## Offline use and browser storage
 
-The HTML embeds SheetJS Community Edition 0.20.3 (Apache-2.0) for reading Excel imports and xlsx-js-style 1.2.0 for styled Excel export, both pinned by SHA-256. Record editing, CSV/PDF saving, supported Excel import, and Excel export work offline. Fonts use local or system files. The app retains a jsDelivr fallback for loading the export library if `window.XLSX` is unavailable.
+The generated HTML embeds Metro UI 5.1.20, its CSS, fonts and icons, SheetJS Community Edition 0.20.3 for Excel imports, and xlsx-js-style 1.2.0 for styled exports. Local vendor files, licenses and provenance are checked before building. No CDN or application package installation is needed. Record editing, supported imports and exports work offline.
 
-Browsers without folder access use browser storage instead. Each saved session then downloads a ZIP containing its CSV and PDF inside a folder named after the medical record number, or the client name if no number is provided. Extract and merge these files into your record folders manually; this mode does not update a fixed folder on disk.
+A restrictive content policy and early privacy guard block network requests, remote scripts, frames, workers and form submissions. Downloads use local Blob URLs. The EyeDot mode-help dialog can copy its documentation URL; the app does not navigate to an external site. There is no remote fallback when an embedded library is unavailable.
+
+Browsers without folder access use browser storage instead. Each saved session then downloads a ZIP containing its CSV and PDF inside a folder named after the medical record number, the client name, or the internal client identifier when both are blank. Extract and merge these files into your record folders manually; this mode does not update a fixed folder on disk.
 
 Browser storage is not a replacement for downloaded files or backups. Clearing browser data removes the records kept there.
 
@@ -242,16 +274,31 @@ EzEMR is released under the [MIT License](LICENSE).
 ```text
 .gitignore             Excludes temporary test files and local Data folders
 .gitattributes         Keeps Git hook line endings compatible across platforms
-.githooks/pre-push     Runs full CI before every push
-.github/workflows/     Full CI on pushes and pull requests
+.githooks/pre-push     Builds the distribution, then runs full CI before pushing
+.github/workflows/     Builds, verifies and uploads the single-file distribution
 AGENTS.md              Development and push rules
-EzEMR.html             Application and embedded Excel import/export libraries
+src/index.html         Development markup with local script/style references
+src/styles.css         Application styles
+src/app.js             Application logic and bilingual source labels
+src/privacy.js         Early outbound-network guard
+src/theme.js           Early stored-theme initialization
+src/excel-reader-init.js  Captures the isolated Excel reader before the writer loads
+src/metro-init.js      Inert Metro HTML parsing compatible with the offline policy
+vendor/                Pinned Metro and Excel libraries, licenses and provenance
+scripts/build.cjs      Offline single-file build and consistency check
+EzEMR.html             Generated distribution; do not hand-edit
 LICENSE                MIT License
 README.md              English documentation
 README.zh-TW.md        Traditional Chinese documentation
 tests/                 Browser tests and PDF/ZIP checks
   VERIFICATION.md      Test setup, coverage, and limitations
   run-ci.cjs           Shared full-suite runner for Git hooks and GitHub Actions
+  lib/app.cjs          Builds isolated test artifacts from current sources
+  build.cjs            Source separation, build integrity and offline-file checks
+  metro-ui.cjs         Native Metro components and keyboard/viewport behavior
+  offline-privacy.cjs  Outbound-request blocking and local record operations
+  profile-settings.cjs  Required profile fields, validation and bilingual forms
+  profile-storage.cjs  Folder/browser settings, backups and preserved profile data
   ci-runner.cjs        Failure handling and stop-on-error checks
   rehab-note.cjs       Record workflow, storage, and export tests
   storage.cjs          Client roster and folder tests
@@ -261,13 +308,22 @@ tests/                 Browser tests and PDF/ZIP checks
   language.cjs         Language switching and data preservation tests
   score-imports.cjs    OcuTrain and UFOV score imports, test settings, and test records in both languages
   imports.cjs          Empty startup, offline Excel and legacy SOAP imports in both languages
+  import-identity.cjs  Patient identity matching, duplicate backup IDs, legacy read failures, and fixed folders
   excel-libraries.cjs  Excel reader isolation, XLSB imports and styled exports in both languages
   workspace.cjs        Offline file opening, client summaries, filters, keyboard tabs, and layout checks
   check_i18n.cjs       Source translation and English documentation gate
   check_exports.py     Independent PDF and ZIP validation
 ```
 
-No package installation is needed to use the application. Development checks require Node.js, Acorn, Playwright with Chromium, and Python with `pypdf` and `PyMuPDF`. See [tests/VERIFICATION.md](tests/VERIFICATION.md) for setup and commands.
+No package installation is needed to use the generated application. Development builds require only Node.js; no package installation or network access is needed to build. Edit `src/` and keep upstream dependencies in `vendor/`; never edit generated `EzEMR.html`. Open `src/index.html` for local-folder development, or build a standalone file:
+
+```sh
+node scripts/build.cjs
+node scripts/build.cjs --check
+node scripts/build.cjs --output .tmp/preview/EzEMR.html
+```
+
+The first command publishes the root `EzEMR.html`. `--check` reports whether it matches current sources without writing it. `--output` builds an isolated preview under `.tmp/`. Tests always build current sources into isolated artifacts and do not require a previously published file to be current. Development checks also require Acorn, Playwright with Chromium, and Python with `pypdf` and `PyMuPDF`; see [tests/VERIFICATION.md](tests/VERIFICATION.md).
 
 After installing the test dependencies, enable the Git hook once per checkout:
 
@@ -275,12 +331,12 @@ After installing the test dependencies, enable the Git hook once per checkout:
 git config --local core.hooksPath .githooks
 ```
 
-Every `git push` then runs `node tests/run-ci.cjs`. The same command runs in GitHub Actions on pushes and pull requests. It checks translations, record workflows, storage, menus, templates, language switching, imports, test score imports, layouts, PDF/ZIP exports, and runner failure handling. Any failure stops the remaining steps and blocks the local push. New `.cjs` and `.py` test scripts in `tests/` are included automatically. The pinned Excel test component is downloaded on first use and reused from `.tmp/`.
+Every `git push` then builds `EzEMR.html` before running `node tests/run-ci.cjs`. GitHub Actions follows the same build-and-test sequence and uploads the resulting HTML artifact. Sources are authoritative; CI does not require a committed generated file to match before building. Any failure stops the remaining steps and blocks the local push. New `.cjs` and `.py` scripts directly under `tests/` are included automatically. The runner builds one `.tmp/ci/EzEMR.html` snapshot for the suite; focused tests build their own process-local copy through `tests/lib/app.cjs`. The Excel test component is extracted from the verified local bundle without downloading it.
 
 Every interface feature must include both Traditional Chinese and English. The translation gate rejects untranslated source text, new one-language labels, incomplete built-in label pairs, and Chinese text in this English README. New feature screens and states must also be covered by the bilingual browser tests, as required by [AGENTS.md](AGENTS.md).
 
-`.tmp/` is ignored by Git. It holds generated test results, screenshots, exported test files, and the downloaded Excel test component; these files are not required to use the application.
+`.tmp/` is ignored by Git. It holds generated test applications, previews, results, screenshots and exported synthetic files; these files are not required to use the distribution.
 
 The tests fail if client records are embedded in `EzEMR.html`. They create synthetic clients in isolated browser contexts. `imports.cjs` also opens the published HTML directly from disk, then uses separate folders for synthetic Excel and legacy SOAP imports. Its bilingual checks cover import reports, errors, source labels, dates, duplicate records, and archive exclusion. Native operating-system folder dialogs and clinical suitability are outside automated coverage.
 
-The translation gate excludes non-executable JSON data and checks both embedded Excel libraries against pinned SHA-256 hashes. Application scripts, import messages, accessible names, and built-in assessment label pairs remain subject to translation checks. Sheet names and column headers of the source workbook are data identifiers and stay unchanged in both languages. Regression probes confirm that untranslated UI and modified vendor scripts still fail the gate.
+The translation gate excludes non-executable JSON data and verifies embedded Metro and Excel libraries against pinned SHA-256 hashes. Application scripts, import messages, accessible names, and built-in assessment label pairs remain subject to translation checks. Sheet names and column headers of the source workbook are data identifiers and stay unchanged in both languages. Regression probes confirm that untranslated UI and modified vendor scripts still fail the gate.

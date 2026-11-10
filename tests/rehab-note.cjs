@@ -6,6 +6,7 @@ const vm = require('node:vm');
 const { pathToFileURL } = require('node:url');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 const evidence = [];
@@ -14,7 +15,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
 (async () => {
   await fs.mkdir(output, { recursive: true });
   // Core workflows use synthetic clients only; the published HTML contains no records.
-  const source = await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8');
+  const source = await fs.readFile(appPath, 'utf8');
   assert.doesNotMatch(source, /id="integratedRecords"/, 'The published HTML must not embed client records');
   new vm.Script(source.split('<script>')[1].split('</script>')[0]);
   const server = http.createServer((req, res) => {
@@ -145,6 +146,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     await page.locator('#clientSearch').fill('不存在'); assert.equal(await page.locator('.client-btn').count(), 0);
     await page.locator('#clientSearch').fill('TEST-甲'); assert.equal(await page.locator('.client-btn').count(), 1);
     await page.locator('#clientSearch').fill('');
+    assert.equal(await page.locator('.client-btn').count(), 0, 'Clearing patient search does not display the full roster');
     check('Search, symptom selection and date filters', 'Patient ID search, no-results state, symptom chart selection and invalid date range are exercised.');
 
     await action('new-client').click(); await page.locator('#cf-name').fill('測試個案乙'); await page.locator('#cf-ref').fill('TEST-乙');
@@ -280,7 +282,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     await fallback.goto(`http://127.0.0.1:${server.address().port}/`); await fallback.waitForSelector('html[data-ready="true"]', { state: 'attached' });
     await fallback.locator('[data-action="new-client"]:visible').first().click();
     await fallback.locator('#cf-name').fill('測試 ZIP 個案'); await fallback.locator('#cf-ref').fill('TEST-ZIP'); await fallback.locator('#cForm button[type="submit"]').click();
-    await fallback.waitForSelector('.client-summary'); await fallback.locator('[data-action="new-session"]').first().click();
+    await fallback.waitForSelector('.client-summary'); await fallback.locator('[data-action="new-session"]:visible').first().click();
     await fallback.locator('#s-subj').fill('瀏覽器備援下載測試');
     const downloaded = fallback.waitForEvent('download'); await fallback.locator('[data-action="save-session"]').first().click();
     const download = await downloaded; assert.match(download.suggestedFilename(), /\.zip$/); await download.saveAs(path.join(output, 'fallback.zip'));
@@ -289,7 +291,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     check('Browser fallback downloads ZIP', 'Without directory-picker support, Save downloads one ZIP with a patient subfolder and retains the session across reload.');
 
     const diskPage = await context.newPage(); diskPage.on('pageerror', error => errors.push(error.message));
-    await diskPage.goto(pathToFileURL(path.join(root, 'EzEMR.html')).href);
+    await diskPage.goto(pathToFileURL(appPath).href);
     await diskPage.waitForSelector('html[data-ready="true"]', { state: 'attached' });
     assert.equal(await diskPage.locator('[data-action="pick-folder"]:visible').count(), 1);
     assert.equal(await diskPage.locator('#integratedDataNotice').isVisible(), false);

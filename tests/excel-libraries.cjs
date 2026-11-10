@@ -5,6 +5,7 @@ const http = require('node:http');
 const { inflateRawSync } = require('node:zlib');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'excel-libraries');
 
@@ -33,7 +34,7 @@ function zipText(bytes, name) {
 
 (async () => {
   await fs.mkdir(output, { recursive: true });
-  const source = await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8');
+  const source = await fs.readFile(appPath, 'utf8');
   const missingReader = source.replace(/<script id="excelReaderLibrary">[\s\S]*?<\/script>/, '');
   assert.notEqual(missingReader, source, 'The missing-reader probe must remove the embedded reader');
   const server = http.createServer((req, res) => {

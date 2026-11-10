@@ -5,6 +5,7 @@ const http = require('node:http');
 const { inflateRawSync } = require('node:zlib');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'export-security');
 const client = { id: 'export-client', name: 'Export fixture', ref: 'TEST-EXPORT', plan: [], trainingPlan: [] };
@@ -42,7 +43,7 @@ function checkPair(bytes, base) {
 
 (async () => {
   await fs.mkdir(output, { recursive: true });
-  const source = await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8');
+  const source = await fs.readFile(appPath, 'utf8');
   const server = http.createServer((req, res) => { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(source); });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const url = `http://127.0.0.1:${server.address().port}/`;
@@ -163,6 +164,7 @@ function checkPair(bytes, base) {
       await page.evaluate(async ({ client, session }) => {
         store = localStore(); await store.saveClient(client); await store.saveSession(client.id, { ...session, num: '../../evil' }); await finishBoot();
       }, { client, session });
+      await page.locator('#tab-sessions').click();
       const downloading = page.waitForEvent('download');
       await page.locator('[data-action="export-session"]:visible').first().click();
       const download = await downloading;

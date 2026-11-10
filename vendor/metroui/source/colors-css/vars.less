@@ -1,0 +1,32 @@
+@import "../include/vars";
+
+:root {
+    --color-dark: @dark;
+    --color-light: @light;
+    --color-gray-white: @gray-white;
+
+    --color-hover-default: rgba(red(@dark), green(@dark), blue(@dark), .1);
+    --color-success: green;
+    --color-alert: #c10000;
+    --color-warning: orange;
+    --color-info: #468cff;
+    
+    --color-primary: @primaryColor;
+    --color-secondary: @secondaryColor;
+    --color-tertiary: @tertiaryColor;
+}
+
+:root {
+    each(@normalColors, {
+        @light: "light-@{value}";
+        @minor: "minor-@{value}";
+        @sat: "sat-@{value}";
+        @dark: "dark-@{value}";
+        
+        --color-light-@{value}: @@light;
+        --color-minor-@{value}: @@minor;
+        --color-@{value}: @@value;
+        --color-sat-@{value}: @@sat;
+        --color-dark-@{value}: @@dark;
+    })
+}

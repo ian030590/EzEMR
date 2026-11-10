@@ -1,0 +1,212 @@
+@import (once) "../../include/vars";
+@import (once) "../../include/mixins";
+
+@cubeCellBackground: #231F20;
+@cubeCellBorder: #303030;
+@cubeCellColor: #767676;
+@cubeCellFlash: #c4122f;
+
+:root {
+    --cube-size: 24px;
+    --cube-gap: 4px;
+    --cube-cell-border-radius: 4px;
+    --cube-border-color: #767676;
+    --cube-background: var(--default-background);
+    --cube-color: var(--default-color);
+    --cube-background-flash: var(--color-primary);
+    --cube-color-flash: #ffffff;
+    --cube-axis-color: #191919;
+    --cube-side-border-color: transparent;
+}
+
+.dark-side {
+    --cube-border-color: #767676;
+    --cube-background: var(--default-background);
+    --cube-color: var(--default-color);
+    --cube-background-flash: var(--color-primary);
+    --cube-color-flash: #ffffff;
+    --cube-axis-color: #ffffff;
+    --cube-side-border-color: transparent;
+}
+
+.cube {
+    display: block;
+    position: relative;
+    width: 320px;
+    height: 310px;
+    margin: 0 auto 30px;
+    .rotateY(30deg);
+}
+
+.cube {
+    .side {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: flex-start;
+        padding: var(--cube-gap);
+        gap: var(--cube-gap);
+        position: absolute;
+        overflow: hidden;
+        width: 162px;
+        height: 162px;
+        bottom: 38px;
+        left: 0;
+        border: 1px solid var(--cube-side-border-color);
+        border-radius: calc(var(--cube-cell-border-radius) * 2);
+    }
+
+    .side {
+        &.left-side {
+            .skewY(23deg); .rotateX(10deg);
+        }
+
+        &.right-side {
+            left: 160px;
+            .skewY(-23deg); .rotateY(10deg);
+        }
+
+        &.top-side {
+            left: 80px;
+            bottom: 154px;
+            top: auto;
+            .rotate(45deg); .rotateZ(0); .skew(-22deg, -22deg);
+        }
+    }
+}
+
+.cube {
+    .side {
+        .cube-cell {
+            display: block;
+            position: relative;
+            width: var(--cube-size);
+            height: var(--cube-size);
+            flex-grow: 0;
+            flex-shrink: 0;
+            background-color: var(--cube-background);
+            color: var(--cube-color);
+            border: 1px solid var(--cube-border-color);
+            border-radius: var(--cube-cell-border-radius);
+            transition: @transition-base;
+            line-height: var(--cube-size);
+            text-align: center;
+            font-size: calc(var(--cube-size) / 2);
+
+            &.light {
+                animation: pulsar-cell 2.5s 0s ease-out infinite;
+                background-color: var(--cube-background-flash)!important;
+                border-color: var(--cube-background-flash)!important;
+                color: var(--cube-color-flash)!important;
+            }
+        }
+    }
+}
+
+@keyframes pulsar-cell {
+    0%, 100% {
+        box-shadow:
+                0 0 10px var(--cube-background-flash),
+                0 0 10px var(--cube-background-flash),
+                0 0 10px var(--cube-background-flash);
+    }
+    50% {
+        box-shadow:
+                0 0 10px hsl(from var(--cube-background-flash) h s l / .3),
+                0 0 10px hsl(from var(--cube-background-flash) h s l / .3),
+                0 0 10px hsl(from var(--cube-background-flash) h s l / .3);
+    }
+}
+
+.cube {
+    .axis {
+        height: 2px;
+        width: 200px;
+        position: absolute;
+        background-color: var(--cube-axis-color);
+        bottom: 162px;
+        left: 162px;
+        transform-origin: 0 0 0;
+
+        &::before, &::after {
+            content: "";
+            position: absolute;
+            height: 1px;
+            background-color: inherit;
+            display: block;
+        }
+
+        &.arrow {
+            &::before, &::after {
+                width: 16px;
+                top: 0;
+                right: 0;
+                transform-origin: 100% 100% 0;
+            }
+
+            &::before {
+                .rotate(35deg);
+            }
+
+            &::after {
+                .rotate(-35deg);
+                right: -1px;
+            }
+        }
+
+        &.line {
+            &::before, &::after {
+                width: 16px;
+                top: 0;
+                right: 0;
+                transform-origin: 100% 100% 0;
+            }
+
+            &::before {
+                .rotate(90deg);
+            }
+
+            &::after {
+                .rotate(-90deg);
+                right: -1px;
+            }
+
+            &.axis-y {
+                &::before {
+                    .rotate(113deg);
+                }
+
+                &::after {
+                    .rotate(-67deg);
+                }
+            }
+
+            &.axis-x {
+                &::before {
+                    .rotate(67deg);
+                }
+
+                &::after {
+                    .rotate(-113deg);
+                }
+            }
+        }
+
+        &.no-style {
+            &::before, &::after {
+                display: none;
+            }
+        }
+
+        &.axis-x {
+            .rotate(203deg);
+        }
+        &.axis-y {
+            bottom: 166px;
+            .rotate(-23deg);
+        }
+        &.axis-z {
+            width: 190px;
+            .rotate(90deg);
+        }
+    }
+}

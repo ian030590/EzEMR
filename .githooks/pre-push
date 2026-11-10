@@ -1,3 +1,4 @@
 #!/bin/sh
-# Runs the full test suite before every push. Any failure blocks the push.
+# Build the published file, then run the full suite. Any failure blocks the push.
+node scripts/build.cjs || exit $?
 exec node tests/run-ci.cjs

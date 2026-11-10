@@ -4,12 +4,13 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 
 (async () => {
   await fs.mkdir(output, { recursive: true });
-  const source = await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8');
+  const source = await fs.readFile(appPath, 'utf8');
   const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(source);
   });
@@ -67,6 +68,13 @@ const output = path.join(root, '.tmp', 'verification');
       window.languageRoot = await disk.getDirectoryHandle('language-records', { create: true });
       store = folderStore(languageRoot); await finishBoot();
     });
+    await page.locator('#viewMenuButton').click(); await action('global-settings').click();
+    await page.waitForSelector('#appSettingsForm');
+    await checkEnglish('.modal');
+    assert.equal(await page.locator('#appSettingsForm [name="requiredField"]').count(), 14);
+    assert.equal(await page.locator('#languageSelect').isDisabled(), true);
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#appSettingsForm', { state: 'detached' });
     await action('new-client').click();
     assert.equal(await page.locator('#languageSelect').isDisabled(), true);
     await checkEnglish('.modal');
@@ -79,13 +87,36 @@ const output = path.join(root, '.tmp', 'verification');
     await page.locator('#cForm [type="submit"]').click();
     await page.waitForSelector('#cForm', { state: 'detached' });
     // Client names and diagnoses are clinical data, so only built-in parts of the summary are checked.
-    await checkEnglish('.client-summary .eyebrow');
-    await checkEnglish('.client-head .btn');
+    await checkEnglish('.client-identity > .eyebrow');
+    await checkEnglish('.client-diagnosis .eyebrow');
+    const patientActions = await page.locator('.client-head .btn').evaluateAll(buttons => buttons.map(button => [button.textContent, button.title, button.getAttribute('aria-label') || ''].join(' ')));
+    assert.ok(patientActions.length >= 2 && patientActions.every(text => !/\p{Script=Han}/u.test(text)), 'Patient actions are translated');
     await checkEnglish('.medical-history summary');
     await checkEnglish('.client-stats');
-    await checkEnglish('.rail-head');
     await checkEnglish('label[for="clientSearch"]');
     await checkEnglish('.tabs');
+    assert.equal(await page.locator('#tab-dashboard').getAttribute('aria-selected'), 'true');
+    await checkEnglish('#patientDashboard');
+    assert.equal(await page.locator('.client-head [data-action="new-session"]').innerText(), 'New record');
+    for (const locale of ['zh-TW', 'en']) {
+      await choose(locale);
+      const en = locale === 'en';
+      assert.equal(await page.locator('aside, #railToggle').count(), 0);
+      const searchText = await page.locator('#clientSearch').evaluate(node => [node.placeholder, node.getAttribute('aria-label') || ''].join(' '));
+      assert.equal(/\p{Script=Han}/u.test(searchText), !en, 'Search accessible text follows the selected language');
+      await page.locator('#clientSearch').fill('no matching patient');
+      assert.equal(await page.locator('#clientSearchPopup').isVisible(), true);
+      assert.equal(await page.locator('#clientSearch').getAttribute('aria-expanded'), 'true');
+      if (en) await checkEnglish('#clientSearchPopup');
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator('#clientSearchPopup').isHidden(), true);
+      await page.locator('#clientSearch').fill('');
+    }
+    await choose('zh-TW');
+    assert.equal(await page.locator('#tab-dashboard').innerText(), '病人總覽');
+    await choose('en');
+    assert.equal(await page.locator('#tab-dashboard').innerText(), 'Patient dashboard');
+    await page.locator('#tab-sessions').click();
     await checkEnglish('.filters');
     await checkEnglish('#tabBody');
     assert.equal(await page.locator('#tab-sessions').innerText(), 'Rehabilitation records (0)');
@@ -93,11 +124,11 @@ const output = path.join(root, '.tmp', 'verification');
     await page.locator('#clientSearch').fill('no matching patient');
     assert.equal(await page.locator('#clientList').innerText(), 'No matching clients. Change your search text.');
     await page.locator('#clientSearch').fill('');
-    assert.equal(await page.locator('.client-btn').count(), 1);
+    assert.equal(await page.locator('.client-btn').count(), 0, 'An empty query does not expose the roster');
     assert.equal(await page.locator('.client-stats dd').nth(1).innerText(), 'No records yet');
     await choose('zh-TW');
     assert.equal(await page.locator('.client-stats dt').first().innerText(), '紀錄總數');
-    assert.equal(await page.locator('.client-summary .eyebrow').innerText(), '個案');
+    assert.equal(await page.locator('.client-identity > .eyebrow').innerText(), '個案');
     assert.equal(await page.locator('#tab-sessions').innerText(), '復健紀錄 (0)');
     assert.equal(await page.locator('.client-head h2').innerText(), '姓名');
     await choose('en');
@@ -127,7 +158,14 @@ const output = path.join(root, '.tmp', 'verification');
           await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
           for (const width of [320, 360, 768, 1280]) {
             await page.setViewportSize({ width, height: 900 });
-            assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${locale} ${mode || 'unspecified'} ${theme} editor at ${width}px`);
+            const layout = await page.evaluate(() => ({ fits: document.documentElement.scrollWidth <= innerWidth, documentWidth: document.documentElement.scrollWidth, viewportWidth: innerWidth,
+              overflow: [...document.querySelectorAll('body *')].filter(node => node.getClientRects().length && !node.closest('.scroll, .sr-only')).map(node => ({ tag: node.tagName, id: node.id, className: node.className?.baseVal ?? node.className,
+                right: node.getBoundingClientRect().right, width: node.getBoundingClientRect().width, text: node.textContent.slice(0, 60) })).filter(node => node.right > innerWidth).slice(0, 25) }));
+            if (!layout.fits) {
+              await fs.writeFile(path.join(output, 'language-overflow.json'), JSON.stringify({ locale, mode, theme, width, ...layout }, null, 2));
+              await page.screenshot({ path: path.join(output, 'language-overflow.png'), fullPage: true });
+            }
+            assert.equal(layout.fits, true, `${locale} ${mode || 'unspecified'} ${theme} editor at ${width}px: ${JSON.stringify(layout.overflow)}`);
             const sizes = await page.locator('#s-mode, #s-person, #s-environment, #s-occupation, #adaptationPicks .pick, #compensationPicks .pick, #assessList .pick, #as-va input, #as-va select, #as-self_report input, #as-self_report textarea').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height })));
             assert.ok(sizes.every(size => size.width >= 44 && size.height >= 44), 'Clinical flow controls retain 44px touch targets');
             if (mode === 'telerehab' && width === 360) {
@@ -188,7 +226,7 @@ const output = path.join(root, '.tmp', 'verification');
     assert.match(await page.locator('#fileMenu [data-action="save-session"] [data-label]').textContent(), /Save.*CSV.*PDF/i);
     assert.equal(await page.evaluate(() => JSON.stringify(cur())), client);
     assert.equal(await page.evaluate(() => JSON.stringify(sessions[0])), record);
-    assert.doesNotMatch(await page.locator('.sess .when').first().innerText(), /times/);
+    assert.doesNotMatch(await page.locator('.sess .session-meta').first().innerText(), /times/);
     assert.equal(await page.locator('.client-head h2').innerText(), '姓名');
     await checkEnglish('.section-heading');
     await checkEnglish('.client-stats');
@@ -222,7 +260,7 @@ const output = path.join(root, '.tmp', 'verification');
     assert.match(await page.locator('#planEdit').innerText(), /^尚無項目/);
     await page.evaluate(() => { cur().plan = languagePlan; cur().trainingPlan = languageTraining; renderPlan(); });
     await choose('en');
-    console.log('PASS: Client summary, roster search, tabs, record history, accessible names and empty states are bilingual');
+    console.log('PASS: Client summary, header search, tabs, record history, accessible names and empty states are bilingual');
 
     await page.locator('#tab-outcomes').click();
     for (const locale of ['zh-TW', 'en']) {
@@ -249,7 +287,8 @@ const output = path.join(root, '.tmp', 'verification');
     assert.doesNotMatch(await page.locator('#abs-reason option:checked').innerText(), /\p{Script=Han}/u);
     await action('save-session').click(); await page.waitForSelector('.sess');
     assert.equal(await page.evaluate(() => sessions.find(s => s.visit === 'absent').absence.reason), reason);
-    await checkEnglish('.sess:has(.chip.bad)');
+    const absenceId = await page.evaluate(() => sessions.find(s => s.visit === 'absent').id);
+    await checkEnglish(`.sess:has([data-action="open-session"][data-id="${absenceId}"])`);
     assert.equal(await page.evaluate(reason => noteText(cur(), sessions.find(s => s.visit === 'absent')).includes(reason), reason), false);
     console.log('PASS: Localized absence choices keep canonical stored values across language changes');
 
@@ -272,8 +311,13 @@ const output = path.join(root, '.tmp', 'verification');
     await blockedPage.locator('#languageSelect').selectOption('en');
     assert.equal(await blockedPage.locator('html').getAttribute('lang'), 'en');
     assert.doesNotMatch(await blockedPage.locator('.toast').innerText(), /\p{Script=Han}/u);
+    await blockedPage.locator('#clientSearch').fill('no matching patient');
+    assert.equal(await blockedPage.locator('#clientSearchPopup').isVisible(), true);
+    assert.doesNotMatch(await blockedPage.locator('#clientSearchPopup').innerText(), /\p{Script=Han}/u);
+    await blockedPage.keyboard.press('Escape');
+    assert.equal(await blockedPage.locator('#clientSearchPopup').isHidden(), true);
     await blocked.close();
-    console.log('PASS: Language switching works when browser preference storage is blocked');
+    console.log('PASS: Language switching and patient search work when browser preference storage is blocked');
   } finally {
     await browser.close(); await new Promise(resolve => server.close(resolve));
   }

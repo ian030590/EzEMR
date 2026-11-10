@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { createHash } = require('node:crypto');
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const { parse } = require(require.resolve('acorn', { paths: [__dirname, path.join(root, '.tmp', 'test-tools')] }));
 
@@ -36,6 +37,10 @@ function validate(html) {
     if (/\bid\s*=\s*["']excelReaderLibrary["']/i.test(attributes)) {
       // SheetJS CE 0.20.3 xlsx.core.min.js; raw SHA-256: 197255b0c278588117e45c14c1b25398562864cd9ffa9752c4b4d29f6d9bfd27.
       assert.equal(createHash('sha256').update(source.trim().replace(/\r\n?/g, '\n')).digest('hex'), '19d35a5c9abf6a4bead732e7c50fd4856bee273b567cd977e0dc9d26363aaaea', 'Embedded Excel reader changed; review its source and update the pinned hash');
+      continue;
+    }
+    if (/\bid\s*=\s*["']metroLibrary["']/i.test(attributes)) {
+      assert.equal(createHash('sha256').update(source.trim().replace(/\r\n?/g, '\n')).digest('hex'), '340ce0d1632fa234de6ea58230e523d625dfcf326d45cb167f807dbca4f60c03', 'Embedded Metro UI changed; review the pinned local package and build');
       continue;
     }
     scripts.push({ source, ast: parse(source, { ecmaVersion: 'latest', locations: true }) });
@@ -129,14 +134,14 @@ function validate(html) {
       }
     });
   }
-  const staticHTML = html.replace(/<script(?:\s[^>]*)?>[\s\S]*?<\/script>|<style>[\s\S]*?<\/style>|<!--[^]*?-->|<select[^>]*data-language-names[^>]*>[\s\S]*?<\/select>/g, '');
+  const staticHTML = html.replace(/<script(?:\s[^>]*)?>[\s\S]*?<\/script>|<style\b[^>]*>[\s\S]*?<\/style>|<!--[^]*?-->|<select[^>]*data-language-names[^>]*>[\s\S]*?<\/select>/g, '');
   coverage(staticHTML, 'static HTML');
   markup(staticHTML, 'static HTML');
   assert.doesNotMatch(fs.readFileSync(path.join(root, 'README.md'), 'utf8'), han, 'English README must contain no Chinese characters');
   return checked;
 }
 
-const html = fs.readFileSync(path.join(root, 'EzEMR.html'), 'utf8');
+const html = fs.readFileSync(appPath, 'utf8');
 const count = validate(html);
 const lfHTML = html.replace(/\r\n?/g, '\n');
 assert.equal(validate(lfHTML), count, 'LF checkouts must accept the pinned library');
@@ -160,6 +165,7 @@ assert.throws(() => validate(html.replace(/<\/body>(\s*<\/html>\s*)$/, '<script 
 assert.throws(() => validate(html.replace(/<\/body>(\s*<\/html>\s*)$/, '<script data-type="application/json">document.title = "新增個案";</script></body>$1')), undefined, 'Data attributes must not exempt executable scripts');
 assert.throws(() => validate(html.replace('<script id="excelLibrary">', '<script id="excelLibrary">document.title = "新增個案";')), undefined, 'Modified vendor scripts must not bypass the gate');
 assert.throws(() => validate(html.replace('<script id="excelReaderLibrary">', '<script id="excelReaderLibrary">document.title = "新增個案";')), undefined, 'Modified reader scripts must not bypass the gate');
+assert.throws(() => validate(html.replace('<script id="metroLibrary">', '<script id="metroLibrary">document.title = "新增個案";')), undefined, 'Modified Metro UI scripts must not bypass the gate');
 assert.throws(() => validate(html.replace('<script id="excelReaderInit">', '<script id="excelReaderInit">document.title = "新增個案";')), undefined, 'Reader initialization must remain subject to UI scanning');
 assert.throws(() => validate(html.replace("session: '每次復健'", "session: 'English-only timing'")), undefined, 'Localization gate accepted an English-only canonical label');
 console.log(`PASS: ${count} localization fragments, built-in label pairs and English README; gate rejects missing translations and raw one-language UI`);

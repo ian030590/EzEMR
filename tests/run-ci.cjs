@@ -1,8 +1,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const { createHash } = require('node:crypto');
 
 const root = path.resolve(__dirname, '..');
+const { buildHTML } = require('../scripts/build.cjs');
 
 function runTests(steps, env = process.env) {
   for (const { name, command, args } of steps) {
@@ -17,9 +19,20 @@ function runTests(steps, env = process.env) {
   }
 }
 
+function extractExcelScript(html) {
+  const embedded = html.match(/<script id="excelLibrary">([\s\S]*?)<\/script>/)?.[1];
+  if (!embedded) throw new Error('Embedded Excel test component is missing');
+  if (createHash('sha256').update(embedded.trim().replace(/\r\n?/g, '\n')).digest('hex') !== '0c796fb94a895613dd6d34289ea25df17531f47bd2f89e0f809a829b0459aa67') throw new Error('Embedded Excel test component checksum failed');
+  return embedded;
+}
+
 async function main() {
   const paths = [root, path.join(root, '.tmp', 'test-tools')];
   const env = { ...process.env };
+  const appPath = path.join(root, '.tmp', 'ci', 'EzEMR.html');
+  fs.mkdirSync(path.dirname(appPath), { recursive: true });
+  fs.writeFileSync(appPath, buildHTML());
+  env.EZEMR_TEST_HTML = appPath;
   try {
     require.resolve('acorn', { paths });
     env.PLAYWRIGHT_MODULE ||= path.dirname(require.resolve('playwright/package.json', { paths }));
@@ -38,11 +51,10 @@ async function main() {
   const excel = env.XLSX_SCRIPT ? path.resolve(env.XLSX_SCRIPT) : path.join(root, '.tmp', 'xlsx.bundle.js');
   if (!fs.existsSync(excel)) {
     if (env.XLSX_SCRIPT) throw new Error(`Excel test component does not exist: ${excel}`);
-    console.log('CI: Downloading pinned Excel test component');
-    const response = await fetch('https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js', { signal: AbortSignal.timeout(30000) });
-    if (!response.ok) throw new Error(`Excel test component download failed: HTTP ${response.status}`);
+    console.log('CI: Extracting pinned Excel test component from the offline HTML');
+    const embedded = extractExcelScript(fs.readFileSync(appPath, 'utf8'));
     fs.mkdirSync(path.dirname(excel), { recursive: true });
-    fs.writeFileSync(excel, Buffer.from(await response.arrayBuffer()));
+    fs.writeFileSync(excel, embedded);
   }
   env.XLSX_SCRIPT = excel;
 
@@ -53,5 +65,5 @@ async function main() {
   console.log('\nPASS: Full CI completed.');
 }
 
-module.exports = { runTests };
+module.exports = { runTests, extractExcelScript };
 if (require.main === module) main().catch(error => { console.error(error.message); process.exitCode = error.exitCode || 1; });

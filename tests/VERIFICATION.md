@@ -1,5 +1,109 @@
 # 驗證紀錄
 
+## 2026-11-10：分離開發來源、離線 Metro UI 與全域基本資料設定
+
+開發來源改為 `src/index.html`、`src/styles.css`、`src/app.js` 與獨立的隱私／主題／Excel／Metro 初始化程式；外部套件、授權與校驗資訊放在 `vendor/`。`EzEMR.html` 為建置產物。`node scripts/build.cjs` 不需安裝套件或連網，會檢查本地套件完整性，再合併 HTML、CSS、JavaScript、字型與圖示。開發頁與產物皆可直接以 `file://` 開啟。
+
+`.githooks/pre-push` 先建置根目錄的發佈檔，再執行完整 `node tests/run-ci.cjs`；GitHub Actions 採相同流程，成功後上傳單一 HTML artifact。測試透過 `tests/lib/app.cjs` 讀取獨立暫存產物；完整 runner 共用新建的 `.tmp/ci/EzEMR.html`，單獨測試不覆寫發佈檔。`build.cjs` 測試涵蓋來源修改、唯讀檢查、暫存預覽、LF／CRLF 一致性、禁止外部資源、套件遭修改或授權缺失，以及開發／發佈頁的離線啟動。`ci-runner.cjs` 在隔離 Git 專案執行真實 hook，證明失敗會阻擋後續流程。
+
+採用本地固定版本 Metro UI 5.1.20 的 app-bar、Input、dropdown 與按鈕樣式，保留鍵盤選單、焦點、原生表單與既有病歷內容。互動文字 13px、共用內距 2px／10px、相鄰操作同尺寸與 8px 間隔；桌面頂部高 61px，控制項外保留 8px，上下不貼邊。主要操作使用應用程式強調色，避免套件 `.primary` 的紅色覆蓋；刪除與確認刪除維持警示色，雙主題皆驗證實際顏色與 hover。資料夾狀態不占畫面欄位，於設定內查看。原有病人搜尋、無側欄、主區新增紀錄及語意化紀錄分組均保留。
+
+基本資料設定有 14 欄：姓名、病歷號、身分證字號、生日、性別、抽菸／飲酒／嚼檳榔、職業、宗教、慢性病、電話、地址與過敏史。勾選欄位為所有病人的必填資料；未勾選欄位不顯示於填寫畫面，保留既有值。新增要求不改寫舊資料，已有紀錄可讀，缺漏時先補資料才可儲存新紀錄。設定與 SOAP 草稿互不覆蓋；設定儲存失敗保留原政策與可編輯對話框。資料夾模式以 `settings.json` 儲存，瀏覽器模式獨立保存；備份可還原設定，無姓名／病歷號時仍使用穩定識別碼且不把翻譯文字寫成姓名。
+
+發佈檔的 CSP 禁止外部腳本、連線、表單提交、frame、worker 與 base URI；最早執行的隱私程式另封鎖 fetch、XHR、beacon、WebSocket、EventSource、WebRTC 等傳輸介面。Metro／Excel／字型與圖示全數本地內嵌，不使用 CDN、外部字型或宿主下載橋接。`metro-init.js` 保留暫存文件解析，省略上游解析器插入的 base；不修改套件、不放寬 CSP，並驗證單一標籤、選擇器、混合文字與 script 的解析契約。EyeDot 說明網址以本地對話框供複製。`offline-privacy.cjs` 用合成識別字串測試填寫、儲存、重開、匯入、下載及備份，要求零 HTTP／WebSocket 請求及正常操作時零 CSP 違規；另外以捕獲的原生 API 證明 CSP 仍會阻擋傳輸，不只依賴 JavaScript 封鎖。
+
+新增的 `build.cjs`、`metro-ui.cjs`、`offline-privacy.cjs`、`profile-settings.cjs` 與 `profile-storage.cjs` 均由 runner 自動發現。瀏覽器檢查涵蓋雙語、亮暗模式、320–1280px、無溢出、按鈕間距、全域必填驗證、設定儲存與病歷原文保留。人工檢視包含繁中桌面工具列、病人總覽、基本資料設定及英文深色設定／手機畫面；截圖與結果位於忽略的 `.tmp/verification/metro-ui/`、`patient-dashboard/`、`profile-settings/`、`profile-storage/`、`offline-privacy/` 與 `build/`。
+
+最終 `node tests/check_i18n.cjs`、`node tests/language.cjs` 與實際 `git hook run pre-push` 執行的完整 `node tests/run-ci.cjs` 全部通過，原生程序退出碼為 0。完整輸出為 `.tmp/v-full-ci-metro-source.log`，退出碼為 `.tmp/verification/metro-source/hook-result.json`；`node scripts/build.cjs --check` 也通過。先前抓到的鍵盤焦點、儲存按鈕配色與上游暫存 base 問題均已修正，未略過失敗測試或放寬 CSP。未提交或推送；GitHub Actions 流程已設定，尚未在遠端執行。
+
+## 2026-11-10：頂部個案搜尋、紀錄卡片分組與 ponytail-audit 修正
+
+依本輪需求移除完整側欄、收合按鈕、收合偏好與隱藏的 command-context。個案搜尋移至固定頂部，空白時不列名冊；依姓名、病歷號或診斷搜尋，最多顯示八筆並提供總數，支援上下鍵、Enter、Escape 及草稿確認。紀錄卡片以 `session-metrics` 定義清單對齊復健前、復健後與差異，各測驗分數、評估／恢復／耐受度、復健項目另行分組；出席與缺席卡片共用標題和操作。編輯器的 `symSummary` 與 `copmSum` 也改為 `score-summary` 定義清單，保留原有值與比較規則。互動文字使用 13px，維持至少 44px 操作範圍，正文不縮小。
+
+ponytail-audit 實際以合成資料重現並修正：同名但病歷號不同的病人被誤合併、備份內重複識別碼覆蓋資料、舊版 JSON 讀取失敗被當成不存在，以及病人切換的舊回應覆蓋目前紀錄。另刪除 `saveClient` 不可能成立的資料夾重新命名／刪除分支與未使用變數，減少六行，沿用既有固定資料夾政策；沒有新增執行期套件或儲存層。完整稽核位於忽略的 `.tmp/verification/ponytail-audit.md`，修正前反例為 `ponytail-audit-probes.json`。
+
+新增 `tests/import-identity.cjs`，兩語皆通過：不同病歷號分開、相同病歷號與缺少號碼的既有備援合併、舊資料的空白或純空格號碼補入第一個已知病歷號後不被另一號碼誤用、同名歧義與生日衝突、整份備份寫入前拒絕重複個案／病歷識別碼、舊版 JSON 格式或權限錯誤顯示檔名且不修改檔案、遺失 JSON 的備援與 BOM 相容性，以及修改病歷號仍保留既有資料夾與檔案。結果存於 `.tmp/verification/import-identity/results.json`；`imports.cjs`、`storage.cjs` 已通過相關回歸。
+
+`run-ci.cjs` 自動發現 `tests/` 下的新 `.cjs`，故新測試已包含於 `.githooks/pre-push` 執行的完整入口，無須調整 runner。`vf-entry.cjs` 的重載流程亦改由 header 搜尋選取病人，保留全部視野與儲存驗證。最終 `node tests/check_i18n.cjs`、`node tests/language.cjs` 與實際 `git hook run pre-push` 執行的完整 `node tests/run-ci.cjs` 全部通過，原生程序退出碼為 0；失敗阻擋反例亦通過。輸出為 `.tmp/v-full-ci-header-search.log`，退出碼為 `.tmp/verification/header-search/hook-result.json`。未提交或推送。
+
+交付檢查：
+
+- PASS，操作與可及性：繁中／英文、亮暗模式、320–1920px、鍵盤搜尋、無符合結果、八筆上限及草稿確認由瀏覽器測試通過；13px 互動文字與 44px 操作範圍均有實測。
+- PASS，排列目的：復健前／後／差異使用固定三欄，測驗、恢復、評估與訓練依資料意義分組；標籤、顏色與正負值同時保留。移除 `.line`、所有 `chip mono`、側欄及其狀態，出席／缺席共用標題與操作。
+- PASS，設計方向：沿用本次高密度臨床工作區的 ENERGY 1／RHYTHM 1／MOTION 1；正文維持原尺寸，未新增視覺素材或動畫。
+- PASS，人工檢視：已檢視 1366px 繁中／英文紀錄、搜尋結果、英文症狀／COPM 編輯摘要及英文深色 320px 畫面；截圖位於 `.tmp/verification/header-search/` 與 `workspace-*.png`。1366px 實測頂部 49px、主區全寬 1366px、輸入字體 13px、正文 16px。
+
+## 2026-11-10：緊湊工作區與病人狀態層級
+
+桌面版標題、選單、工具、儲存狀態與語言選擇器合為一列；「新增紀錄」移至病人主區。左側個案名單可收合，瀏覽器記住選擇，草稿不受影響。主區優先顯示病人身分與診斷、紀錄日期及症狀分數，再呈現症狀／推理依據／介入計畫；病史與來源細節收合。總覽以可用內容寬度決定三欄或依序堆疊，減少重複標題與內距，控制項保留至少 44px 操作範圍。
+
+總覽只讀取所選出席紀錄，標示最近或歷次出席；最新紀錄若為缺席，包含只有缺席紀錄的個案，都顯示日期提示。分數正負差異只比較同次紀錄的首末評分，以「本次變化／Visit change」標明；降低為綠、升高為紅，相同或缺少比較值使用中性色，不推定嚴重程度。
+
+本輪驗證範圍為 `patient-dashboard.cjs`、`toolbar.cjs`、`workspace.cjs` 與 `language.cjs`：兩語、亮暗模式、桌面緊湊高度、手機無溢出、收合後空間與重載記憶、鍵盤／焦點、切換語言與收合時保留草稿、最新缺席及不完整評分。這些既有測試由 `node tests/run-ci.cjs` 自動發現，`.githooks/pre-push` 執行同一入口；失敗必須阻擋推送。畫面與結果留在忽略的 `.tmp/verification/`，總覽截圖位於其 `patient-dashboard/` 子目錄。
+
+1280px 視窗實測，頂部高度由 130px 降至 49px；名單由 272px 改為 224px，收合為 52px，主區可用寬度由 1008px 增至 1228px。量測以本輪開始時的 HTML 副本對照，結果存於 `.tmp/verification/density-metrics.json`。
+
+交付檢查：
+
+- PASS，操作與可及性：雙語、亮暗模式、320–1920px 無水平溢出；44px 控制項、鍵盤與焦點由上述瀏覽器測試驗證。
+- PASS，視覺目的：沿用原字體與青綠操作色，診斷提前、低優先資料收合、每項症狀的關係對齊；顏色配合正負值，不單靠顏色傳達資訊。
+- PASS，設計方向：依本次臨床資料密度要求採 ENERGY 1／RHYTHM 1／MOTION 1，以一列工具和資料欄位建立層級，未新增視覺素材或動畫。
+- PASS，人工畫面檢視：已檢視繁中淺色 1280px 展開／收合、英文深色 1280px 與 360px 收合畫面；病人資訊、來源日期與完整臨床原文保留。
+
+本輪 `node tests/check_i18n.cjs`、`node tests/language.cjs` 與上述工作區測試通過。實際 `git hook run pre-push` 執行完整 `node tests/run-ci.cjs`，全部測試通過且原生程序退出碼為 0；失敗阻擋反例亦通過。完整輸出為 `.tmp/v-full-ci-density-native.log`，退出碼紀錄為 `.tmp/verification/density-hook-result.json`。未提交或推送。
+
+## 2026-11-10：症狀變化標示與五項加總來源
+
+復健紀錄卡片的症狀差異改用「與首次差異／Change from first」與正負數值，不再使用眼科稜鏡度數符號；正融像輻輳欄位的原始名稱、單位及既有結果鍵保持不變。`workspace.cjs` 在兩種語言檢查差異標籤與稜鏡度數欄位，仍由 runner 自動納入。
+
+追溯最初應用程式 commit `af3ec91`，五項症狀與加總方式已存在；原始註解提到的症狀評分說明未附於儲存庫，也沒有此五項組合的量表引用。提供的簡報未指定這五項。雙語 README 記錄此來源限制與目前略過空白後直接加總的算法；本輪未改動症狀項目、既有評分或加總算法。
+
+雙語工作區、`check_i18n.cjs`、`language.cjs` 與實際 pre-push hook 執行的完整 `node tests/run-ci.cjs` 均通過；未推送。
+
+## 2026-11-10：總覽可用寬度與臨床閱讀排版
+
+原本以整個視窗 1200px 啟用三欄，扣除側欄與內距後，症狀欄只剩約 180px 文字寬度。改以 Dashboard 的內容寬度作容器查詢，至少 72rem 才並排；不足時，每個症狀的「主要症狀／推理與依據／介入」依序各占完整一列，維持症狀到介入的閱讀順序。
+
+依醫療人員閱讀情境，正文保留 16px、一般字重，繁中／英文行距由 1.8／1.6 改為 1.45／1.4；標題使用 700 字重與 1.25 行距。總覽區段標題改為主文字色與 16px 粗體，症狀文字維持正文格式；段落與清單間距縮小，填寫標籤加粗，欄位仍保留 44px 操作高度。雙語瀏覽器回歸同時檢查標題比正文粗、正文行距不超過 1.5。
+
+`tests/patient-dashboard.cjs` 先在原始版面重現 1200px 三欄問題，再驗證修正後的繁中／英文與亮暗模式：320／360／768／1024／1200／1280／1366／1440px 為直排，1600／1680／1920px 有足夠欄寬才並排；大視窗內將 Dashboard 限制為 900px 也會直排。回歸檢查實際座標、欄寬與順序，補足原本僅檢查無溢出的不足。截圖為 `.tmp/verification/patient-dashboard/{zh-TW,en}-{light,dark}-{1280,1440,1680}.png`。
+
+本輪 `check_i18n.cjs`、`language.cjs`、Dashboard 檢查與實際 `git hook run pre-push` 執行的完整 `node tests/run-ci.cjs` 均通過；未推送。已人工檢視繁中 1280px 與英文深色 360px 的緊湊排版，以及 1680px 並排畫面。
+
+## 2026-11-10：病人總覽與逐項症狀、推理、介入連結
+
+最終完整 `node tests/run-ci.cjs` 與實際 `git hook run pre-push` 均通過，包含新增的 Dashboard、VF 測試及所有既有 `.cjs`／`.py` 測試。hook 的失敗阻擋反例也通過；未進行推送。檢查輸出與合成資料僅寫入忽略的 `.tmp/`。
+
+依《視覺復健服務架構》的一張架構投影片，新增每位病人的預設「病人總覽」。評估沿用「視覺功能／功能性視覺」，推理標記個人、環境與作業面向，處置分面對面／遠距復健的復能、調適與代償。簡報沒有獨立症狀分類或自動推理規則，因此關係由治療人員逐項填寫。面對面復能「視覺知覺」的英文採中文原意 Visual perception，沒有沿用簡報中不一致的 Visual field training。
+
+新增 `tests/patient-dashboard.cjs`，既有 `tests/workspace.cjs` 與 `tests/language.cjs` 加入預設總覽及分頁檢查。`tests/run-ci.cjs` 自動發現 `tests/` 下的 `.cjs`，不需另外登錄；`.githooks/pre-push` 直接執行同一 runner，失敗會阻擋推送。下列項目已以合成資料執行 `node tests/patient-dashboard.cjs` 與 `node tests/workspace.cjs`，兩語皆通過：
+
+- PASS：從本機 HTML 離線開啟，新增與切換病人預設進入總覽；空白與只有缺席紀錄的病人不混入其他病人的資料。
+- PASS：預設選最近出席紀錄，可切換歷次出席紀錄，缺席不列入選單；逐筆顯示症狀、推理與依據、介入，保留各筆對應關係。
+- PASS：依據使用該筆紀錄與當時的評估定義；草稿結果變更立即更新依據預覽，未施測的評估明確提示；閱讀總覽不修改已存資料。
+- PASS：沒有逐項連結的舊紀錄依原欄位顯示，沒有虛構的連結識別碼或自動推理。
+- PASS：編輯器新增、刪除連結，切換服務型態保留其他型態已選策略；切換中英文保留分類識別碼、勾選、病人原文與草稿。
+- PASS：儲存、CSV 往返、病歷文字與連結文字報告保留內容；舊紀錄不被補上原本不存在的 `clinicalLinks`。
+- PASS：實際序列化及重讀 Excel 的 Clinical links 工作表與 SOAP 表單，保留連結 ID、評估／介入 ID、翻譯後標籤、PEO、該次結果及原文備註；以 `=` 開頭的備註維持文字，不產生公式。
+- PASS：錯誤結構、重複連結 ID、不合法分類與 PEO 面向、危險識別碼皆以雙語錯誤拒絕；未知但格式正確的識別碼可保留。文字中的 HTML 原樣顯示，不產生標記。
+- PASS：亮色與深色、中英文、320／360／768／1280px 無水平溢出；總覽控制項至少 44px，鍵盤焦點可見；既有工作區的四分頁鍵盤切換與病歷操作通過。
+- PASS：未完成的空白症狀連結切換為缺席後可儲存，草稿推理與處置不消失，也不混入缺席病歷文字；CSV 與重載後保留草稿，改回出席時重新要求症狀欄位。
+
+結果與合成資料快照為 `.tmp/verification/patient-dashboard/results.json`、`zh-TW-clinical-links.json`、`en-clinical-links.json`；畫面包含空白、舊紀錄、編輯器，以及兩語亮／深色 360／1280px 總覽截圖。原生資料夾選擇對話框與臨床適用性未由這些自動化測試驗證。
+
+視野填寫參考 NTUHLowvision `index.html` 的十字欄位：OD 在觀看者左側、OS 在右側，鼻側朝中間、顳側朝外；OU 在下方，病人右側位於畫面左側。共十二個自由文字欄位，空白表示未記錄，角度、質性描述及 `0` 均保留；沒有新增視野判讀或臨床推論。既有測驗方法、OD／OS 記載、摘要、自訂欄位及來源資料表的原始欄位識別碼均維持相容。顯示方向欄位不會改寫已儲存的模板。
+
+新增 `tests/vf-entry.cjs`，由同一 runner 與 pre-push hook 自動納入。已實際執行 `node tests/vf-entry.cjs`，繁體中文與英文皆通過：
+
+- PASS：內建視野與來源資料表各有十二個附標籤欄位；OD／OS 的鼻顳方向、OU 的病人左右方向正確，舊欄位及自訂欄位仍可填寫。
+- PASS：空白維持空白，自由文字、含引號與 HTML 字元的描述、文字 `0` 均可輸入；取消勾選再展開及切換語言保留草稿，英文標籤與提示無漏翻。
+- PASS：中英文、亮色及深色、320／390／768／1280px 無水平溢出，方向欄位至少 44px 且有可用標籤；Tab 可移至下一欄，焦點可見。
+- PASS：儲存與重載、病歷文字、CSV 往返保留全部方向結果及舊有／自訂內容；已載入的數字 `0` 在欄位未修改時保留數字型別；自訂評估不會被套入視野排列。
+
+結果存於 `.tmp/verification/vf-entry-results.json`。兩語、亮／深色、390／1280px 截圖為 `.tmp/verification/vf-{zh-TW|en}-{light|dark}-{390|1280}.png`；已人工檢視英文亮色 1280px 與繁中深色 390px。參考介面截圖存於 `.tmp/reference-ui/ntuh-vf.png` 及 `ntuh-clinic-vf-desktop.png`，以本機原始 HTML／CSS 呈現後擷取，沒有連接正式 Apps Script 服務或使用真實病歷。
+
+Antislop 使用 during 模式，設計讀取設定為 ENERGY 1／RHYTHM 2／MOTION 1。沿用青綠色只標示選取與操作；Noto／系統繁中字體支援雙語臨床閱讀。一個實際症狀對應一列，寬螢幕為三欄、窄螢幕依序堆疊；症狀欄的淡底與列分隔線用於辨識關係。只收合來源細節與選擇清單，沒有新增視覺素材或虛構的真實病歷。分類依來源簡報，VF 方位依 NTUHLowvision 的參考介面。交付檢查以實際操作、上述截圖與結果檔為據；已人工檢視繁中淺色 1280px、英文深色 360px、VF 來源與實作畫面。
+
 ## 2026-11-05：OcuTrain 與周邊視野訓練分數匯入
 
 電腦化視覺測驗改依 OcuTrain 的模組設定：平滑追視（PURSUIT）、凝視（FIXATION）、跳視（SACCADE）與前庭眼反射（VOR）各是一個評估項目，原本合併的追視、凝視項目不再列入新個案的預設清單。周邊視野訓練程式的三個 UFOV 子測驗也各自獨立。每個項目以主要分數為第一欄（OcuTrain 為注視正確率，UFOV 為 80% 正確門檻），測驗設定收合在「測驗設定」區，欄位代碼沿用程式匯出檔的鍵名。「電腦眼球運動訓練」與「周邊覺察」新增「測驗紀錄」，每次測驗一張卡片，各自記錄結果與設定。既有個案保留原本存好的項目與結果。

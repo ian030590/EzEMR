@@ -1,0 +1,40 @@
+@import (once) "../../include/vars";
+@import (once) "../../include/mixins";
+
+:root {
+    --resizer-color: var(--border-color);
+    --resizer-color-disabled: var(--default-background-disabled);
+}
+
+.dark-side {
+    --resizer-color: var(--border-color);
+    --resizer-color-disabled: var(--default-background-disabled);
+}
+
+.resize-element {
+    display: block;
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    z-index: 101;
+    cursor: nwse-resize;
+    width: 12px;
+    height: 12px;
+
+    &::after {
+        position: absolute;
+        display: block;
+        border-bottom: 12px solid var(--resizer-color);
+        border-left: 12px solid transparent;
+        content:"";
+        right: 0;
+        bottom: 0;
+    }
+
+    &.resize-element-disabled {
+        cursor: default;
+        &::after {
+            border-bottom-color: var( --resizer-color-disabled);
+        }
+    }
+}

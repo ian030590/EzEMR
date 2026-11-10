@@ -1,0 +1,98 @@
+@import (once) "../../include/vars";
+@import (once) "../../include/mixins";
+
+:root {
+    --dropdown-caret-color: #191919;
+}
+
+.dark-side {
+    --dropdown-caret-color: #ffffff;
+}
+
+[data-role-dropdown] {
+}
+
+.dropdown {
+    position: absolute!important;
+    z-index: @z-index-fixed!important;
+}
+
+.dropdown-caret {
+    margin-left: 4px;
+}
+
+ul ul {
+    .dropdown-caret {
+        margin-left: auto;
+    }
+}
+
+.dropdown-toggle {
+    svg {
+        fill: var(--dropdown-caret-color);
+        transform: rotate(90deg);
+        transition: transform .3s;
+    }
+
+    &.active-toggle {
+        svg {
+            transform: rotate(270deg);
+        }
+    }
+    
+    &.light-toggle {
+        --dropdown-caret-color: #fff!important;
+    }
+}
+
+.no-dropdown-caret {
+    .dropdown-caret {
+        display: none!important;
+    }
+}
+
+// These classes are auxiliary and should not be used directly.
+.drop-left {
+    right: 100%!important;
+    top: 0!important;
+}
+
+.drop-right {
+    left: 100%!important;
+    top: 0!important;
+}
+
+.drop-up {
+    top: auto!important;
+    bottom: 100%!important;
+}
+
+.drop-up-left {
+    top: auto!important;
+    bottom: 100%!important;
+    left: 0;
+}
+
+.drop-up-right {
+    top: auto!important;
+    bottom: 100%!important;
+    right: 0!important;
+}
+
+.drop-down {
+    top: 100%!important;
+    bottom: auto!important;
+}
+
+.drop-down-left {
+    top: 100%!important;
+    bottom: auto!important;
+    left: 0!important;
+}
+
+.drop-down-right {
+    top: 100%!important;
+    bottom: auto!important;
+    right: 0!important;
+}
+// End of auxiliary classes

@@ -4,6 +4,7 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'record-security');
 const client = { id: 'security-client', name: 'Security fixture', ref: 'TEST-SECURITY', plan: [] };
@@ -11,7 +12,7 @@ const session = { id: 'security-session', date: '2026-11-02', visit: 'treatment'
 
 (async () => {
   await fs.mkdir(output, { recursive: true });
-  const source = await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8');
+  const source = await fs.readFile(appPath, 'utf8');
   const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(source);
   });
@@ -73,16 +74,18 @@ const session = { id: 'security-session', date: '2026-11-02', visit: 'treatment'
         { ...session, id: 'tolerance-empty', tolerance: '' }
       ] }] };
       await page.locator('#importFile').setInputFiles({ name: 'valid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
-      await page.waitForFunction(() => clients.length === 1 && sessions.length === 2 && document.querySelectorAll('.sess').length === 2);
-      assert.match((await page.locator('.sess').allTextContents()).join('\n'), locale === 'en' ? /Tolerance 7\/10/ : /耐受度 7\/10/);
+      await page.waitForFunction(() => clients.length === 1 && sessions.length === 2 && document.querySelector('#tab-sessions'));
+      await page.locator('#tab-sessions').click();
+      assert.equal(await page.locator('.sess').count(), 2);
+      assert.match((await page.locator('.sess').allTextContents()).join('\n'), locale === 'en' ? /Tolerance\s*7\/10/ : /耐受度\s*7\/10/);
       assert.deepEqual(await page.evaluate(async () => (await store.listSessions(curId)).sort((a, b) => a.id.localeCompare(b.id)).map(s => s.tolerance)), [null, 7]);
       check(`${locale} normalized tolerance survives JSON import and CSV folder reload, and the session card shows 7/10`);
 
       const sinks = await page.evaluate(({ client, session }) => {
-        const saved = { clients, sessions, curId };
+        const saved = { clients, sessions, curId, search: $('#clientSearch').value };
         const markup = '<img src=x>', id = 'x"><img src=x>';
         try {
-          clients = [{ ...client, id }]; curId = id; renderClients();
+          clients = [{ ...client, id }]; curId = id; $('#clientSearch').value = client.name; renderClients();
           const clientHTML = $('#clientList').innerHTML;
           clients = [client]; curId = client.id;
           const s = { ...session, tolerance: '<b>x</b>', sym: [
@@ -97,7 +100,7 @@ const session = { id: 'security-session', date: '2026-11-02', visit: 'treatment'
           const runHTML = runCard('ocular', { id, item: RUN_ITEMS.ocular[0], values: {} });
           const template = document.createElement('template'); template.innerHTML = runHTML;
           return { clientHTML, cardHTML, outcomesHTML, runHTML, runID: template.content.querySelector('.run').dataset.run };
-        } finally { clients = saved.clients; sessions = saved.sessions; curId = saved.curId; renderClients(); renderMain(); }
+        } finally { clients = saved.clients; sessions = saved.sessions; curId = saved.curId; $('#clientSearch').value = saved.search; renderClients(); renderMain(); }
       }, { client, session });
       assert.match(sinks.cardHTML, /&lt;b&gt;x&lt;\/b&gt;/);
       for (const key of ['clientHTML', 'cardHTML', 'outcomesHTML', 'runHTML']) {

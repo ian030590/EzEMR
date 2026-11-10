@@ -1,0 +1,12 @@
+{
+  "name": "xlsx-js-style",
+  "version": "1.2.0",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/gitbrent/xlsx-js-style",
+  "origin": "Preserved from the previously embedded EzEMR distribution",
+  "files": {
+    "xlsx.bundle.js": "1c7abf2993ff2cd61e508f9268e9acda0098c9796f3925d2ba0d2579072653e2",
+    "LICENSE": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64"
+  },
+  "licenseSource": "https://raw.githubusercontent.com/gitbrent/xlsx-js-style/master/LICENSE"
+}

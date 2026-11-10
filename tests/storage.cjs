@@ -4,6 +4,7 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 const evidence = [];
@@ -11,7 +12,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
 
 (async () => {
   await fs.mkdir(output, { recursive: true });
-  const source = await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8');
+  const source = await fs.readFile(appPath, 'utf8');
   assert.doesNotMatch(source.toString(), /dropbox|dbxForm|oauth2/i);
   const server = http.createServer((req, res) => { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(source); });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -61,7 +62,10 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
       const disk = await navigator.storage.getDirectory(), parent = await disk.getDirectoryHandle('local-records');
       store = folderStore(await parent.getDirectoryHandle('Data')); await finishBoot();
     });
+    assert.equal(await page.locator('.client-btn').count(), 0, 'Reopening a folder does not reveal the full roster');
+    await page.locator('#clientSearch').fill('TEST-DEFAULT');
     assert.match(await page.locator('#clientList').textContent(), /測試預設個案/);
+    await page.keyboard.press('Escape');
     check('First save creates Data/clients.csv beside the selected HTML; reopening the folder reads the roster and leaves HTML untouched');
 
     await action('new-session').click(); await page.locator('#s-subj').fill('本機資料夾讀寫測試');

@@ -4,6 +4,7 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'assessment-groups');
 // The new clinic battery is additive; the earlier ten assessment definitions remain available.
@@ -35,7 +36,7 @@ const ordered = (text, terms) => {
 
 (async () => {
   await fs.mkdir(output, { recursive: true });
-  const source = await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8');
+  const source = await fs.readFile(appPath, 'utf8');
   const server = http.createServer((req, res) => { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(source); });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   let browser;
@@ -317,7 +318,7 @@ const ordered = (text, terms) => {
         assert.equal(await page.locator('#assess-functional .pick').count(), 0); assert.equal(await page.locator('#assessList .muted').count(), 0);
         check(`${locale}: existing Add assessment dialog offers all new seeds, carries categories and retains the editor draft; keyboard category edit moves custom items; COPM stays functional; empty groups render gracefully`);
 
-        await connect('group-demo'); await action('example').click(); await page.waitForSelector('.sess');
+        await connect('group-demo'); await action('example').click(); await page.locator('#tab-sessions').click(); await page.waitForSelector('.sess');
         const demo = await page.evaluate(() => ({ plan: cur().plan, baseline: sessions.find(s => s.visit === 'baseline') }));
         const demoInitial = ['copm', 'pursuit', 'fixation', 'saccade', 'npc', 'ufov_divided'];
         assert.deepEqual(demo.plan.filter(item => item.initial === true).map(item => item.id), demoInitial);

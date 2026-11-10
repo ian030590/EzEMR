@@ -5,12 +5,13 @@ const http = require('node:http');
 const { pathToFileURL } = require('node:url');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
+const { appPath } = require('./lib/app.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'imports');
 
 (async () => {
   await fs.mkdir(output, { recursive: true });
-  const source = await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8');
+  const source = await fs.readFile(appPath, 'utf8');
   // The published HTML must not carry any client records.
   assert.doesNotMatch(source, /id="integratedRecords"/, 'The published HTML must not embed client records');
   const server = http.createServer((req, res) => {
@@ -38,7 +39,7 @@ const output = path.join(root, '.tmp', 'verification', 'imports');
       };
       await page.goto(url); await ready();
       await page.locator('#languageSelect').selectOption(locale);
-      assert.equal(await page.locator('#clientCount').textContent(), '0');
+      assert.equal(await page.evaluate(() => clients.length), 0);
       assert.equal(await page.locator('#integratedDataNotice').isVisible(), false);
       assert.equal(await page.locator('.storage-connect').isVisible(), true);
       assert.equal(await page.evaluate(() => store), null, 'No storage is chosen until the user picks a folder');
@@ -46,7 +47,7 @@ const output = path.join(root, '.tmp', 'verification', 'imports');
       await page.locator('#fileMenuButton').click(); await english('#fileMenu'); await page.keyboard.press('Escape');
       await page.reload(); await ready();
       assert.equal(await page.locator('#languageSelect').inputValue(), locale);
-      assert.equal(await page.locator('#clientCount').textContent(), '0');
+      assert.equal(await page.evaluate(() => clients.length), 0);
       assert.equal(await page.evaluate(() => typeof XLSX.read), 'function');
 
       // Imported test records go into a separate empty folder.
@@ -56,7 +57,7 @@ const output = path.join(root, '.tmp', 'verification', 'imports');
         store = folderStore(importRoot); await finishBoot();
       });
       assert.equal(await page.locator('#integratedDataNotice').isVisible(), false);
-      assert.equal(await page.locator('#clientCount').textContent(), '0');
+      assert.equal(await page.evaluate(() => clients.length), 0);
       const workbook = await page.evaluate(() => {
         const wb = XLSX.utils.book_new();
         const add = (index, rows) => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), SOURCE_WORKBOOK.sheets[index]);
@@ -123,10 +124,50 @@ const output = path.join(root, '.tmp', 'verification', 'imports');
       await page.locator('#importSOAPFolder').setInputFiles(legacy);
       await page.waitForSelector('#importReportClose'); await english('.modal');
       await page.locator('#importReportClose').click();
-      assert.equal(await page.locator('#clientCount').textContent(), '2');
+      assert.equal(await page.evaluate(() => clients.length), 2);
       assert.equal(await page.evaluate(() => sessions.length), 1);
       assert.equal(await page.evaluate(() => sessions[0].subjective), s.subjective);
       assert.equal(await page.evaluate(() => sessions[0].sourceRecords[0].file.endsWith('/new.json')), true);
+      const link = { id: 'imported-link', category: 'visual', symptom: 'Imported symptom', reasoning: 'Imported reasoning', peo: ['person'], evidence: ['future_assessment'], evidenceNotes: 'Imported evidence', interventions: ['future_strategy-v2'], interventionNotes: 'Imported intervention' };
+      await fs.writeFile(path.join(clientDir, 'new.json'), JSON.stringify({ ...s, clinicalLinks: [link] }));
+      await page.locator('#importSOAPFolder').setInputFiles(legacy);
+      await page.waitForSelector('#importReportClose'); await english('.modal'); await page.locator('#importReportClose').click();
+      assert.deepEqual(await page.evaluate(() => sessions[0].clinicalLinks), [link], 'New clinical links survive merging into a previously imported session, even with the same source metadata');
+      assert.deepEqual(await page.evaluate(async () => (await store.listSessions(curId))[0].clinicalLinks), [link]);
+      const addedLink = { ...link, id: 'additional-link', category: 'functional', symptom: 'Additional imported symptom' };
+      await fs.writeFile(path.join(clientDir, 'new.json'), JSON.stringify({ ...s, clinicalLinks: [link, addedLink] }));
+      await page.locator('#importSOAPFolder').setInputFiles(legacy);
+      await page.waitForSelector('#importReportClose'); await page.locator('#importReportClose').click();
+      assert.deepEqual(await page.evaluate(() => sessions[0].clinicalLinks), [link, addedLink], 'Nonconflicting clinical link IDs merge without duplication');
+      await fs.writeFile(path.join(clientDir, 'new.json'), JSON.stringify(s));
+      await page.locator('#importSOAPFolder').setInputFiles(legacy);
+      await page.waitForSelector('#importReportClose'); await page.locator('#importReportClose').click();
+      assert.deepEqual(await page.evaluate(() => sessions[0].clinicalLinks), [link, addedLink], 'Missing incoming clinical links do not delete stored links');
+      const beforeLinkConflict = await page.evaluate(async () => ({ memory: JSON.stringify({ clients, sessions }), disk: JSON.stringify(await store.listSessions(curId)) }));
+      await fs.writeFile(path.join(clientDir, 'new.json'), JSON.stringify({ ...s, clinicalLinks: [{ ...link, reasoning: 'Conflicting reasoning' }] }));
+      await page.locator('#importSOAPFolder').setInputFiles(legacy);
+      await page.waitForFunction(() => document.querySelector('.toast')?.textContent.includes('clinicalLinks/imported-link'));
+      await english('.toast');
+      assert.deepEqual(await page.evaluate(async () => ({ memory: JSON.stringify({ clients, sessions }), disk: JSON.stringify(await store.listSessions(curId)) })), beforeLinkConflict, 'Conflicting clinical links stop the import before changing memory or saved records');
+      const direct = await page.evaluate(() => {
+        const existing = [{ client: clone(cur()), sessions: clone(sessions) }], original = JSON.stringify(existing), incoming = clone(existing);
+        incoming[0].sessions[0].clinicalLinks[0].symptom = 'Conflict fixture';
+        let error;
+        try { mergeImportBundles(incoming, existing); } catch (e) { error = e.message; }
+        return { error, unchanged: JSON.stringify(existing) === original };
+      });
+      assert.ok(direct.error.includes('clinicalLinks/imported-link')); assert.equal(direct.unchanged, true);
+      const oversized = await page.evaluate(() => {
+        const existing = [{ client: clone(cur()), sessions: clone(sessions) }], row = clone(existing[0].sessions[0].clinicalLinks[0]);
+        existing[0].sessions[0].clinicalLinks = Array.from({ length: 100 }, (_, i) => ({ ...row, id: 'existing-' + i }));
+        const original = JSON.stringify(existing), incoming = clone(existing);
+        incoming[0].sessions[0].clinicalLinks = Array.from({ length: 100 }, (_, i) => ({ ...row, id: 'incoming-' + i }));
+        let error;
+        try { mergeImportBundles(incoming, existing); } catch (e) { error = e.message; }
+        return { error, expected: ui('臨床連結欄位格式錯誤'), unchanged: JSON.stringify(existing) === original };
+      });
+      assert.equal(oversized.error, oversized.expected); assert.equal(oversized.unchanged, true, 'Combined clinical link limits fail in the pure merge without changing the original records');
+      console.log(`PASS: ${locale} SOAP imports preserve unknown clinical link IDs, merge added rows, retain omitted links and reject conflicts without altering records`);
       const beforeFailure = await page.evaluate(() => JSON.stringify({ clients, sessions }));
       const missing = path.join(output, locale, 'missing-client');
       await fs.mkdir(missing, { recursive: true });
@@ -145,14 +186,14 @@ const output = path.join(root, '.tmp', 'verification', 'imports');
     const offline = await browser.newContext();
     await offline.route(/^https?:/, route => { external.push(route.request().url()); return route.abort(); });
     const localPage = await offline.newPage(); localPage.on('pageerror', error => errors.push(error.message));
-    await localPage.goto(pathToFileURL(path.join(root, 'EzEMR.html')).href);
+    await localPage.goto(pathToFileURL(appPath).href);
     await localPage.waitForSelector('html[data-ready="true"]', { state: 'attached' });
-    assert.equal(await localPage.locator('#clientCount').textContent(), '0');
+    assert.equal(await localPage.evaluate(() => clients.length), 0);
     assert.equal(await localPage.locator('.storage-connect').isVisible(), true);
     assert.equal(await localPage.evaluate(() => typeof XLSX.write), 'function');
     await offline.close();
     assert.deepEqual(external, []); assert.deepEqual(errors, []);
-    assert.equal(await fs.readFile(path.join(root, 'EzEMR.html'), 'utf8'), source);
+    assert.equal(await fs.readFile(appPath, 'utf8'), source);
     console.log('PASS: Published HTML opens directly offline with no embedded records and a working Excel library; no external requests, browser errors or source-file changes');
   } finally {
     await browser.close(); await new Promise(resolve => server.close(resolve));
