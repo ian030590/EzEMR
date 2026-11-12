@@ -60,7 +60,7 @@ const session = { id: 'security-session', date: '2026-11-02', visit: 'treatment'
           { ...client, id: 'invalid-client', ref: 'TEST-INVALID', sessions: [{ ...session, tolerance }] }
         ] };
         await page.locator('#importFile').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
-        await page.waitForFunction(message => document.querySelector('.toast')?.textContent.endsWith(message), toleranceError);
+        await page.waitForFunction(message => [...document.querySelectorAll('.failure-message pre')].some(node => node.textContent === message), toleranceError);
         const unchanged = await page.evaluate(async () => {
           const entries = []; for await (const [name] of securityRoot.entries()) entries.push(name);
           return { entries, clients: clients.length, sessions: sessions.length };
@@ -74,6 +74,7 @@ const session = { id: 'security-session', date: '2026-11-02', visit: 'treatment'
         { ...session, id: 'tolerance-empty', tolerance: '' }
       ] }] };
       await page.locator('#importFile').setInputFiles({ name: 'valid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+      await page.locator('#restoreBackupConfirm').click();
       await page.waitForFunction(() => clients.length === 1 && sessions.length === 2 && document.querySelector('#tab-sessions'));
       await page.locator('#tab-sessions').click();
       assert.equal(await page.locator('.sess').count(), 2);
@@ -124,9 +125,11 @@ const session = { id: 'security-session', date: '2026-11-02', visit: 'treatment'
         const alert = page.locator('#main [role="alert"]');
         const text = await alert.innerText();
         assert.match(text, locale === 'en' ? /Cannot read/ : /無法讀取/);
-        assert.match(text, kind === 'client' ? /TEST-LEGACY\/client\.json/ : /session\.json/);
-        if (kind === 'tolerance') assert(text.includes(toleranceError));
-        assert.equal(await page.locator('#main img, #clientList img').count(), 0);
+        const details = page.locator('.failure-message pre').last(), raw = await details.textContent();
+        assert.match(raw, kind === 'client' ? /TEST-LEGACY\/client\.json/ : /session\.json/);
+        if (kind === 'tolerance') assert(raw.includes(toleranceError));
+        assert.equal(await details.isVisible(), false);
+        assert.equal(await page.locator('#main img, #clientList img, #failureHost img').count(), 0);
         if (locale === 'en') assert.doesNotMatch(text, /\p{Script=Han}/u);
         assert.deepEqual(original.rootFiles, []);
         assert.deepEqual(original.files, kind === 'client' ? ['client.json'] : ['client.json', 'session.json']);

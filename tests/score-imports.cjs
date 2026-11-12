@@ -7,6 +7,8 @@ const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const { appPath } = require('./lib/app.cjs');
+const { openTraining, completeTraining } = require('./training-modal.cjs');
+const { openAssessment, completeAssessment } = require('./lib/assessments.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 const evidence = [];
@@ -209,24 +211,28 @@ const diplopiaOnly = file('TEST-SCORES_manual-1.json', JSON.stringify({ record_t
     assert.match(files.note, /各方向複視起始角度（× 表示無複視）：↗ 12.3° · ← ×/);
     assert.match(files.note, /測驗設定：評估 · 白圈紅心 · 刺激大小（arcmin）：45 · 移動速度（arcmin\/s）：240/);
     assert.match(files.note, /測驗設定：評估 · 白點 · 刺激大小（arcmin）：60 · 移動速度（arcmin\/s）：300 · 邊緣停留時間（秒）：3/);
-    assert.match(files.training, /活動：跳視：58.5%/);
+    assert.match(files.training, /活動：跳視訓練：58.5%/);
     assert.match(files.training, /測驗紀錄：跳視（OcuTrain SACCADE） 14:05:09：注視正確率（%）：58.5；平均首次凝視時間（ms）：312/);
     check('Notes print results line by line with each item\'s settings on one line, training runs on their own line, and the CSV round trip keeps every imported value');
 
     // Editor: imported results appear in the same boxes clinicians fill by hand.
     await page.locator(`[data-action="open-session"][data-id="${assessed.id}"]`).click();
     assert.equal(await page.locator('#ac-pursuit').isChecked(), true);
+    await openAssessment(page, 'pursuit');
     assert.equal(await page.locator('#af-pursuit-0').inputValue(), '76.4');
     assert.equal(await page.locator('#af-pursuit-settings summary').innerText(), '測驗設定（已填 8 項）');
     assert.equal(await page.locator('#af-pursuit-settings').evaluate(el => el.open), false);
     const fixationHold = await page.evaluate(() => fieldsFor(cur().plan.find(p => p.id === 'fixation')).findIndex(f => f.id === 'holdSec'));
+    await openAssessment(page, 'fixation');
     await page.locator('#af-fixation-settings summary').click();
     assert.equal(await page.locator(`#af-fixation-${fixationHold}`).inputValue(), '3');
     assert.match(await page.locator('label[for="af-fixation-' + fixationHold + '"]').innerText(), /^邊緣停留時間（秒）/);
     const stimulus = await page.evaluate(() => fieldsFor(cur().plan.find(p => p.id === 'pursuit')).findIndex(f => f.id === 'stimulusType'));
+    await openAssessment(page, 'pursuit');
     assert.equal(await page.locator(`#af-pursuit-${stimulus}`).inputValue(), 'Red in White');
     assert.equal(await page.locator(`#af-pursuit-${stimulus} option:checked`).textContent(), '白圈紅心');
     await page.locator('#an-pursuit').fill('Catch-up saccades on return');
+    await completeAssessment(page);
     await action('save-session').click(); await page.waitForSelector('.sess');
     const resaved = (await stored())[0];
     assert.deepEqual(resaved.assess.pursuit.values, assessed.assess.pursuit.values);
@@ -235,7 +241,8 @@ const diplopiaOnly = file('TEST-SCORES_manual-1.json', JSON.stringify({ record_t
 
     await page.locator(`[data-action="open-session"][data-id="${trained.id}"]`).click();
     const runId = trained.training.ocular.runs[0].id;
-    assert.equal(await page.locator(`#rn-${runId}-h`).innerText(), `跳視（OcuTrain SACCADE） · 14:05:09\n來源：${saccadeCSV.name}`);
+      await openTraining(page, 'ocular');
+    assert.equal(await page.locator(`#rn-${runId}-h`).innerText(), '跳視（OcuTrain SACCADE） · 14:05:09');
     assert.equal(await page.locator(`#rn-${runId}-0`).inputValue(), '58.5');
     const saccadeScore = (await page.locator('#tx-ocular-acts [data-act="Saccades"]').getAttribute('data-score')).replace(/-r(\d+)$/, '-s$1');
     assert.equal(await page.locator('#' + saccadeScore).inputValue(), '58.5%');
@@ -256,10 +263,12 @@ const diplopiaOnly = file('TEST-SCORES_manual-1.json', JSON.stringify({ record_t
     await page.locator('#tx-ocular').screenshot({ path: path.join(output, 'score-runs-dark-360.png') });
     await page.setViewportSize({ width: 1280, height: 900 }); await page.emulateMedia({ colorScheme: 'light' });
     await page.locator('#tx-ocular').screenshot({ path: path.join(output, 'score-runs-light-1280.png') });
+      await completeTraining(page);
     await action('save-session').click(); await page.waitForSelector('.sess');
     const runs = (await stored())[1].training.ocular.runs;
     assert.deepEqual(runs.map(r => [r.item, r.values]), [['saccade', trained.training.ocular.runs[0].values], ['fixation', { accuracy_rate: 70, holdSec: 4 }]]);
-    check('Training test records show source and time, can be added by hand with their own settings or removed, and save with the visit');
+    assert.equal(runs[0].file, saccadeCSV.name, 'The hidden import filename survives editing and saving');
+    check('Training test records show test time, keep import filenames in storage, can be added by hand with their own settings or removed, and save with the visit');
 
     // Re-importing the same files changes nothing; a different result for the same item is not overwritten.
     await importFiles([pursuitJSON, fixationCSV]); await preview();
@@ -288,16 +297,19 @@ const diplopiaOnly = file('TEST-SCORES_manual-1.json', JSON.stringify({ record_t
     const untouched = await stored();
     const foreign = file('OTHER-1_20261105_090000_FIXATION_Tobii_gaze_record.csv', fixationCSV.buffer.toString().replace(/TEST-SCORES/g, 'OTHER-1').replace('sess-fixation-1', 'sess-other'));
     await importFiles([foreign]);
-    await page.waitForFunction(() => /受試者代號 OTHER-1 屬於個案 Other fixture/.test(document.querySelector('.toast')?.textContent || ''));
+    await page.waitForFunction(() => [...document.querySelectorAll('.failure-message pre')].some(node => /受試者代號 OTHER-1 屬於個案 Other fixture/.test(node.textContent)));
     await importFiles([fixationCSV, file('notes.csv', 'schema_version,section,field,type,value\r\n')]);
-    await page.waitForFunction(() => /測驗分數檔請與 EzEMR 的 CSV 或 JSON 備份分開匯入/.test(document.querySelector('.toast')?.textContent || ''));
+    await page.waitForFunction(() => [...document.querySelectorAll('.failure-message pre')].some(node => /測驗分數檔請與 EzEMR 的 CSV 或 JSON 備份分開匯入/.test(node.textContent)));
     await importFiles([file('broken.csv', otCSV({ 'Session ID': 'x', 'Test Date': '2026-11-05', 'Training Module': 'Unknown (OTHER)' }))]);
-    await page.waitForFunction(() => /broken\.csv: 無法辨識 OcuTrain 模組/.test(document.querySelector('.toast')?.textContent || ''));
+    await page.waitForFunction(() => [...document.querySelectorAll('.failure-message pre')].some(node => /broken\.csv: 無法辨識 OcuTrain 模組/.test(node.textContent)));
     await importFiles([ufovRaw]);
-    await page.waitForFunction(() => /原始分數檔只有逐題資料/.test(document.querySelector('.toast')?.textContent || ''));
+    await page.waitForFunction(() => [...document.querySelectorAll('.failure-message pre')].some(node => /原始分數檔只有逐題資料/.test(node.textContent)));
     assert.equal(await page.locator('#scoreImport').count(), 0);
     assert.deepEqual(await stored(), untouched);
     check('Files for another client, score files mixed with EzEMR records, unknown modules and raw-only files are rejected with a message and nothing is written');
+    while (await page.locator('.failure-message').count()) {
+      await page.locator('.failure-message [data-failure-dismiss]').last().focus(); await page.keyboard.press('Enter');
+    }
 
     // Progress tracking: one table per item with result columns and a settings column; a table for training runs.
     await page.locator('#tab-outcomes').click();
@@ -322,14 +334,17 @@ const diplopiaOnly = file('TEST-SCORES_manual-1.json', JSON.stringify({ record_t
     await page.locator('#scoreCancel').click();
     await page.locator('#tab-sessions').click();
     await page.locator(`[data-action="open-session"][data-id="${assessed.id}"]`).click();
+    await openAssessment(page, 'pursuit');
     assert.equal(await page.locator('#af-pursuit-settings summary').innerText(), 'Test settings (8 filled)');
     assert.equal(await page.locator(`#af-pursuit-${stimulus} option:checked`).textContent(), 'Red in White');
     await checkEnglish('#assessList');
+    await checkEnglish('.modal'); await completeAssessment(page);
     await action('cancel-edit').click(); if (await page.locator('#askYes').count()) await page.locator('#askYes').click();
     await page.waitForSelector('#soapForm', { state: 'detached' });
     await page.locator(`[data-action="open-session"][data-id="${trained.id}"]`).click();
-    assert.equal(await page.locator(`#rn-${runId}-h`).innerText(), `Saccade (OcuTrain SACCADE) · 14:05:09\nSource: ${saccadeCSV.name}`);
-    await checkEnglish('#tx-ocular'); await checkEnglish('#tx-periph');
+      await openTraining(page, 'ocular');
+    assert.equal(await page.locator(`#rn-${runId}-h`).innerText(), 'Saccade (OcuTrain SACCADE) · 14:05:09');
+      await checkEnglish('#tx-ocular'); await completeTraining(page); await openTraining(page, 'periph'); await checkEnglish('#tx-periph'); await completeTraining(page);
     assert.match(await page.evaluate(() => noteText(cur(), sessions.find(s => s.date === '2026-11-03'))), /Test settings: Evaluation · Red in White · Stimulus size \(arcmin\): 45/);
     await page.locator('#languageSelect').selectOption('zh-TW');
     check('English preview, report wording, settings, test records, notes and progress tables have no untranslated interface text');

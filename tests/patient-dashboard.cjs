@@ -5,6 +5,7 @@ const { pathToFileURL } = require('node:url');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const { appPath } = require('./lib/app.cjs');
+const { openAssessment, completeAssessment } = require('./lib/assessments.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'patient-dashboard');
 const evidence = [];
@@ -218,7 +219,10 @@ const check = message => { evidence.push(message); console.log('PASS: ' + messag
               });
               assert.ok(chrome.height <= 68 && chrome.topGap >= 8 && chrome.bottomGap >= 8, `${locale} ${theme} ${width}px: desktop controls have outside breathing room within one row`);
             }
-            const controls = await page.locator('#patientDashboard select, #patientDashboard button').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height })));
+            const controls = await page.locator('#patientDashboard select, #patientDashboard button').evaluateAll(nodes => nodes.map(node => {
+              const rect = node.getBoundingClientRect(), hit = node.matches('.help-trigger') ? getComputedStyle(node, '::before') : null;
+              return { width: Math.max(rect.width, parseFloat(hit?.width) || 0), height: Math.max(rect.height, parseFloat(hit?.height) || 0) };
+            }));
             assert.ok(controls.every(control => control.width >= 44 && control.height >= 44), 'Dashboard controls have 44px targets');
             if ([360, 1280, 1440, 1680].includes(width)) await capture(`${locale}-${theme}-${width}.png`);
             await search.fill('TEST-DASHBOARD');
@@ -241,16 +245,16 @@ const check = message => { evidence.push(message); console.log('PASS: ' + messag
         assert.equal(await page.evaluate(() => editing.id), fixture.linked.id);
         assert.equal(await links().count(), 2);
         assert.equal(await field('symptom').inputValue(), 'Reading symptom fixture');
-        await links().first().locator('details').first().locator('summary').click();
+        await links().first().locator(':scope > details').first().locator('summary').click();
         await selectLink('evidence', 'va').focus(); await page.keyboard.press('Space');
         assert.equal(await selectLink('evidence', 'va').isChecked(), false);
         assert.doesNotMatch(await links().first().locator('.clinical-evidence-preview').innerText(), /0\.42 synthetic result/);
         await page.keyboard.press('Space');
         assert.equal(await selectLink('evidence', 'va').isChecked(), true);
         assert.match(await links().first().locator('.clinical-evidence-preview').innerText(), /0\.42 synthetic result/);
-        await page.locator('#af-va-0').fill('0.84 live draft result');
+        await openAssessment(page, 'va'); await page.locator('#af-va-0').fill('0.84 live draft result'); await completeAssessment(page);
         assert.match(await links().first().locator('.clinical-evidence-preview').innerText(), /0\.84 live draft result/);
-        await page.locator('#af-va-0').fill('0.42 synthetic result');
+        await openAssessment(page, 'va'); await page.locator('#af-va-0').fill('0.42 synthetic result'); await completeAssessment(page);
         const note = '病人原文 <img src=x onerror=alert(1)> =1+1';
         await field('symptom').fill(note);
         await field('reasoning').fill('臨床推理原文 / reasoning fixture');
@@ -272,10 +276,10 @@ const check = message => { evidence.push(message); console.log('PASS: ' + messag
         assert.equal(await field('symptom').inputValue(), note);
         await page.locator('#s-mode').selectOption('telerehab');
         assert.equal(await selectLink('interventions', 'ocular_sol').isChecked(), true);
-        await links().first().locator('details').nth(1).locator('summary').click();
-        await selectLink('interventions', 'home_modules').check();
+        await links().first().locator(':scope > details').nth(1).locator('summary').click();
+        await selectLink('interventions', 'digital_tools').check();
         await page.locator('#s-mode').selectOption('inperson');
-        assert.equal(await selectLink('interventions', 'home_modules').isChecked(), true);
+        assert.equal(await selectLink('interventions', 'digital_tools').isChecked(), true);
         const draft = await page.evaluate(() => collectSession().clinicalLinks);
         for (const language of ['en', 'zh-TW', locale]) {
           await choose(language);
@@ -321,7 +325,7 @@ const check = message => { evidence.push(message); console.log('PASS: ' + messag
         assert.deepEqual(exported['Evidence IDs'].split('; '), draft[0].evidence);
         assert.deepEqual(exported['Intervention IDs'].split('; '), draft[0].interventions);
         assert.match(exported.Evidence, /0\.42 synthetic result/);
-        assert.match(exported.Interventions, en ? /Home-based practice modules/ : /居家視覺練習模組/);
+        assert.match(exported.Interventions, en ? /Digital support tools/ : /數位輔具工具應用/);
         for (const label of workbook.peo) assert.ok(exported.PEO.includes(label));
         const formText = workbook.form.flat().join('\n');
         for (const text of [note, draft[0].reasoning, draft[0].evidenceNotes, draft[0].interventionNotes, '0.42 synthetic result']) assert.ok(formText.includes(text));

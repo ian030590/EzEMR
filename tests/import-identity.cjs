@@ -113,7 +113,7 @@ const output = path.join(root, '.tmp', 'verification', 'import-identity');
           let error = '';
           try { await reader(); } catch (e) { error = e.message; renderLoadError(e); }
           const name = kind + '.json';
-          results.push({ error, expected: ui('無法讀取'), file: name, original: await (await (await folder.getFileHandle(name)).getFile()).text(), alert: document.querySelector('#main [role="alert"]')?.textContent });
+          results.push({ error, expected: ui('無法讀取'), file: name, original: await (await (await folder.getFileHandle(name)).getFile()).text(), alert: document.querySelector('#main [role="alert"]')?.textContent, details: [...document.querySelectorAll('.failure-message pre')].at(-1)?.textContent, expanded: [...document.querySelectorAll('.failure-message details')].at(-1)?.open });
         }
         const directory = await disk.getDirectoryHandle('valid-legacy', { create: true });
         const absent = await readJSON(directory, 'missing.json');
@@ -127,7 +127,9 @@ const output = path.join(root, '.tmp', 'verification', 'import-identity');
       });
       for (const result of legacy.results) {
         assert.ok(result.error.includes(result.expected) && result.error.includes('LEGACY/' + result.file));
-        assert.ok(result.alert.includes(result.error));
+        assert.equal(result.details, result.error);
+        assert.equal(result.expanded, false);
+        assert.equal(result.alert.includes(result.error), false);
         assert.equal(result.original, '{broken', 'Failed reads preserve the source bytes');
         if (locale === 'en') assert.doesNotMatch(result.alert, /\p{Script=Han}/u);
       }

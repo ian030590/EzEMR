@@ -126,7 +126,7 @@ const output = path.join(root, '.tmp', 'verification', 'clinical-samples', proce
         assert.match(await summary.innerText(), /3/); assert.match(await summary.innerText(), /4/);
         assert.doesNotMatch(await page.locator('#patientDashboard').innerText(), /尚未填寫症狀評分/);
         await choose('en');
-        assert.equal(await page.locator('.dashboard-score-head h4').innerText(), 'Symptoms and tolerability');
+        assert.equal(await page.locator('.dashboard-score-head h4').evaluate(node => { const label = node.cloneNode(true); label.querySelectorAll('.help').forEach(help => help.remove()); return label.textContent; }), 'Symptoms and tolerability');
         assert.match(await summary.innerText(), /Pain/);
       }
       await choose('zh-TW'); await screenshot(sample.key + '-dashboard-zh-1440');
@@ -165,7 +165,7 @@ const output = path.join(root, '.tmp', 'verification', 'clinical-samples', proce
       if (sample.key === 'sci') assert.equal(await page.locator('#tabBody').getByRole('heading', { name: /TUG|10MWT/ }).count(), 0);
       for (const locale of ['zh-TW', 'en']) {
         await choose(locale);
-        assert.equal(await compact.first().locator('thead th').first().innerText(), locale === 'en' ? 'Measurement stage' : '測量時點');
+        assert.equal(await compact.first().locator('thead th').first().evaluate(node => { const label = node.cloneNode(true); label.querySelectorAll('.help').forEach(help => help.remove()); return label.textContent; }), locale === 'en' ? 'Measurement stage' : '測量時點');
         assert.equal(await compact.first().locator('.short-notes > summary').first().innerText(), locale === 'en' ? 'Test conditions and notes' : '測驗條件與備註');
         assert.match((await page.locator('#tabBody > .section-heading h3').allTextContents()).join(' '), locale === 'en' ? /Functional performance/ : /功能表現/);
         const symptomHeading = locale === 'en' ? 'Symptom rating (0 to 10)' : '症狀評分（0 至 10）';
@@ -178,7 +178,10 @@ const output = path.join(root, '.tmp', 'verification', 'clinical-samples', proce
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${sample.key} ${locale} ${theme} ${width}px`);
             if (width === 360 && sample.key === 'stroke') {
               const comparison = compact.first();
-              assert.equal(await comparison.locator('.short-scroll-hint').first().isVisible(), true);
+              const scrollHint = await page.evaluate(() => ui('可左右捲動查看更多指標與測量時間。'));
+              const scrollTip = comparison.locator('.help-tooltip').filter({ hasText: scrollHint }).first();
+              const scrollTrigger = comparison.locator(`[aria-describedby="${await scrollTip.getAttribute('id')}"]`);
+              await page.locator('#tab-outcomes').focus(); await scrollTrigger.focus(); assert.equal(await scrollTip.isVisible(), true); await page.keyboard.press('Escape');
               const visibleValue = await comparison.locator('tbody tr').first().locator('td').first().evaluate(node => ({ text: node.textContent, right: node.getBoundingClientRect().right, viewport: innerWidth }));
               assert.equal(visibleValue.text, '96');
               assert.ok(visibleValue.right <= visibleValue.viewport, 'The first outcome value is visible on a phone before horizontal scrolling');
@@ -198,7 +201,9 @@ const output = path.join(root, '.tmp', 'verification', 'clinical-samples', proce
         assert.equal(await page.locator('#symWrap').isVisible(), true);
         await page.keyboard.press('Enter');
         await choose('en');
-        assert.equal(await page.locator('#optionalVisualSymptoms > summary').innerText(), 'Vision-related symptom ratings (optional)');
+        assert.equal(await page.locator('#optionalVisualSymptoms > summary').innerText(), 'Vision-related symptom self-ratings (optional)');
+        assert.equal(await page.locator('#assess-short #optionalVisualSymptoms').count(), 0);
+        assert.equal(await page.locator('.soap-sec').nth(1).locator('#optionalVisualSymptoms').count(), 1, 'Optional symptoms are at the O entry');
         await choose('zh-TW');
       }
       assert.equal(await page.locator('#soapForm').evaluate(form => form.checkValidity()), true, `${sample.key}: generated sample respects field constraints`);
@@ -236,7 +241,7 @@ const output = path.join(root, '.tmp', 'verification', 'clinical-samples', proce
     const added = await page.evaluate(() => cur().plan.at(-1));
     assert.equal(added.name, 'Timed Up and Go (short-term TUG)');
     assert.equal(added.fields[1].label, 'Completion time (s)');
-    await choose('en'); assert.match(await page.locator(`[data-item-id="${added.id}"]`).innerText(), /Timed Up and Go/);
+    await choose('en'); assert.equal(await page.locator(`[data-item-id="${added.id}"] h4`).innerText(), 'Mobility (TUG)');
     await page.locator(`[data-action="item-edit"][data-id="${added.id}"]`).click();
     await page.locator('#item-name').fill('自訂移位測試');
     await page.locator('#itemForm [type="submit"]').click(); await page.waitForSelector('#itemForm', { state: 'detached' });

@@ -5,6 +5,7 @@ const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const { appPath } = require('./lib/app.cjs');
+const { openAssessment, completeAssessment } = require('./lib/assessments.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'assessment-groups');
 // The new clinic battery is additive; the earlier ten assessment definitions remain available.
@@ -59,10 +60,10 @@ const ordered = (text, terms) => {
         if (await page.locator('#askYes').count()) await page.locator('#askYes').click();
         await page.waitForSelector('#soapForm', { state: 'detached' });
       };
-      const functionOf = p => p.functionCategory || (['copm', 'self_report', 'ot_assessment', 'daily_task', 'participation', 'ot_record'].includes(p.id) ? 'daily'
+      const functionOf = p => ['ufov_speed', 'ufov_divided', 'ufov_selective'].includes(p.id) ? 'functional' : p.functionCategory || (['copm', 'self_report', 'ot_assessment', 'daily_task', 'participation', 'ot_record'].includes(p.id) ? 'daily'
         : ['st_tug', 'st_10mwt', 'st_bbt', 'st_9hpt', 'st_cop'].includes(p.id) ? 'motor'
-        : ['ufov_speed', 'ufov_divided', 'ufov_selective', 'st_neglect'].includes(p.id) ? 'cognitive'
-        : ['func', 'st_search', 'st_reading', 'st_coordination'].includes(p.id) ? 'functional' : p.category || 'visual');
+        : p.id === 'st_neglect' ? 'cognitive'
+        : ['func', 'reading_speed', 'search_time', 'coordination_time', 'st_search', 'st_reading', 'st_coordination'].includes(p.id) ? 'functional' : p.category || 'visual');
       const periodOf = p => p.outcomePeriod || (p.id.startsWith('st_') ? 'short' : 'long');
       const verifyGroups = async (plan, visit) => {
         assert.deepEqual(await page.locator('.assessment-period > .spread > h3').allTextContents(), en ? ['Short-term outcomes', 'Long-term assessments'] : ['短期成效', '長期評估']);
@@ -72,12 +73,21 @@ const ordered = (text, terms) => {
           const group = page.locator(`#assess-${period} [data-function="${category}"]`);
           assert.equal(await group.count(), items.length ? 1 : 0, `${period}/${category}: only populated groups are shown`);
           if (!items.length) continue;
-          assert.deepEqual(await group.locator('.pick input').evaluateAll(nodes => nodes.map(n => n.id)), [...items.filter(due), ...items.filter(p => !due(p))].map(p => 'ac-' + p.id));
+          if (period === 'long' && category === 'visual') {
+            const order = ['va', 'near_va', 'refraction', 'vf', 'cs', 'color', 'stereo', 'saccade', 'fixation', 'pursuit', 'periph', 'vor', 'npc'];
+            const rank = p => {
+              const id = p.id === 'src_va' ? 'va' : p.id;
+              return order.includes(id) ? order.indexOf(id) : order.length;
+            };
+            assert.deepEqual(await group.locator('.pick input').evaluateAll(nodes => nodes.map(n => n.id)), [...items].sort((a, b) => rank(a) - rank(b)).map(p => 'ac-' + p.id));
+            assert.deepEqual(await group.locator('.pick input[data-planned="true"]').evaluateAll(nodes => nodes.map(n => n.id).sort()), items.filter(due).map(p => 'ac-' + p.id).sort());
+          } else assert.deepEqual(await group.locator('.pick input').evaluateAll(nodes => nodes.map(n => n.id)), [...items.filter(due), ...items.filter(p => !due(p))].map(p => 'ac-' + p.id));
           assert.equal(await group.locator('.pick input:disabled').count(), 0);
           assert.equal(await group.locator('.pick-group:empty').count(), 0);
           const heading = page.locator(`#assessPlanned-${period}-${category}`);
-          assert.equal(await heading.count(), items.some(due) ? 1 : 0);
-          if (items.some(due)) assert.equal(await heading.innerText(), en ? visit === 'baseline' ? 'Initial assessment items' : 'Due this visit' : visit === 'baseline' ? '初次評估項目' : '本次應評估');
+          const hasDueHeading = items.some(due) && !(period === 'long' && category === 'visual');
+          assert.equal(await heading.count(), hasDueHeading ? 1 : 0);
+          if (hasDueHeading) assert.equal(await heading.innerText(), en ? visit === 'baseline' ? 'Initial assessment items' : 'Due this visit' : visit === 'baseline' ? '初次評估項目' : '本次應評估');
         }
       };
       try {
@@ -86,7 +96,7 @@ const ordered = (text, terms) => {
         await action('new-client').click(); await page.locator('#cf-name').fill('Synthetic assessment groups'); await page.locator('#cf-ref').fill('TEST-GROUPS');
         await page.locator('#cForm [type="submit"]').click(); await page.waitForSelector('.client-summary');
         const plan = await page.evaluate(() => { validateItems(cur().plan, 'assessment'); return cur().plan; });
-        assert.equal(plan.length, 38);
+        assert.equal(plan.length, 40);
         assert.ok(plan.every(item => item.initial === false));
         for (const [id, [category, timing, fields]] of Object.entries(expected)) {
           const item = plan.find(p => p.id === id); assert.ok(item, id);
@@ -95,8 +105,8 @@ const ordered = (text, terms) => {
         }
         assert.equal(plan.find(p => p.id === 'copm').name, 'COPM');
         await page.locator('#tab-plan').click();
-        assert.equal(await page.locator('#initialHeading').innerText(), en ? 'Initial assessment items' : '初次評估項目');
-        assert.equal(await page.locator('#initialPicks input').count(), 38);
+        assert.equal(await page.locator('#initialHeading').evaluate(node => { const label = node.cloneNode(true); label.querySelectorAll('.help').forEach(help => help.remove()); return label.textContent; }), en ? 'Initial assessment items' : '初次評估項目');
+        assert.equal(await page.locator('#initialPicks input').count(), 40);
         assert.equal(await page.locator('#initialPicks input:checked').count(), 0);
         assert.deepEqual(await page.evaluate(async () => (await store.listClients())[0].plan), plan);
         await action('new-session').click();
@@ -108,12 +118,16 @@ const ordered = (text, terms) => {
           assert.equal(await page.locator('#assessList .pick-group:empty').count(), 0);
           assert.equal(await page.locator('#assessList .as:visible').count(), 0);
           assert.equal(await page.locator('#visualSymptoms #symWrap').count(), 1);
-          assert.equal(await page.locator('.assessment-period #symWrap').count(), 0, 'Symptom ratings stay separate from functional outcomes');
+          assert.equal(await page.locator('#assess-short #symWrap').count(), 0, 'Symptoms are no longer buried after short-term items');
+          assert.equal(await page.locator('.soap-sec').nth(1).locator('#visualSymptoms').count(), 1, 'Symptoms are available at the assessment entry');
+          assert.equal(await page.locator('#assess-long #symWrap').count(), 0);
           for (const id of ['va', 'daily_task']) {
             await page.locator('#ac-' + id).focus(); await page.keyboard.press('Space');
             assert.equal(await page.locator('#ac-' + id).isChecked(), true);
+            assert.equal(await page.locator('#assessmentResultForm').isVisible(), true);
+            await completeAssessment(page);
             assert.equal(await page.locator('#as-' + id).isVisible(), true);
-            await page.keyboard.press('Space');
+            await page.locator('#ac-' + id).focus(); await page.keyboard.press('Space');
             assert.equal(await page.locator('#as-' + id).isVisible(), false);
           }
         }
@@ -126,7 +140,7 @@ const ordered = (text, terms) => {
             await page.screenshot({ path: path.join(output, `${locale}-no-initial-${colorScheme}-${width}.png`), fullPage: true });
           }
         }
-        check(`${locale}: all 38 initial choices start unticked on disk and screen; four visit types preserve short/long groups, separate NRS, available items and keyboard tick-to-open; light/dark layouts fit 320/1280px`);
+        check(`${locale}: all 40 initial choices start unticked on disk and screen; four visit types preserve short/long groups, short-term symptom self-ratings, available items and keyboard tick-to-open; light/dark layouts fit 320/1280px`);
         await discard(); await page.locator('#tab-plan').click();
         for (const item of plan) {
           await page.locator(`[data-initial="${item.id}"]`).check();
@@ -137,15 +151,16 @@ const ordered = (text, terms) => {
         const assessmentSection = page.locator('.soap-sec').nth(1);
         const addAssessment = assessmentSection.locator('[data-action="plan-add"][data-editor="true"]:not([data-category]):not([data-period])');
         const assessmentNote = assessmentSection.getByText(en
-          ? 'Tick the items tested this visit to open their fields. Unticked items are not saved. Change the initial assessment items under Item settings.'
-          : '勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。', { exact: true });
-        for (const element of [addAssessment, assessmentNote]) {
-          assert.equal(await element.count(), 1);
-          assert.equal(await element.evaluate(node => !!(node.compareDocumentPosition(document.querySelector('#assess-short')) & Node.DOCUMENT_POSITION_FOLLOWING)), true, 'Assessment controls precede both periods');
-          assert.equal(await element.evaluate(node => !!(document.querySelector('#s-obj').compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)), true, 'Assessment controls follow objective findings');
-        }
-        const nrsHeading = assessmentSection.getByRole('heading', { name: en ? 'Symptom rating (NRS, 0 to 10)' : '症狀評分（NRS，0 至 10）', level: 4, exact: true });
-        const nrsSize = await nrsHeading.evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+          ? "Select an assessment to enter results in a dialog. Completed results appear below as text. Deselecting retains results and excludes them from this visit's report."
+          : '勾選後在視窗填寫，完成後顯示文字結果。取消勾選會保留結果，並排除本次報告。', { exact: true });
+        assert.equal(await addAssessment.count(), 1);
+        assert.equal(await addAssessment.evaluate(node => !!(node.compareDocumentPosition(document.querySelector('#assess-short')) & Node.DOCUMENT_POSITION_FOLLOWING)), true, 'Assessment controls precede both periods');
+        assert.equal(await addAssessment.evaluate(node => !!(document.querySelector('#s-obj').compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)), true, 'Assessment controls follow objective findings');
+        assert.equal(await assessmentNote.count(), 1);
+        assert.equal(await assessmentNote.getAttribute('role'), 'tooltip');
+        assert.equal(await assessmentNote.evaluate(node => !!node.closest('.sec-title h3')), true, 'Assessment instructions are attached inline to the O heading');
+        const symptomHeading = assessmentSection.getByRole('heading', { name: en ? 'Symptom self-ratings (0 to 10)' : '症狀自評（0 至 10）', level: 4, exact: true });
+        const symptomSize = await symptomHeading.evaluate(node => parseFloat(getComputedStyle(node).fontSize));
         for (const period of ['short', 'long']) {
           const categoryAdd = page.locator(`#assess-${period} [data-action="plan-add"][data-period="${period}"]`);
           assert.equal(await categoryAdd.count(), 1, 'Each assessment category has a direct add entry');
@@ -153,12 +168,12 @@ const ordered = (text, terms) => {
           assert.equal(await page.locator('#item-period').inputValue(), period, 'New items default to their entry period');
           await page.keyboard.press('Escape');
           const groupSize = await page.locator(`#assess-${period}-h`).evaluate(node => parseFloat(getComputedStyle(node).fontSize));
-          assert.ok(groupSize > nrsSize, 'Assessment group headings are larger than the subordinate NRS heading');
+          assert.ok(groupSize > symptomSize, 'Assessment group headings are larger than the subordinate symptom heading');
         }
-        check(`${locale}: assessment add button and instructions follow objective findings and precede both groups; h3 groups are larger than the h4 NRS heading`);
+        check(`${locale}: assessment add button follows objective findings and precedes both groups; instructions sit on the O heading; h3 groups are larger than the h4 symptom heading`);
         assert.equal(await page.locator('#visualSymptoms #symWrap').count(), 1);
         await verifyGroups(await page.evaluate(() => cur().plan), 'baseline');
-        const remediation = page.locator('.soap-sec').nth(3).locator('.sec-body > h4 + .sub');
+        const remediation = page.locator('#remediation');
         assert.equal(await remediation.evaluate(node => getComputedStyle(node).borderTopWidth), '0px');
         await page.locator('#s-visit').selectOption('post');
         await verifyGroups(await page.evaluate(() => cur().plan), 'post');
@@ -166,17 +181,22 @@ const ordered = (text, terms) => {
         await page.locator('#s-visit').selectOption('treatment'); assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 4);
         assert.equal(await page.locator('#ac-copm').count(), 0);
         await page.locator('#s-visit').selectOption('baseline');
-        check(`${locale}: canonical categories, fields, timing and initial choices survive function/period grouping; separate NRS and visit rules hold; remediation has no top border`);
+        check(`${locale}: canonical categories, fields, timing and initial choices survive function/period grouping; short-term symptom placement and visit rules hold; remediation has no top border`);
 
         await page.locator('#s-date').fill('2026-11-07');
-        for (const id of ['va', 'daily_task', 'copm']) await page.locator('#ac-' + id).check();
+        await openAssessment(page, 'va');
         await page.locator('#af-va-0').fill('6/12'); await page.locator('#af-va-4').selectOption('Best corrected');
+        await openAssessment(page, 'daily_task');
         await page.locator('#af-daily_task-0').fill('Reading fixture');
         const clinicalText = '=1+1 <img src=x onerror=alert(1)> 原文';
         await page.locator('#af-daily_task-1').fill(clinicalText); await page.locator('#an-daily_task').fill('Observation fixture');
+        await openAssessment(page, 'copm');
         await page.locator('#copm-occ-0').fill('Occupation fixture'); await page.locator('#copm-p-0').fill('4'); await page.locator('#copm-s-0').fill('5');
+        await completeAssessment(page);
         await page.locator('#languageSelect').selectOption(en ? 'zh-TW' : 'en');
-        assert.equal(await page.locator('#af-va-4').inputValue(), 'Best corrected'); assert.equal(await page.locator('#af-daily_task-1').inputValue(), clinicalText);
+        await openAssessment(page, 'va'); assert.equal(await page.locator('#af-va-4').inputValue(), 'Best corrected');
+        await openAssessment(page, 'daily_task'); assert.equal(await page.locator('#af-daily_task-1').inputValue(), clinicalText);
+        await completeAssessment(page);
         await page.locator('#languageSelect').selectOption(locale);
         await page.evaluate(() => {
           window.pdfLines = []; const original = CanvasRenderingContext2D.prototype.fillText;
@@ -199,7 +219,7 @@ const ordered = (text, terms) => {
         await page.reload(); await ready(); await connect('group-records');
         assert.deepEqual(await page.evaluate(() => sessions[0]), saved.s); assert.deepEqual(await page.evaluate(() => cur()), saved.c);
         await action('open-session').click(); assert.equal(await page.locator('#soapForm img').count(), 0);
-        assert.equal(await page.locator('#af-daily_task-1').inputValue(), clinicalText); await discard();
+        await openAssessment(page, 'daily_task'); assert.equal(await page.locator('#af-daily_task-1').inputValue(), clinicalText); await page.keyboard.press('Escape'); await discard();
         check(`${locale}: assessment values and category snapshots survive folder save, CSV, reload and language changes; TXT/PDF group only done items and escape clinical text`);
 
         const workbook = await page.evaluate(() => {
@@ -215,7 +235,7 @@ const ordered = (text, terms) => {
         assert.deepEqual(workbook.headers[0], ['Client ID', 'Client name', 'Date', 'Session no.', 'Visit', 'Domain', 'Instrument / assessment', 'Measure', 'Value', 'Category']);
         assert.deepEqual(workbook.headers[1], ['Client ID', 'Client name', 'Domain', 'Instrument / assessment', 'Timing', 'Outcomes recorded', 'Enabled', 'Category']);
         assert.deepEqual([...new Set(workbook.assessments.map(r => r.Category))], groups);
-        assert.equal(workbook.plan.filter(r => r.Category === groups[0]).length, 25); assert.equal(workbook.plan.filter(r => r.Category === groups[1]).length, 13);
+        assert.equal(workbook.plan.filter(r => r.Category === groups[0]).length, 22); assert.equal(workbook.plan.filter(r => r.Category === groups[1]).length, 18);
         ordered(workbook.form.join('\n'), [groups[0], en ? 'Visual acuity' : '視力', groups[1], 'COPM', 'Reading fixture']);
         assert.deepEqual(workbook.formulas, []); assert.ok(workbook.form.includes(clinicalText));
         await page.locator('#tab-outcomes').click(); assert.deepEqual(await page.locator('#tabBody > .section-heading h3').allTextContents(), groups);
@@ -225,6 +245,7 @@ const ordered = (text, terms) => {
         assert.deepEqual(backup.clients[0].sessions, [saved.s]);
         const { sessions: backupSessions, ...backupClient } = backup.clients[0]; assert.deepEqual(backupClient, saved.c);
         await connect('group-restored'); await page.locator('#importFile').setInputFiles(backupPath);
+        await page.locator('#restoreBackupConfirm').click();
         await page.waitForFunction(() => sessions.length === 1 && !savingSession);
         assert.deepEqual(await page.evaluate(() => sessions[0]), saved.s); assert.deepEqual(await page.evaluate(() => cur()), saved.c);
         check(`${locale}: serialized Excel appends translated Category columns without reordering existing columns, SOAP form and outcomes show both groups, and real JSON backup/import preserves exact shapes`);
@@ -243,7 +264,7 @@ const ordered = (text, terms) => {
         assert.deepEqual(await page.evaluate(() => cur().plan), templateSource.plan);
         assert.deepEqual(await page.evaluate(async () => (await store.listClients()).find(c => c.id === curId).plan), templateSource.plan);
         await page.locator('#tab-plan').click();
-        assert.equal(await page.locator('#initialPicks input:checked').count(), 36);
+        assert.equal(await page.locator('#initialPicks input:checked').count(), 38);
         for (const id of ['va', 'self_report']) assert.equal(await page.locator(`[data-initial="${id}"]`).isChecked(), false);
         check(`${locale}: a client created using another client copies all initial choices unchanged, including both exclusions, on screen and disk`);
 
@@ -257,7 +278,7 @@ const ordered = (text, terms) => {
         assert.deepEqual(await page.evaluate(() => cur()), noChoice.client);
         assert.ok((await page.evaluate(() => cur().plan)).every(item => !Object.hasOwn(item, 'initial')));
         await page.locator('#tab-plan').click();
-        assert.equal(await page.locator('#initialPicks input:checked').count(), 38);
+        assert.equal(await page.locator('#initialPicks input:checked').count(), 40);
         await action('new-session').click();
         await verifyGroups(noChoice.client.plan, 'baseline');
         assert.equal(await page.locator('[id^="assessOther-"]').count(), 0);
@@ -271,7 +292,7 @@ const ordered = (text, terms) => {
         await connect('group-legacy');
         const legacy = await page.evaluate(async ids => {
           const plan = clone(DEFAULT_PLAN.filter(p => !ids.includes(p.id))); plan.forEach(p => { delete p.category; });
-          plan.find(p => p.id === 'npc').initial = false; plan.find(p => p.id === 'func').initial = false;
+          plan.find(p => p.id === 'npc').initial = false; plan.find(p => p.id === 'reading_speed').initial = false;
           plan.push({ id: 'custom_group', name: 'Custom category fixture', timing: 'assessment', fields: ['Result'] }, clone(SOURCE_ASSESSMENTS[0]));
           const client = { id: 'legacy_group', name: 'Synthetic old template', ref: 'TEST-OLD-GROUP', dob: '', doi: '', dx: '', referral: '', eyeSurgery: null, created: '', plan };
           await store.saveClient(client); await finishBoot(); return clone(client);
@@ -281,10 +302,10 @@ const ordered = (text, terms) => {
         await action('new-session').click();
         await verifyGroups(legacy.plan, 'baseline');
         assert.equal(await page.locator('#assess-long [data-function="daily"] #ac-copm').count(), 1);
-        assert.equal(await page.locator('#assess-long [data-function="functional"] #ac-func').count(), 1);
+        assert.equal(await page.locator('#assess-long [data-function="functional"] #ac-reading_speed').count(), 1);
         assert.equal(await page.locator('#assess-long [data-function="visual"] #ac-custom_group').count(), 1);
-        assert.equal(await page.locator('[aria-labelledby="assessOther-long-visual"] #ac-npc').count(), 1);
-        assert.equal(await page.locator('#assess-long [data-function="functional"] #ac-func').count(), 1);
+        assert.equal(await page.locator('#assess-long [data-function="visual"] #ac-npc[data-planned="false"]').count(), 1);
+        assert.equal(await page.locator('#assess-long [data-function="functional"] #ac-reading_speed').count(), 1);
         await page.locator('#languageSelect').selectOption(en ? 'zh-TW' : 'en'); await page.locator('#languageSelect').selectOption(locale);
         assert.deepEqual(await page.evaluate(async () => (await store.listClients())[0]), legacy);
         const validation = await page.evaluate(() => {
@@ -308,6 +329,7 @@ const ordered = (text, terms) => {
         const added = await page.evaluate(() => cur().plan.at(-1)); assert.equal(added.category, 'functional');
         assert.equal(Object.hasOwn(added, 'initial'), false, 'Items added later from the unchanged standard seeds keep implicit inclusion');
         assert.equal(await page.locator('#assess-long [data-function="daily"] #ac-' + added.id).isChecked(), true);
+        await completeAssessment(page);
         await discard(); await page.locator('#tab-plan').click();
         assert.equal(await page.locator(`[data-initial="${added.id}"]`).isChecked(), true);
         await page.locator('[data-action="item-edit"][data-id="custom_group"]').click();
@@ -322,9 +344,9 @@ const ordered = (text, terms) => {
         await discard();
         // No items in one group produces no repeated empty message; an empty battery produces one.
         await page.evaluate(() => { editing = { visit: 'treatment', sym: [], assess: {}, training: {} }; view = 'edit'; cur().plan = []; renderEditor(); });
-        assert.deepEqual(await page.locator('#assessList .assessment-empty').allTextContents(), en ? ['No short-term measures configured.', 'No long-term assessments configured.'] : ['尚未設定短期指標。', '尚未設定長期評估。']);
+        assert.deepEqual(await page.locator('#assessList .assessment-empty').allTextContents(), en ? ['No long-term assessments configured.'] : ['尚未設定長期評估。']);
         await page.evaluate(() => { cur().plan = [clone(DEFAULT_PLAN.find(p => p.id === 'va'))]; renderEditor(); });
-        assert.equal(await page.locator('#assess-long [data-function="functional"]').count(), 0); assert.equal(await page.locator('#assessList .assessment-empty').count(), 1);
+        assert.equal(await page.locator('#assess-long [data-function="functional"]').count(), 0); assert.equal(await page.locator('#assessList .assessment-period > .assessment-empty').count(), 0);
         check(`${locale}: Add assessment offers every seed, carries function and period and retains the draft; keyboard edits move custom items; COPM stays in daily living; empty groups have translated messages`);
 
         await connect('group-demo'); await action('example').click(); await page.locator('#tab-sessions').click(); await page.waitForSelector('.sess');
@@ -332,13 +354,13 @@ const ordered = (text, terms) => {
         const demoInitial = ['copm', 'pursuit', 'fixation', 'saccade', 'npc', 'ufov_divided'];
         assert.deepEqual(demo.plan.filter(item => item.initial === true).map(item => item.id), demoInitial);
         assert.ok(demo.plan.every(item => item.initial === (demo.baseline.assess[item.id]?.done === true)));
-        assert.equal(demo.plan.filter(item => item.initial === false).length, 32);
+        assert.equal(demo.plan.filter(item => item.initial === false).length, 34);
         await page.locator(`[data-action="open-session"][data-id="${demo.baseline.id}"]`).click();
         await verifyGroups(demo.plan, 'baseline');
-        assert.equal(await page.locator('[aria-labelledby^="assessPlanned-"] input').count(), 6);
+        assert.equal(await page.locator('#assessList .pick input[data-planned="true"]').count(), 6);
         await discard(); await page.locator('#tab-plan').click();
         assert.equal(await page.locator('#initialPicks input:checked').count(), 6);
-        check(`${locale}: demo initial battery matches its six completed baseline assessments; the other 32 items stay excluded while all applicable function/period groups remain available`);
+        check(`${locale}: demo initial battery matches its six completed baseline assessments; the other 34 items stay excluded while all applicable function/period groups remain available`);
         assert.deepEqual(errors, []);
       } finally { await context.close(); }
     }

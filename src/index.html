@@ -38,10 +38,11 @@
     <button class="menu-trigger" id="fileMenuButton" aria-haspopup="menu" aria-expanded="false" aria-controls="fileMenu">檔案</button>
     <button class="menu-trigger" id="clientMenuButton" aria-haspopup="menu" aria-expanded="false" aria-controls="clientMenu">個案</button>
     <button class="menu-trigger" id="viewMenuButton" aria-haspopup="menu" aria-expanded="false" aria-controls="viewMenu">設定</button>
+    <button class="menu-trigger" id="helpMenuButton" aria-haspopup="menu" aria-expanded="false" aria-controls="helpMenu">說明</button>
   </nav>
   <div class="command-toolbar toolbar no-divider" role="toolbar" aria-label="常用工具">
     <div class="tool-group" id="saveTools" hidden>
-      <button class="tool-button save" id="toolbarSave" data-action="save-session" data-needs="draft" disabled title="儲存 CSV 與 PDF（Ctrl+S／⌘S）" aria-keyshortcuts="Control+S Meta+S"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l3 3v15H4z M8 3v6h8V3 M8 21v-8h8v8"/></svg><span data-label>儲存</span></button>
+      <button class="tool-button save" id="toolbarSave" data-action="save-session" data-needs="draft" disabled title="將這筆紀錄與可列印的副本儲存至個案資料夾（CSV、PDF、TXT）。" aria-keyshortcuts="Control+S Meta+S"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l3 3v15H4z M8 3v6h8V3 M8 21v-8h8v8"/></svg><span data-label>儲存</span></button>
     </div>
     <div class="tool-group">
       <button class="tool-button" data-action="import-records" title="匯入 CSV、評估復能 Excel、JSON 備份或測驗分數檔"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12 M8 11l4 4 4-4 M4 15v6h16v-6"/></svg>匯入</button>
@@ -55,7 +56,7 @@
 </div>
 <div class="patient-search" id="patientSearch">
   <label for="clientSearch"><span class="sr-only">搜尋個案</span><input type="search" id="clientSearch" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="clientList" placeholder="姓名／病歷號／診斷" autocomplete="off"></label>
-  <button class="btn small" data-action="new-client">新增個案</button>
+  <button class="btn small" data-action="new-client"><svg class="add-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v12M2 8h12"/></svg>新增個案</button>
   <div class="patient-search-popup" id="clientSearchPopup" hidden>
     <p class="patient-search-status" id="clientSearchStatus" role="status"></p>
     <div class="clients" id="clientList" role="listbox" aria-label="搜尋結果"></div>
@@ -63,36 +64,45 @@
 </div>
 </div>
 <div class="command-menu" id="fileMenu" role="menu" aria-labelledby="fileMenuButton" hidden>
-  <button role="menuitem" tabindex="-1" data-action="new-client">新增個案…</button>
-  <button role="menuitem" tabindex="-1" data-action="new-session" data-needs="client" disabled>新增復健紀錄</button>
+  <button role="menuitem" tabindex="-1" data-action="new-client"><span><svg class="add-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v12M2 8h12"/></svg>新增個案</span></button>
+  <button role="menuitem" tabindex="-1" data-action="new-session" data-needs="client" disabled><span><svg class="add-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v12M2 8h12"/></svg>新增復健紀錄</span></button>
   <hr role="separator">
-  <button role="menuitem" tabindex="-1" data-action="save-session" data-needs="draft" disabled title="儲存 CSV 與 PDF"><span data-label>儲存紀錄</span><kbd data-shortcut="S">Ctrl+S</kbd></button>
-  <button role="menuitem" tabindex="-1" data-action="import-records" title="匯入 CSV、評估復能 Excel、JSON 備份或測驗分數檔">匯入資料…</button>
-  <button role="menuitem" tabindex="-1" data-action="import-soap-folder">匯入舊版 SOAP 資料夾…</button>
+  <button role="menuitem" tabindex="-1" data-action="save-session" data-needs="draft" disabled title="將這筆紀錄與可列印的副本儲存至個案資料夾（CSV、PDF、TXT）。"><span data-label>儲存紀錄</span><kbd data-shortcut="S">Ctrl+S</kbd></button>
+  <button role="menuitem" tabindex="-1" data-action="import-records" title="匯入 CSV、評估復能 Excel、JSON 備份或測驗分數檔">匯入資料</button>
+  <button role="menuitem" tabindex="-1" data-action="import-soap-folder">匯入舊版 SOAP 資料夾</button>
   <hr role="separator">
-  <button role="menuitem" tabindex="-1" data-action="storage-settings">儲存位置…</button>
-  <button role="menuitem" tabindex="-1" data-action="change-folder" id="changeFolder" aria-keyshortcuts="Control+O Meta+O"><span>開啟病歷資料夾…</span><kbd data-shortcut="O">Ctrl+O</kbd></button>
+  <button role="menuitem" tabindex="-1" data-action="storage-settings">儲存位置</button>
+  <button role="menuitem" tabindex="-1" data-action="change-folder" id="changeFolder" aria-keyshortcuts="Control+O Meta+O"><span>開啟病歷資料夾</span><kbd data-shortcut="O">Ctrl+O</kbd></button>
   <button role="menuitem" tabindex="-1" data-action="reload-storage" id="reloadStorage" hidden>重新讀取資料夾</button>
-  <button role="menuitem" tabindex="-1" data-action="copy-folder" id="copyBtn" hidden>設定副本資料夾…</button>
+  <button role="menuitem" tabindex="-1" data-action="copy-folder" id="copyBtn" hidden>設定同步副本資料夾</button>
 </div>
 <div class="command-menu" id="clientMenu" role="menu" aria-labelledby="clientMenuButton" hidden>
-  <button role="menuitem" tabindex="-1" data-action="new-client">新增個案…</button>
-  <button role="menuitem" tabindex="-1" data-action="edit-client" data-needs="client" disabled>編輯目前個案…</button>
-  <button role="menuitem" tabindex="-1" data-action="new-session" data-needs="client" disabled>新增復健紀錄</button>
+  <button role="menuitem" tabindex="-1" data-action="new-client"><span><svg class="add-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v12M2 8h12"/></svg>新增個案</span></button>
+  <button role="menuitem" tabindex="-1" data-action="edit-client" data-needs="client" disabled>編輯目前個案</button>
+  <button role="menuitem" tabindex="-1" data-action="new-session" data-needs="client" disabled><span><svg class="add-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v12M2 8h12"/></svg>新增復健紀錄</span></button>
 </div>
 <div class="command-menu" id="viewMenu" role="menu" aria-labelledby="viewMenuButton" hidden>
   <button role="menuitemcheckbox" tabindex="-1" data-action="toggle-theme" id="themeToggle" aria-checked="false">切換為深色</button>
   <hr role="separator">
-  <button role="menuitem" tabindex="-1" data-action="global-settings">基本資料欄位…</button>
+  <button role="menuitem" tabindex="-1" data-action="global-settings">基本資料欄位</button>
+</div>
+<div class="command-menu" id="helpMenu" role="menu" aria-labelledby="helpMenuButton" hidden>
+  <button role="menuitem" tabindex="-1" data-action="help-start">快速上手</button>
+  <button role="menuitem" tabindex="-1" data-action="help-shortcuts">鍵盤快速鍵</button>
+  <button role="menuitem" tabindex="-1" data-action="example">載入範例個案（示範資料）</button>
 </div>
 <div class="command-menu" id="exportMenu" role="menu" aria-labelledby="exportMenuButton" hidden>
+  <p class="menu-label backup-status" id="lastBackupStatus"></p>
+  <p class="menu-label backup-status-note">僅記錄從此瀏覽器開始下載備份的時間，請自行確認檔案已保存。</p>
+  <hr role="separator">
   <span class="menu-label">目前個案</span>
   <button role="menuitem" tabindex="-1" data-action="xlsx-client" data-needs="client" disabled>匯出個案 Excel</button>
   <hr role="separator">
   <span class="menu-label">全部個案</span>
-  <button role="menuitem" tabindex="-1" data-action="export-roster" data-needs="store" disabled>匯出個案總表 CSV</button>
+  <button role="menuitem" tabindex="-1" data-action="export-roster" data-needs="store" disabled title="下載個案名單（CSV），不含每次病歷。">匯出個案名單</button>
   <button role="menuitem" tabindex="-1" data-action="xlsx-all" data-needs="store" disabled>匯出全部個案 Excel</button>
-  <button role="menuitem" tabindex="-1" data-action="export-all" data-needs="store" disabled>備份全部資料（JSON）</button>
+  <button role="menuitem" tabindex="-1" data-action="export-all" data-needs="store" disabled title="下載所有已儲存的個案、病歷與欄位設定，供日後還原（JSON）。">備份全部資料</button>
+  <button role="menuitem" tabindex="-1" data-action="export-encrypted" data-needs="store" disabled title="下載需密碼才能還原的完整備份（加密 JSON）。請另存密碼。">備份全部資料（加上密碼）</button>
 </div>
 <input type="file" id="importFile" accept=".csv,text/csv,.json,application/json,.xlsb,.xlsx" multiple hidden>
 <input type="file" id="importSOAPFolder" webkitdirectory multiple hidden>
@@ -102,6 +112,7 @@
 </div>
 
 <div id="toastHost"></div>
+<div id="failureHost"></div>
 
 <div class="app">
   <main class="main" id="main"></main>

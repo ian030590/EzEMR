@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 const { parse } = require(require.resolve('acorn', { paths: [__dirname, path.join(root, '.tmp', 'test-tools')] }));
 
 const canonical = new Set(['SYMS', 'TP_LABEL', 'SUBTESTS', 'ABSENCE_REASONS', 'NOTIFIED', 'TIMING', 'VISITS', 'FIELD_TYPES', 'EYES']);
-const builtins = new Set(['DEFAULT_PLAN', 'ASSESSMENT_TITLES', 'TRAIN', 'EYE_PROCS', 'ED_MODES', 'ED_DUR', 'ED_DOT']);
+const builtins = new Set(['DEFAULT_PLAN', 'ASSESSMENT_TITLES', 'TRAIN_TITLES', 'TRAIN', 'EYE_PROCS', 'ED_MODES', 'ED_DUR', 'ED_DOT']);
 const shared = new Set(['CSV + PDF', 'CSV', 'PDF', 'JSON', 'HTML', 'Excel', 'Data', 'SOAP', 'COPM', 'UFOV', 'NPC', 'NRS', 'OU', 'OD', 'OS', 'EyeDot Trainer', 'EyeDot ×', 'OcuTrain', 'Tobii', 'WebGazer', 'English', 'EzEMR', 'Ctrl+S', 'Ctrl+O', 'Ctrl+C', 'S', 'O', 'A', 'P']);
 const han = /\p{Script=Han}/u;
 const uiAttributes = new Set(['title', 'aria-label', 'placeholder']);
@@ -65,7 +65,7 @@ function validate(html) {
     assert.ok(Object.hasOwn(labels, label) || shared.has(label), `Source assessment needs a Chinese LABELS entry: ${label}`);
   }
   // Built-in items are assembled from helpers, so check the evaluated plan: names, domains, notes, field labels and select options.
-  const planSource = ['numField', 'asSetting', 'OT_OPTIONS', 'otResults', 'otSettings', 'completedTargets', 'ufovFields', 'UFOV_OUTCOME', 'DEVICE_ITEMS', 'SHORT_PHASES', 'shortFields', 'SHORT_TERM_ITEMS', 'DEFAULT_PLAN', 'TRAIN', 'RUN_ACTS'].map(key => definitions.get(key).text).join('\n');
+  const planSource = ['numField', 'asSetting', 'OT_OPTIONS', 'otResults', 'otSettings', 'completedTargets', 'ufovFields', 'UFOV_OUTCOME', 'DEVICE_ITEMS', 'SHORT_PHASES', 'shortFields', 'SHORT_TERM_ITEMS', 'FUNCTIONAL_ASSESSMENTS', 'DEFAULT_PLAN', 'TRAIN', 'RUN_ACTS'].map(key => definitions.get(key).text).join('\n');
   const built = vm.runInNewContext(`${planSource}\n({ plan: DEFAULT_PLAN, train: TRAIN, runActs: RUN_ACTS, phases: SHORT_PHASES })`);
   const builtLabels = [
     ...built.plan.flatMap(item => [item.name, item.domain, item.outcome, ...(item.fields || []).flatMap(field => typeof field === 'string' ? [field] : [field.label, ...(field.options || [])])]),

@@ -37,7 +37,7 @@ const { appPath } = require('./lib/app.cjs');
       for (const theme of ['light', 'dark']) {
         await page.evaluate(theme => { document.documentElement.dataset.theme = theme; renderTheme(); }, theme);
         await page.locator('#fileMenuButton').click();
-        assert.equal(await page.locator('#fileMenu [data-action="import-records"]').innerText(), locale === 'en' ? 'Import data...' : '匯入資料…');
+        assert.equal(await page.locator('#fileMenu [data-action="import-records"]').innerText(), locale === 'en' ? 'Import data' : '匯入資料');
         assert.equal(await page.locator('#fileMenu [data-action="save-session"] [data-label]').innerText(), locale === 'en' ? 'Save record' : '儲存紀錄');
         assert.equal(await page.locator('[data-action="storage-settings"]').count(), 1, 'The storage command has one menu entry');
         const contrast = await page.locator('#fileMenu [data-action="save-session"]').evaluate(node => {

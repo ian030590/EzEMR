@@ -4,6 +4,7 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const { appPath } = require('./lib/app.cjs');
+const { openTraining, completeTraining } = require('./training-modal.cjs');
 
 const output = path.resolve(__dirname, '../.tmp/verification/intervention-entry');
 (async () => {
@@ -45,6 +46,7 @@ const output = path.resolve(__dirname, '../.tmp/verification/intervention-entry'
         assert.equal(await activity.getAttribute('data-act'), activityName);
         const scoreId = (await activity.getAttribute('data-score')).replace(/-r(\d+)$/, '-s$1');
         await page.locator('#' + scoreId).fill('5 repetitions');
+        await completeTraining(page);
         const customIds = {};
         for (const approach of ['adaptation', 'compensation']) {
           await page.locator('#' + approach + '-new').fill(names[approach]);
@@ -76,8 +78,10 @@ const output = path.resolve(__dirname, '../.tmp/verification/intervention-entry'
         assert.equal(await page.locator('#symWrap input').first().evaluate(input => input === document.activeElement), true);
         await page.locator('#languageSelect').selectOption(locale === 'en' ? 'zh-TW' : 'en');
         for (const approach of ['adaptation', 'compensation']) assert.ok((await page.locator('#' + approach + 'Picks').innerText()).includes(names[approach]));
+        await openTraining(page, 'ocular');
         assert.equal(await page.locator('#edWrap [id$="-notes"]').inputValue(), 'Draft EyeDot result');
         assert.equal(await page.locator('#' + scoreId).inputValue(), '5 repetitions');
+        await completeTraining(page);
         await page.locator('#languageSelect').selectOption(locale);
         for (const theme of ['light', 'dark']) {
           await page.evaluate(theme => { document.documentElement.dataset.theme = theme; }, theme);
@@ -112,8 +116,10 @@ const output = path.resolve(__dirname, '../.tmp/verification/intervention-entry'
         });
         assert.equal(invalid, locale === 'en' ? 'Invalid custom intervention plan' : '自訂介入方案格式錯誤');
         await action('open-session').click();
+        await openTraining(page, 'ocular');
         assert.equal(await eyeDot().isChecked(), true);
         assert.equal(await page.locator('#edWrap [id$="-notes"]').inputValue(), 'Draft EyeDot result');
+        await completeTraining(page);
         for (const approach of ['adaptation', 'compensation']) assert.equal(await page.locator(`#${approach}Picks [data-strategy="${customIds[approach]}"]`).isChecked(), true);
         assert.match(await page.locator('#sessionSymptomSummary').innerText(), /2 → 3/);
         assert.equal(await page.locator('#s-tol').inputValue(), '8');

@@ -5,6 +5,7 @@ const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const { appPath } = require('./lib/app.cjs');
+const { openAssessment, completeAssessment } = require('./lib/assessments.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 const checks = [];
@@ -52,16 +53,24 @@ const check = text => { checks.push(text); console.log('PASS: ' + text); };
         const directional = plan.fields.filter(f => /^(od|os|ou)_/.test(f.id));
         assert.equal(directional.length, 12);
         assert.ok(directional.every(f => /^[a-z_]+$/.test(f.id) && f.type === 'text'));
-        await action('new-session').click(); await page.locator('#ac-vf').check(); await page.locator('#ac-src_vf').check();
+        await action('new-session').click();
+        await page.evaluate(() => {
+          editing.assess.vf = { done: true, values: {} };
+          editing.assess.src_vf = { done: true, values: { vf_ou_up: '0' } };
+          renderEditor();
+        });
+        assert.equal(await page.locator('#assess-long .pick input:is(#ac-vf, #ac-src_vf)').count(), 1, 'Current and imported visual-field results share one entry');
+        await page.locator('#ac-vf').uncheck(); await page.locator('#ac-vf').check();
+        assert.equal(await page.locator('#assessmentResultForm [data-entry="src_vf"]').count(), 1);
         const field = (id, item = plan.item, fields = plan.fields) => page.locator(`#af-${item.id}-${fields.findIndex(f => f.id === id)}`);
-        assert.equal(await page.locator('#as-vf .vf-entry input').count(), 12);
-        assert.equal(await page.locator('#as-src_vf .vf-entry input').count(), 12);
+        assert.equal(await page.locator('[data-entry="vf"] .vf-entry input').count(), 12);
+        assert.equal(await page.locator('[data-entry="src_vf"] .vf-entry input').count(), 12);
         assert.equal(await field('method').isVisible(), true);
         assert.equal(await field('od').isVisible(), true);
         assert.equal(await field('os').isVisible(), true);
         assert.equal(await field('summary').isVisible(), true);
         assert.equal(await field('custom_context').isVisible(), true);
-        assert.equal(await page.locator('#as-vf .vf-entry input').evaluateAll(nodes => nodes.every(n => n.value === '')), true);
+        assert.equal(await page.locator('[data-entry="vf"] .vf-entry input').evaluateAll(nodes => nodes.every(n => n.value === '')), true);
         const expected = { method: 'Confrontation', od: 'Legacy OD', os: 'Legacy OS', summary: 'Clinical summary', custom_context: 'Custom note' };
         for (let i = 0; i < directional.length; i++) expected[directional[i].id] = i === 0 ? '0' : i === 1 ? 'Blind spot, "observed" < > &' : `${40 + i}°`;
         for (const [id, value] of Object.entries(expected)) await field(id).fill(value);
@@ -70,13 +79,18 @@ const check = text => { checks.push(text); console.log('PASS: ' + text); };
           const f = plan.source.fields[i], value = i ? `source ${i}` : '0';
           sourceExpected[f.id] = value; await field(f.id, plan.source, plan.source.fields).fill(value);
         }
-        await page.locator('#ac-vf').uncheck(); assert.equal(await field('od_superior').isDisabled(), true);
+        await completeAssessment(page);
+        await page.locator('#ac-vf').uncheck(); assert.equal(await field('od_superior').count(), 0);
         await page.locator('#ac-vf').check(); assert.equal(await field('od_superior').inputValue(), '0');
+        await completeAssessment(page);
         await page.locator('#languageSelect').selectOption(locale === 'en' ? 'zh-TW' : 'en');
+        await openAssessment(page, 'vf');
         assert.equal(await field('od_inferior').inputValue(), expected.od_inferior);
+        await completeAssessment(page);
         await page.locator('#languageSelect').selectOption(locale);
-        const cross = page.locator('#as-vf .vf-entry');
-        assert.deepEqual(await cross.locator('legend').allTextContents(), locale === 'en' ? ['Right eye (OD)', 'Left eye (OS)', 'Both eyes (OU)'] : ['右眼（OD）', '左眼（OS）', '雙眼（OU）']);
+        await openAssessment(page, 'vf');
+        const cross = page.locator('[data-entry="vf"] .vf-entry');
+        assert.deepEqual(await cross.locator('legend').evaluateAll(nodes => nodes.map(node => { const label = node.cloneNode(true); label.querySelectorAll('.help').forEach(help => help.remove()); return label.textContent; })), locale === 'en' ? ['Right eye (OD)', 'Left eye (OS)', 'Both eyes (OU)'] : ['右眼（OD）', '左眼（OS）', '雙眼（OU）']);
         if (locale === 'en') {
           const han = await cross.evaluate(el => {
             const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), found = [];
@@ -103,6 +117,7 @@ const check = text => { checks.push(text); console.log('PASS: ' + text); };
         assert.equal(await field('od_temporal').evaluate(el => el === document.activeElement), true);
         assert.notEqual(await field('od_temporal').evaluate(el => getComputedStyle(el).outlineStyle), 'none');
         check(`${locale}: twelve labelled cross entries, patient-facing directions, bilingual labels, zero/text, keyboard focus, 320–1280px light/dark layouts and unmodified custom/legacy fields`);
+        await completeAssessment(page);
         await action('save-session').click();
         try { await page.waitForSelector('#soapForm', { state: 'detached' }); }
         catch (error) {
@@ -122,6 +137,7 @@ const check = text => { checks.push(text); console.log('PASS: ' + text); };
         await page.locator('#clientSearch').fill('TEST-VF');
         await action('pick').click();
         await page.locator(`[data-action="open-session"][data-id="${saved.session.id}"]`).click();
+        await openAssessment(page, 'vf');
         assert.equal(await field('od_superior').inputValue(), '0');
         assert.equal(await field('od_inferior').inputValue(), expected.od_inferior);
         assert.equal(await field('custom_context').inputValue(), expected.custom_context);

@@ -1,0 +1,553 @@
+﻿schema_version,section,field,type,value
+1,client,,object,
+1,client,/id,string,demo_diplopia
+1,client,/ref,string,DEMO-DIPLOPIA
+1,client,/name,string,示範個案03｜複視
+1,client,/dob,string,1979-11-03
+1,client,/doi,string,2026-09-02
+1,client,/occupation,string,會計人員
+1,client,/dx,string,虛構情境：近距離間歇性雙眼複視，持續閱讀時較明顯。
+1,client,/referral,string,完全虛構的操作示範資料，不含真實病人資訊，非診療建議。
+1,client,/eyeSurgery,null,
+1,client,/plan,array,
+1,client,/plan/0,object,
+1,client,/plan/0/id,string,copm
+1,client,/plan/0/category,string,functional
+1,client,/plan/0/domain,string,Occupational performance & satisfaction
+1,client,/plan/0/name,string,COPM
+1,client,/plan/0/timing,string,bp
+1,client,/plan/0/copm,boolean,true
+1,client,/plan/0/outcome,string,Performance and satisfaction ratings for the same priority occupations; change scores
+1,client,/plan/0/active,boolean,true
+1,client,/plan/0/initial,boolean,true
+1,client,/plan/1,object,
+1,client,/plan/1/id,string,daily_task
+1,client,/plan/1/category,string,functional
+1,client,/plan/1/domain,string,Functional performance
+1,client,/plan/1/name,string,Daily task performance
+1,client,/plan/1/timing,string,assessment
+1,client,/plan/1/fields,array,
+1,client,/plan/1/fields/0,object,
+1,client,/plan/1/fields/0/id,string,task
+1,client,/plan/1/fields/0/label,string,Task / measure
+1,client,/plan/1/fields/0/type,string,text
+1,client,/plan/1/fields/1,object,
+1,client,/plan/1/fields/1/id,string,performance
+1,client,/plan/1/fields/1/label,string,Performance / observation
+1,client,/plan/1/fields/1/type,string,textarea
+1,client,/plan/1/active,boolean,true
+1,client,/plan/1/initial,boolean,true
+1,client,/plan/2,object,
+1,client,/plan/2/id,string,npc
+1,client,/plan/2/domain,string,Basic visual function – convergence
+1,client,/plan/2/name,string,Clinical convergence assessment (NPC)
+1,client,/plan/2/timing,string,milestone
+1,client,/plan/2/fields,array,
+1,client,/plan/2/fields/0,string,NPC break (cm)
+1,client,/plan/2/fields/1,string,NPC recovery (cm)
+1,client,/plan/2/fields/2,string,Positive fusional vergence (Δ)
+1,client,/plan/2/fields/3,string,Binocular eye-tracking measures
+1,client,/plan/2/outcome,string,"NPC, positive fusional vergence and selected binocular eye-tracking measures"
+1,client,/plan/2/active,boolean,true
+1,client,/plan/2/initial,boolean,true
+1,client,/plan/3,object,
+1,client,/plan/3/id,string,demo_diplopia
+1,client,/plan/3/category,string,functional
+1,client,/plan/3/functionCategory,string,functional
+1,client,/plan/3/outcomePeriod,string,long
+1,client,/plan/3/domain,string,Functional vision
+1,client,/plan/3/name,string,10 分鐘閱讀複視次數
+1,client,/plan/3/timing,string,milestone
+1,client,/plan/3/fields,array,
+1,client,/plan/3/fields/0,object,
+1,client,/plan/3/fields/0/id,string,value
+1,client,/plan/3/fields/0/label,string,出現複視次數
+1,client,/plan/3/fields/0/type,string,number
+1,client,/plan/3/fields/0/min,number,0
+1,client,/plan/3/fields/0/step,number,1
+1,client,/plan/3/fields/0/unit,string,次
+1,client,/plan/3/outcome,string,虛構自訂觀察：相同字級、距離與 10 分鐘閱讀時間，記錄個案回報的複視次數；非標準化量表。
+1,client,/plan/3/active,boolean,true
+1,client,/plan/3/initial,boolean,true
+1,client,/plan/4,object,
+1,client,/plan/4/id,string,st_npc
+1,client,/plan/4/category,string,visual
+1,client,/plan/4/domain,string,Short-term functional outcomes
+1,client,/plan/4/name,string,Near point of convergence (short-term NPC)
+1,client,/plan/4/outcome,string,Record repeated NPC trials and their mean with symptoms. A shorter distance is generally better for convergence goals; use a consistent target and procedure.
+1,client,/plan/4/timing,string,session
+1,client,/plan/4/fields,array,
+1,client,/plan/4/fields/0,object,
+1,client,/plan/4/fields/0/id,string,pre_context
+1,client,/plan/4/fields/0/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/0/type,string,text
+1,client,/plan/4/fields/0/phase,string,pre
+1,client,/plan/4/fields/1,object,
+1,client,/plan/4/fields/1/id,string,pre_trials
+1,client,/plan/4/fields/1/label,string,Repeated trials / procedure
+1,client,/plan/4/fields/1/type,string,text
+1,client,/plan/4/fields/1/phase,string,pre
+1,client,/plan/4/fields/2,object,
+1,client,/plan/4/fields/2/id,string,pre_break_cm
+1,client,/plan/4/fields/2/label,string,Mean NPC break (cm)
+1,client,/plan/4/fields/2/type,string,number
+1,client,/plan/4/fields/2/min,number,0
+1,client,/plan/4/fields/2/phase,string,pre
+1,client,/plan/4/fields/3,object,
+1,client,/plan/4/fields/3/id,string,pre_recovery_cm
+1,client,/plan/4/fields/3/label,string,Mean NPC recovery (cm)
+1,client,/plan/4/fields/3/type,string,number
+1,client,/plan/4/fields/3/min,number,0
+1,client,/plan/4/fields/3/phase,string,pre
+1,client,/plan/4/fields/4,object,
+1,client,/plan/4/fields/4/id,string,pre2_context
+1,client,/plan/4/fields/4/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/4/type,string,text
+1,client,/plan/4/fields/4/phase,string,pre2
+1,client,/plan/4/fields/5,object,
+1,client,/plan/4/fields/5/id,string,pre2_trials
+1,client,/plan/4/fields/5/label,string,Repeated trials / procedure
+1,client,/plan/4/fields/5/type,string,text
+1,client,/plan/4/fields/5/phase,string,pre2
+1,client,/plan/4/fields/6,object,
+1,client,/plan/4/fields/6/id,string,pre2_break_cm
+1,client,/plan/4/fields/6/label,string,Mean NPC break (cm)
+1,client,/plan/4/fields/6/type,string,number
+1,client,/plan/4/fields/6/min,number,0
+1,client,/plan/4/fields/6/phase,string,pre2
+1,client,/plan/4/fields/7,object,
+1,client,/plan/4/fields/7/id,string,pre2_recovery_cm
+1,client,/plan/4/fields/7/label,string,Mean NPC recovery (cm)
+1,client,/plan/4/fields/7/type,string,number
+1,client,/plan/4/fields/7/min,number,0
+1,client,/plan/4/fields/7/phase,string,pre2
+1,client,/plan/4/fields/8,object,
+1,client,/plan/4/fields/8/id,string,post_context
+1,client,/plan/4/fields/8/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/8/type,string,text
+1,client,/plan/4/fields/8/phase,string,post
+1,client,/plan/4/fields/9,object,
+1,client,/plan/4/fields/9/id,string,post_trials
+1,client,/plan/4/fields/9/label,string,Repeated trials / procedure
+1,client,/plan/4/fields/9/type,string,text
+1,client,/plan/4/fields/9/phase,string,post
+1,client,/plan/4/fields/10,object,
+1,client,/plan/4/fields/10/id,string,post_break_cm
+1,client,/plan/4/fields/10/label,string,Mean NPC break (cm)
+1,client,/plan/4/fields/10/type,string,number
+1,client,/plan/4/fields/10/min,number,0
+1,client,/plan/4/fields/10/phase,string,post
+1,client,/plan/4/fields/11,object,
+1,client,/plan/4/fields/11/id,string,post_recovery_cm
+1,client,/plan/4/fields/11/label,string,Mean NPC recovery (cm)
+1,client,/plan/4/fields/11/type,string,number
+1,client,/plan/4/fields/11/min,number,0
+1,client,/plan/4/fields/11/phase,string,post
+1,client,/plan/4/fields/12,object,
+1,client,/plan/4/fields/12/id,string,recovery_context
+1,client,/plan/4/fields/12/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/12/type,string,text
+1,client,/plan/4/fields/12/phase,string,recovery
+1,client,/plan/4/fields/13,object,
+1,client,/plan/4/fields/13/id,string,recovery_trials
+1,client,/plan/4/fields/13/label,string,Repeated trials / procedure
+1,client,/plan/4/fields/13/type,string,text
+1,client,/plan/4/fields/13/phase,string,recovery
+1,client,/plan/4/fields/14,object,
+1,client,/plan/4/fields/14/id,string,recovery_break_cm
+1,client,/plan/4/fields/14/label,string,Mean NPC break (cm)
+1,client,/plan/4/fields/14/type,string,number
+1,client,/plan/4/fields/14/min,number,0
+1,client,/plan/4/fields/14/phase,string,recovery
+1,client,/plan/4/fields/15,object,
+1,client,/plan/4/fields/15/id,string,recovery_recovery_cm
+1,client,/plan/4/fields/15/label,string,Mean NPC recovery (cm)
+1,client,/plan/4/fields/15/type,string,number
+1,client,/plan/4/fields/15/min,number,0
+1,client,/plan/4/fields/15/phase,string,recovery
+1,client,/plan/4/fields/16,object,
+1,client,/plan/4/fields/16/id,string,followup_context
+1,client,/plan/4/fields/16/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/16/type,string,text
+1,client,/plan/4/fields/16/phase,string,followup
+1,client,/plan/4/fields/17,object,
+1,client,/plan/4/fields/17/id,string,followup_trials
+1,client,/plan/4/fields/17/label,string,Repeated trials / procedure
+1,client,/plan/4/fields/17/type,string,text
+1,client,/plan/4/fields/17/phase,string,followup
+1,client,/plan/4/fields/18,object,
+1,client,/plan/4/fields/18/id,string,followup_break_cm
+1,client,/plan/4/fields/18/label,string,Mean NPC break (cm)
+1,client,/plan/4/fields/18/type,string,number
+1,client,/plan/4/fields/18/min,number,0
+1,client,/plan/4/fields/18/phase,string,followup
+1,client,/plan/4/fields/19,object,
+1,client,/plan/4/fields/19/id,string,followup_recovery_cm
+1,client,/plan/4/fields/19/label,string,Mean NPC recovery (cm)
+1,client,/plan/4/fields/19/type,string,number
+1,client,/plan/4/fields/19/min,number,0
+1,client,/plan/4/fields/19/phase,string,followup
+1,client,/plan/4/fields/20,object,
+1,client,/plan/4/fields/20/id,string,protocol
+1,client,/plan/4/fields/20/label,string,Tool / procedure / scoring / test conditions
+1,client,/plan/4/fields/20/type,string,textarea
+1,client,/plan/4/fields/20/group,string,setting
+1,client,/plan/4/fields/21,object,
+1,client,/plan/4/fields/21/id,string,primary
+1,client,/plan/4/fields/21/label,string,Primary outcome (choose one)
+1,client,/plan/4/fields/21/type,string,text
+1,client,/plan/4/fields/21/group,string,setting
+1,client,/plan/4/fields/22,object,
+1,client,/plan/4/fields/22/id,string,intervention
+1,client,/plan/4/fields/22/label,string,Training / duration / difficulty / breaks / comparison condition
+1,client,/plan/4/fields/22/type,string,textarea
+1,client,/plan/4/fields/22/group,string,setting
+1,client,/plan/4/active,boolean,true
+1,client,/plan/4/initial,boolean,true
+1,client,/trainingPlan,array,
+1,client,/trainingPlan/0,object,
+1,client,/trainingPlan/0/k,string,ocular
+1,client,/trainingPlan/0/label,string,Computer-based oculomotor training
+1,client,/trainingPlan/0/acts,array,
+1,client,/trainingPlan/0/acts/0,string,Fixation
+1,client,/trainingPlan/0/acts/1,string,Vergence (convergence / divergence)
+1,client,/created,string,2026-10-01
+1,client,/demo,boolean,true
+1,session,,object,
+1,session,/id,string,demo_diplopia_post
+1,session,/date,string,2026-10-26
+1,session,/num,number,3
+1,session,/visit,string,post
+1,session,/mode,string,inperson
+1,session,/clinician,string,示範治療師（虛構）
+1,session,/duration,number,45
+1,session,/subjective,string,閱讀帳單時文字偶爾變成兩個影像，需要停止閱讀；希望能連續看完一頁資料。
+1,session,/feedback,string,示範回饋：希望繼續練習相同日常目標。
+1,session,/sym,array,
+1,session,/sym/0,object,
+1,session,/sym/0/id,string,demo_diplopia_post_pre
+1,session,/sym/0/kind,string,pre
+1,session,/sym/0/scores,object,
+1,session,/sym/0/scores/ef,number,2
+1,session,/sym/0/scores/bv,number,1
+1,session,/sym/0/scores/dz,number,0
+1,session,/sym/0/scores/ha,number,0
+1,session,/sym/0/scores/na,number,0
+1,session,/sym/1,object,
+1,session,/sym/1/id,string,demo_diplopia_post_end
+1,session,/sym/1/kind,string,end
+1,session,/sym/1/scores,object,
+1,session,/sym/1/scores/ef,number,3
+1,session,/sym/1/scores/bv,number,1
+1,session,/sym/1/scores/dz,number,0
+1,session,/sym/1/scores/ha,number,0
+1,session,/sym/1/scores/na,number,0
+1,session,/sym/2,object,
+1,session,/sym/2/id,string,demo_diplopia_post_rec
+1,session,/sym/2/kind,string,rec
+1,session,/sym/2/recMin,number,10
+1,session,/sym/2/scores,object,
+1,session,/sym/2/scores/ef,number,2
+1,session,/sym/2/scores/bv,number,1
+1,session,/sym/2/scores/dz,number,0
+1,session,/sym/2/scores/ha,number,0
+1,session,/sym/2/scores/na,number,0
+1,session,/assess,object,
+1,session,/assess/daily_task,object,
+1,session,/assess/daily_task/done,boolean,true
+1,session,/assess/daily_task/values,object,
+1,session,/assess/daily_task/values/task,string,在固定距離閱讀帳單 10 分鐘
+1,session,/assess/daily_task/values/performance,string,閱讀期間回報複視 4 次，仍有近距離不適。
+1,session,/assess/daily_task/notes,string,完全虛構的日常任務觀察。
+1,session,/assess/copm,object,
+1,session,/assess/copm/done,boolean,true
+1,session,/assess/copm/copm,array,
+1,session,/assess/copm/copm/0,object,
+1,session,/assess/copm/copm/0/occ,string,在固定距離閱讀帳單 10 分鐘
+1,session,/assess/copm/copm/0/perf,number,6
+1,session,/assess/copm/copm/0/sat,number,5
+1,session,/assess/copm/notes,string,虛構個案自評，沿用相同優先作業。
+1,session,/assess/npc,object,
+1,session,/assess/npc/done,boolean,true
+1,session,/assess/npc/values,object,
+1,session,/assess/npc/values/NPC break (cm),string,12
+1,session,/assess/npc/values/NPC recovery (cm),string,17
+1,session,/assess/npc/notes,string,完全虛構的操作示範結果。
+1,session,/assess/demo_diplopia,object,
+1,session,/assess/demo_diplopia/done,boolean,true
+1,session,/assess/demo_diplopia/values,object,
+1,session,/assess/demo_diplopia/values/value,number,4
+1,session,/assess/demo_diplopia/notes,string,完全虛構的操作示範結果。
+1,session,/assess/st_npc,object,
+1,session,/assess/st_npc/done,boolean,true
+1,session,/assess/st_npc/values,object,
+1,session,/assess/st_npc/values/pre_context,string,2026-10-26 09:00
+1,session,/assess/st_npc/values/post_context,string,2026-10-26 09:45
+1,session,/assess/st_npc/values/protocol,string,相同近距離視標與眼鏡，三次測量取平均，距離以 cm 記錄；僅為虛構結果。
+1,session,/assess/st_npc/values/primary,string,NPC 破裂點平均（cm）
+1,session,/assess/st_npc/values/intervention,string,本次活動與條件見 P；前後使用等難度材料。
+1,session,/assess/st_npc/values/pre_break_cm,number,12
+1,session,/assess/st_npc/values/post_break_cm,number,12
+1,session,/assess/st_npc/values/pre_recovery_cm,number,17
+1,session,/assess/st_npc/values/post_recovery_cm,number,17
+1,session,/assess/st_npc/values/pre_trials,string,12 / 13 / 11 cm
+1,session,/assess/st_npc/values/post_trials,string,12 / 12 / 12 cm
+1,session,/assess/st_npc/notes,string,示範數值，不代表治療效果或標準常模。
+1,session,/training,object,
+1,session,/training/ocular,object,
+1,session,/training/ocular/on,boolean,true
+1,session,/training/ocular/acts,array,
+1,session,/training/ocular/acts/0,string,Fixation
+1,session,/training/ocular/acts/1,string,Vergence (convergence / divergence)
+1,session,/training/ocular/actScores,object,
+1,session,/training/ocular/actScores/Fixation,string,25 秒，3 回合
+1,session,/training/ocular/actScores/Vergence (convergence ~1 divergence),string,3 分鐘，休息 1 次
+1,session,/training/ocular/dur,number,20
+1,session,/training/ocular/diff,number,4
+1,session,/training/ocular/program,string,虛構操作示範
+1,session,/training/ocular/notes,string,閱讀距離 40 cm、相同字級及照明，沿用原有眼鏡；短期測量前後條件相同。
+1,session,/otherTx,string,虛構居家練習紀錄：依本次活動目標記錄執行情形與休息需求。
+1,session,/tolerance,number,7
+1,session,/assessment,string,分開記錄集合近點、閱讀複視次數及眼睛疲勞，不將自訂次數當成診斷量表。
+1,session,/plan,string,示範紀錄：以相同條件追蹤「在固定距離閱讀帳單 10 分鐘」，分別記錄功能表現及活動後不適。
+1,session,/nextDate,string,2026-11-09
+1,session,/objective,string,閱讀期間回報複視 4 次，仍有近距離不適。
+1,session,/peo,object,
+1,session,/peo/person,string,閱讀帳單時文字偶爾變成兩個影像，需要停止閱讀；希望能連續看完一頁資料。
+1,session,/peo/environment,string,閱讀距離 40 cm、相同字級及照明，沿用原有眼鏡；短期測量前後條件相同。
+1,session,/peo/occupation,string,在固定距離閱讀帳單 10 分鐘
+1,session,/interventions,object,
+1,session,/interventions/adaptation,object,
+1,session,/interventions/adaptation/picks,array,
+1,session,/interventions/adaptation/picks/0,string,task_setup
+1,session,/interventions/adaptation/picks/1,string,environment_mod
+1,session,/interventions/adaptation/notes,string,閱讀距離 40 cm、相同字級及照明，沿用原有眼鏡；短期測量前後條件相同。
+1,session,/interventions/compensation,object,
+1,session,/interventions/compensation/picks,array,
+1,session,/interventions/compensation/picks/0,string,pacing_rest
+1,session,/interventions/compensation/notes,string,示範方案：記錄提示方式與分段休息，不以單次分數差推定療效。
+1,session,/created,string,2026-10-26T09:00:00+08:00
+1,session,/updated,string,2026-10-26T10:00:00+08:00
+1,session,/demo,boolean,true
+1,session,/assessmentPlan,array,
+1,session,/assessmentPlan/0,object,
+1,session,/assessmentPlan/0/id,string,copm
+1,session,/assessmentPlan/0/category,string,functional
+1,session,/assessmentPlan/0/domain,string,Occupational performance & satisfaction
+1,session,/assessmentPlan/0/name,string,COPM
+1,session,/assessmentPlan/0/timing,string,bp
+1,session,/assessmentPlan/0/copm,boolean,true
+1,session,/assessmentPlan/0/outcome,string,Performance and satisfaction ratings for the same priority occupations; change scores
+1,session,/assessmentPlan/0/active,boolean,true
+1,session,/assessmentPlan/0/initial,boolean,true
+1,session,/assessmentPlan/1,object,
+1,session,/assessmentPlan/1/id,string,daily_task
+1,session,/assessmentPlan/1/category,string,functional
+1,session,/assessmentPlan/1/domain,string,Functional performance
+1,session,/assessmentPlan/1/name,string,Daily task performance
+1,session,/assessmentPlan/1/timing,string,assessment
+1,session,/assessmentPlan/1/fields,array,
+1,session,/assessmentPlan/1/fields/0,object,
+1,session,/assessmentPlan/1/fields/0/id,string,task
+1,session,/assessmentPlan/1/fields/0/label,string,Task / measure
+1,session,/assessmentPlan/1/fields/0/type,string,text
+1,session,/assessmentPlan/1/fields/1,object,
+1,session,/assessmentPlan/1/fields/1/id,string,performance
+1,session,/assessmentPlan/1/fields/1/label,string,Performance / observation
+1,session,/assessmentPlan/1/fields/1/type,string,textarea
+1,session,/assessmentPlan/1/active,boolean,true
+1,session,/assessmentPlan/1/initial,boolean,true
+1,session,/assessmentPlan/2,object,
+1,session,/assessmentPlan/2/id,string,npc
+1,session,/assessmentPlan/2/domain,string,Basic visual function – convergence
+1,session,/assessmentPlan/2/name,string,Clinical convergence assessment (NPC)
+1,session,/assessmentPlan/2/timing,string,milestone
+1,session,/assessmentPlan/2/fields,array,
+1,session,/assessmentPlan/2/fields/0,string,NPC break (cm)
+1,session,/assessmentPlan/2/fields/1,string,NPC recovery (cm)
+1,session,/assessmentPlan/2/fields/2,string,Positive fusional vergence (Δ)
+1,session,/assessmentPlan/2/fields/3,string,Binocular eye-tracking measures
+1,session,/assessmentPlan/2/outcome,string,"NPC, positive fusional vergence and selected binocular eye-tracking measures"
+1,session,/assessmentPlan/2/active,boolean,true
+1,session,/assessmentPlan/2/initial,boolean,true
+1,session,/assessmentPlan/3,object,
+1,session,/assessmentPlan/3/id,string,demo_diplopia
+1,session,/assessmentPlan/3/category,string,functional
+1,session,/assessmentPlan/3/functionCategory,string,functional
+1,session,/assessmentPlan/3/outcomePeriod,string,long
+1,session,/assessmentPlan/3/domain,string,Functional vision
+1,session,/assessmentPlan/3/name,string,10 分鐘閱讀複視次數
+1,session,/assessmentPlan/3/timing,string,milestone
+1,session,/assessmentPlan/3/fields,array,
+1,session,/assessmentPlan/3/fields/0,object,
+1,session,/assessmentPlan/3/fields/0/id,string,value
+1,session,/assessmentPlan/3/fields/0/label,string,出現複視次數
+1,session,/assessmentPlan/3/fields/0/type,string,number
+1,session,/assessmentPlan/3/fields/0/min,number,0
+1,session,/assessmentPlan/3/fields/0/step,number,1
+1,session,/assessmentPlan/3/fields/0/unit,string,次
+1,session,/assessmentPlan/3/outcome,string,虛構自訂觀察：相同字級、距離與 10 分鐘閱讀時間，記錄個案回報的複視次數；非標準化量表。
+1,session,/assessmentPlan/3/active,boolean,true
+1,session,/assessmentPlan/3/initial,boolean,true
+1,session,/assessmentPlan/4,object,
+1,session,/assessmentPlan/4/id,string,st_npc
+1,session,/assessmentPlan/4/category,string,visual
+1,session,/assessmentPlan/4/domain,string,Short-term functional outcomes
+1,session,/assessmentPlan/4/name,string,Near point of convergence (short-term NPC)
+1,session,/assessmentPlan/4/outcome,string,Record repeated NPC trials and their mean with symptoms. A shorter distance is generally better for convergence goals; use a consistent target and procedure.
+1,session,/assessmentPlan/4/timing,string,session
+1,session,/assessmentPlan/4/fields,array,
+1,session,/assessmentPlan/4/fields/0,object,
+1,session,/assessmentPlan/4/fields/0/id,string,pre_context
+1,session,/assessmentPlan/4/fields/0/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/4/fields/0/type,string,text
+1,session,/assessmentPlan/4/fields/0/phase,string,pre
+1,session,/assessmentPlan/4/fields/1,object,
+1,session,/assessmentPlan/4/fields/1/id,string,pre_trials
+1,session,/assessmentPlan/4/fields/1/label,string,Repeated trials / procedure
+1,session,/assessmentPlan/4/fields/1/type,string,text
+1,session,/assessmentPlan/4/fields/1/phase,string,pre
+1,session,/assessmentPlan/4/fields/2,object,
+1,session,/assessmentPlan/4/fields/2/id,string,pre_break_cm
+1,session,/assessmentPlan/4/fields/2/label,string,Mean NPC break (cm)
+1,session,/assessmentPlan/4/fields/2/type,string,number
+1,session,/assessmentPlan/4/fields/2/min,number,0
+1,session,/assessmentPlan/4/fields/2/phase,string,pre
+1,session,/assessmentPlan/4/fields/3,object,
+1,session,/assessmentPlan/4/fields/3/id,string,pre_recovery_cm
+1,session,/assessmentPlan/4/fields/3/label,string,Mean NPC recovery (cm)
+1,session,/assessmentPlan/4/fields/3/type,string,number
+1,session,/assessmentPlan/4/fields/3/min,number,0
+1,session,/assessmentPlan/4/fields/3/phase,string,pre
+1,session,/assessmentPlan/4/fields/4,object,
+1,session,/assessmentPlan/4/fields/4/id,string,pre2_context
+1,session,/assessmentPlan/4/fields/4/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/4/fields/4/type,string,text
+1,session,/assessmentPlan/4/fields/4/phase,string,pre2
+1,session,/assessmentPlan/4/fields/5,object,
+1,session,/assessmentPlan/4/fields/5/id,string,pre2_trials
+1,session,/assessmentPlan/4/fields/5/label,string,Repeated trials / procedure
+1,session,/assessmentPlan/4/fields/5/type,string,text
+1,session,/assessmentPlan/4/fields/5/phase,string,pre2
+1,session,/assessmentPlan/4/fields/6,object,
+1,session,/assessmentPlan/4/fields/6/id,string,pre2_break_cm
+1,session,/assessmentPlan/4/fields/6/label,string,Mean NPC break (cm)
+1,session,/assessmentPlan/4/fields/6/type,string,number
+1,session,/assessmentPlan/4/fields/6/min,number,0
+1,session,/assessmentPlan/4/fields/6/phase,string,pre2
+1,session,/assessmentPlan/4/fields/7,object,
+1,session,/assessmentPlan/4/fields/7/id,string,pre2_recovery_cm
+1,session,/assessmentPlan/4/fields/7/label,string,Mean NPC recovery (cm)
+1,session,/assessmentPlan/4/fields/7/type,string,number
+1,session,/assessmentPlan/4/fields/7/min,number,0
+1,session,/assessmentPlan/4/fields/7/phase,string,pre2
+1,session,/assessmentPlan/4/fields/8,object,
+1,session,/assessmentPlan/4/fields/8/id,string,post_context
+1,session,/assessmentPlan/4/fields/8/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/4/fields/8/type,string,text
+1,session,/assessmentPlan/4/fields/8/phase,string,post
+1,session,/assessmentPlan/4/fields/9,object,
+1,session,/assessmentPlan/4/fields/9/id,string,post_trials
+1,session,/assessmentPlan/4/fields/9/label,string,Repeated trials / procedure
+1,session,/assessmentPlan/4/fields/9/type,string,text
+1,session,/assessmentPlan/4/fields/9/phase,string,post
+1,session,/assessmentPlan/4/fields/10,object,
+1,session,/assessmentPlan/4/fields/10/id,string,post_break_cm
+1,session,/assessmentPlan/4/fields/10/label,string,Mean NPC break (cm)
+1,session,/assessmentPlan/4/fields/10/type,string,number
+1,session,/assessmentPlan/4/fields/10/min,number,0
+1,session,/assessmentPlan/4/fields/10/phase,string,post
+1,session,/assessmentPlan/4/fields/11,object,
+1,session,/assessmentPlan/4/fields/11/id,string,post_recovery_cm
+1,session,/assessmentPlan/4/fields/11/label,string,Mean NPC recovery (cm)
+1,session,/assessmentPlan/4/fields/11/type,string,number
+1,session,/assessmentPlan/4/fields/11/min,number,0
+1,session,/assessmentPlan/4/fields/11/phase,string,post
+1,session,/assessmentPlan/4/fields/12,object,
+1,session,/assessmentPlan/4/fields/12/id,string,recovery_context
+1,session,/assessmentPlan/4/fields/12/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/4/fields/12/type,string,text
+1,session,/assessmentPlan/4/fields/12/phase,string,recovery
+1,session,/assessmentPlan/4/fields/13,object,
+1,session,/assessmentPlan/4/fields/13/id,string,recovery_trials
+1,session,/assessmentPlan/4/fields/13/label,string,Repeated trials / procedure
+1,session,/assessmentPlan/4/fields/13/type,string,text
+1,session,/assessmentPlan/4/fields/13/phase,string,recovery
+1,session,/assessmentPlan/4/fields/14,object,
+1,session,/assessmentPlan/4/fields/14/id,string,recovery_break_cm
+1,session,/assessmentPlan/4/fields/14/label,string,Mean NPC break (cm)
+1,session,/assessmentPlan/4/fields/14/type,string,number
+1,session,/assessmentPlan/4/fields/14/min,number,0
+1,session,/assessmentPlan/4/fields/14/phase,string,recovery
+1,session,/assessmentPlan/4/fields/15,object,
+1,session,/assessmentPlan/4/fields/15/id,string,recovery_recovery_cm
+1,session,/assessmentPlan/4/fields/15/label,string,Mean NPC recovery (cm)
+1,session,/assessmentPlan/4/fields/15/type,string,number
+1,session,/assessmentPlan/4/fields/15/min,number,0
+1,session,/assessmentPlan/4/fields/15/phase,string,recovery
+1,session,/assessmentPlan/4/fields/16,object,
+1,session,/assessmentPlan/4/fields/16/id,string,followup_context
+1,session,/assessmentPlan/4/fields/16/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/4/fields/16/type,string,text
+1,session,/assessmentPlan/4/fields/16/phase,string,followup
+1,session,/assessmentPlan/4/fields/17,object,
+1,session,/assessmentPlan/4/fields/17/id,string,followup_trials
+1,session,/assessmentPlan/4/fields/17/label,string,Repeated trials / procedure
+1,session,/assessmentPlan/4/fields/17/type,string,text
+1,session,/assessmentPlan/4/fields/17/phase,string,followup
+1,session,/assessmentPlan/4/fields/18,object,
+1,session,/assessmentPlan/4/fields/18/id,string,followup_break_cm
+1,session,/assessmentPlan/4/fields/18/label,string,Mean NPC break (cm)
+1,session,/assessmentPlan/4/fields/18/type,string,number
+1,session,/assessmentPlan/4/fields/18/min,number,0
+1,session,/assessmentPlan/4/fields/18/phase,string,followup
+1,session,/assessmentPlan/4/fields/19,object,
+1,session,/assessmentPlan/4/fields/19/id,string,followup_recovery_cm
+1,session,/assessmentPlan/4/fields/19/label,string,Mean NPC recovery (cm)
+1,session,/assessmentPlan/4/fields/19/type,string,number
+1,session,/assessmentPlan/4/fields/19/min,number,0
+1,session,/assessmentPlan/4/fields/19/phase,string,followup
+1,session,/assessmentPlan/4/fields/20,object,
+1,session,/assessmentPlan/4/fields/20/id,string,protocol
+1,session,/assessmentPlan/4/fields/20/label,string,Tool / procedure / scoring / test conditions
+1,session,/assessmentPlan/4/fields/20/type,string,textarea
+1,session,/assessmentPlan/4/fields/20/group,string,setting
+1,session,/assessmentPlan/4/fields/21,object,
+1,session,/assessmentPlan/4/fields/21/id,string,primary
+1,session,/assessmentPlan/4/fields/21/label,string,Primary outcome (choose one)
+1,session,/assessmentPlan/4/fields/21/type,string,text
+1,session,/assessmentPlan/4/fields/21/group,string,setting
+1,session,/assessmentPlan/4/fields/22,object,
+1,session,/assessmentPlan/4/fields/22/id,string,intervention
+1,session,/assessmentPlan/4/fields/22/label,string,Training / duration / difficulty / breaks / comparison condition
+1,session,/assessmentPlan/4/fields/22/type,string,textarea
+1,session,/assessmentPlan/4/fields/22/group,string,setting
+1,session,/assessmentPlan/4/active,boolean,true
+1,session,/assessmentPlan/4/initial,boolean,true
+1,session,/trainingPlan,array,
+1,session,/trainingPlan/0,object,
+1,session,/trainingPlan/0/k,string,ocular
+1,session,/trainingPlan/0/label,string,Computer-based oculomotor training
+1,session,/trainingPlan/0/acts,array,
+1,session,/trainingPlan/0/acts/0,string,Fixation
+1,session,/trainingPlan/0/acts/1,string,Vergence (convergence / divergence)
+1,session,/clinicalLinks,array,
+1,session,/clinicalLinks/0,object,
+1,session,/clinicalLinks/0/id,string,demo_diplopia_post_link
+1,session,/clinicalLinks/0/category,string,visual
+1,session,/clinicalLinks/0/symptom,string,閱讀帳單時文字偶爾變成兩個影像，需要停止閱讀；希望能連續看完一頁資料。
+1,session,/clinicalLinks/0/reasoning,string,分開記錄集合近點、閱讀複視次數及眼睛疲勞，不將自訂次數當成診斷量表。
+1,session,/clinicalLinks/0/peo,array,
+1,session,/clinicalLinks/0/peo/0,string,person
+1,session,/clinicalLinks/0/peo/1,string,environment
+1,session,/clinicalLinks/0/peo/2,string,occupation
+1,session,/clinicalLinks/0/evidence,array,
+1,session,/clinicalLinks/0/evidence/0,string,st_npc
+1,session,/clinicalLinks/0/evidence/1,string,npc
+1,session,/clinicalLinks/0/evidence/2,string,demo_diplopia
+1,session,/clinicalLinks/0/evidence/3,string,daily_task
+1,session,/clinicalLinks/0/evidenceNotes,string,完全虛構的示範數據，未施測項目不填數值。
+1,session,/clinicalLinks/0/interventions,array,
+1,session,/clinicalLinks/0/interventions/0,string,pacing_rest
+1,session,/clinicalLinks/0/interventions/1,string,task_setup
+1,session,/clinicalLinks/0/interventionNotes,string,凝視訓練、聚散運動（輻輳／開散）

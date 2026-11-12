@@ -7,6 +7,8 @@ const { pathToFileURL } = require('node:url');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const { appPath } = require('./lib/app.cjs');
+const { completeTraining } = require('./training-modal.cjs');
+const { completeAssessment } = require('./lib/assessments.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 const evidence = [];
@@ -58,6 +60,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     await page.locator('#symWrap input.num').first().fill('4');
     await page.locator('#ac-copm').check();
     await page.locator('#copm-occ-0').fill('閱讀'); await page.locator('#copm-p-0').fill('3'); await page.locator('#copm-s-0').fill('4');
+    await completeAssessment(page);
     // Without Noto Sans TC installed, Chromium rejects document.fonts.load; saving must still write every file.
     await page.evaluate(() => { window.realFontLoad = document.fonts.load.bind(document.fonts); document.fonts.load = () => Promise.reject(new DOMException('A network error occurred.', 'NetworkError')); });
     await action('save-session').click();
@@ -126,6 +129,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     await action('new-session').click(); await page.locator('#s-date').fill('2026-10-31');
     await page.locator('#s-visit').selectOption('post'); await page.locator('#ac-copm').check();
     await page.locator('#copm-p-0').fill('7'); await page.locator('#copm-s-0').fill('8');
+    await completeAssessment(page);
     await page.locator('#symWrap input.num').first().fill('1');
     await action('save-session').click(); await page.waitForFunction(() => sessions.length === 2);
     await page.locator('#filter-visit').selectOption('post');
@@ -146,7 +150,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     await page.locator('#clientSearch').fill('不存在'); assert.equal(await page.locator('.client-btn').count(), 0);
     await page.locator('#clientSearch').fill('TEST-甲'); assert.equal(await page.locator('.client-btn').count(), 1);
     await page.locator('#clientSearch').fill('');
-    assert.equal(await page.locator('.client-btn').count(), 0, 'Clearing patient search does not display the full roster');
+    assert.deepEqual(await page.locator('.client-btn').evaluateAll(nodes => nodes.map(node => node.dataset.id)), await page.evaluate(() => recentClientIds().slice(0, 5)), 'Clearing focused search shows only recently opened clients');
     check('Search, symptom selection and date filters', 'Patient ID search, no-results state, symptom chart selection and invalid date range are exercised.');
 
     await action('new-client').click(); await page.locator('#cf-name').fill('測試個案乙'); await page.locator('#cf-ref').fill('TEST-乙');
@@ -174,6 +178,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     await page.locator('#tx-ocular-on').check(); await page.locator('#tx-ocular-new').fill('測試自訂跳視'); await action('act-add').click();
     await page.locator('#tx-ocular-acts [data-act="EyeDot Trainer"]').check();
     await action('ed-add').click(); await page.locator('#edWrap input[id$="-count"]').fill('12');
+    await completeTraining(page);
     await action('sym-rec').click(); await page.locator('#symWrap input[id^="syr-"]').fill('8');
     await action('save-session').click(); await page.waitForSelector('.sess');
     const training = await page.evaluate(async () => (await store.listSessions(curId))[0]);
@@ -230,7 +235,7 @@ const check = (name, detail) => { evidence.push({ name, detail }); console.log('
     await page.locator('#tab-sessions').click();
     assert.equal(await page.locator('.sess').count(), 1);
     await page.locator('#importFile').setInputFiles({ name: 'broken.csv', mimeType: 'text/csv', buffer: Buffer.from('bad csv') });
-    await page.waitForFunction(() => document.querySelector('.toast')?.textContent.includes('匯入失敗'));
+    await page.waitForFunction(() => document.querySelector('.failure-message')?.textContent.includes('匯入失敗'));
     assert.equal(await page.evaluate(() => sessions.length), 1);
     check('CSV import control', 'Exported CSV restores a patient and session; a malformed CSV reports failure and preserves existing data.');
 

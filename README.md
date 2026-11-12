@@ -12,19 +12,22 @@ EzEMR is a browser-based rehabilitation record tool for client information, SOAP
 
 EzEMR supports English and Traditional Chinese. `EzEMR.html` is the generated distribution; development sources are kept separately in `src/`, with third-party libraries in `vendor/`.
 
+See the [field-by-field user manual (Traditional Chinese)](USER_MANUAL.zh-TW.md) for field meanings, expected input, units, ranges, and examples.
+
 ## 🗂 Features
 
-- Add measures directly to a selected assessment for the current record. Choose EyeDot Trainer as an oculomotor activity and add custom activities, adaptation plans, and compensation plans.
+- Add measures directly to a selected assessment for this record, or include them in the client's template for future tracking. Choose EyeDot Trainer as an oculomotor activity and add custom activities, adaptation plans, and compensation plans.
 - Edit symptom reasoning and interventions in their symptom link. Session response reuses symptom ratings, while optional overall tolerance remains a separate self-rating.
 - Manage client details, diagnoses, referral reasons, and eye surgery history; search from the header by name, medical record number, or diagnosis.
 - Choose the profile fields required for every patient under **Settings → Profile fields...**.
 - Open each client in **Patient dashboard**, with **Rehabilitation records**, **Progress tracking**, and **Item settings** alongside it.
 - Record SOAP notes, baseline assessments, treatment sessions, post-rehabilitation assessments, follow-ups, and absences.
-- Choose each client's initial assessment items, then tick the assessments and training items actually done in a record; only ticked items open for entry and are saved. Each training activity has its own score.
+- Choose each client's initial assessment items, then tick an assessment to enter its results in a dialog. Choose **Done** to show text results below, or **Edit results** to revise them. Deselecting retains results and excludes them from reports. Each training activity has its own performance entry.
 - Track Eye fatigue, Blurred vision, Dizziness, Headache, and Nausea, with symptom charts and filters by record type and date.
 - Compare COPM results with the corresponding baseline and record EyeDot Trainer activities.
 - Customize assessment and rehabilitation templates for each client without editing code.
 - Save each session as CSV, PDF, and a plain-text copy of the note; export Excel workbooks, the client roster, and full JSON backups.
+- Search the selected client's record text alongside visit-type and date filters. Create password-encrypted backups and review record counts and overwrite conflicts before restoring.
 - Import supported assessment and rehabilitation Excel workbooks or legacy SOAP JSON folders, retaining source details.
 - Import score files from OcuTrain and the peripheral visual field (UFOV) training program. Each OcuTrain module and each UFOV subtest is its own item with its own score and test settings.
 - Switch between light and dark appearance, with keyboard menus and shortcuts.
@@ -34,25 +37,49 @@ EzEMR supports English and Traditional Chinese. `EzEMR.html` is the generated di
 
 1. Download `EzEMR.html` to a local folder on your computer and open it in desktop Chrome or Edge from your file manager.
 2. Select **English** in the language selector. Traditional Chinese is the default, and the browser remembers your choice. Switching languages preserves the current SOAP draft.
-3. The first screen asks where to keep your records. For a new collection, choose **Use a Data folder beside the HTML**. When first saving a client, select the folder containing the HTML and allow file editing; the app creates `Data` inside that folder. For existing records, choose **Open an existing record folder** and select the folder containing `clients.csv`. You can change this later under **File → Storage location...**.
-4. Choose **New client** and enter the name, medical record number, and other details. To look around first, choose **Load example client (demonstration data)** on the welcome screen.
-5. Select the client, then choose **New record** beside the patient's name in the main area. Fill in the SOAP note and symptom scores. Under **Assessments** and **Rehabilitation items**, tick what was done this visit to open its fields, then enter the results.
+3. The first screen explains that records stay in a folder on this computer and are never sent over the internet. Choose **First time: help me set up** for a new collection. When first saving a client, select where to create the record folder and allow editing; the app creates `Data` there. Choose **I already have a record folder** for existing records. **Where files are kept (advanced)** is collapsed until you need filenames and folder details. You can change the location later under **File → Storage location**.
+4. Choose **New client** and enter the name, medical record number, and other details. **Help → Quick start** explains the workflow even before connecting a folder. To practise with fictional data, use **Help → Load example client (demonstration data)** or the same button on the welcome screen. Use a separate practice folder to keep edits separate from real records.
+5. Select the client, then choose **New record** beside the patient's name in the main area. Fill in the SOAP note and symptom scores. Tick an assessment or rehabilitation item to enter results in its dialog, then choose **Done**.
 6. Choose **Save**, or press `Ctrl+S` / `⌘S`. The session CSV, PDF, and TXT files are written to that client's folder.
 7. When reopening the HTML, the app reconnects to the previously selected record folder if the browser still grants access. Otherwise, the first screen offers to reconnect that folder or choose another one.
 
 The browser requires you to select and authorize a folder. It cannot infer the HTML file's directory and write beside it automatically. The default `Data` folder is created inside the location you select at the first save.
 
+If the browser cannot save straight to a folder, the empty workspace explains that every save downloads a file for you to keep. Use Chrome or Edge on a desktop or laptop for direct folder saving. Connect the record folder each time you open the app; when permission remains available, the browser can reconnect automatically.
+
 ### Patient data
 
-`EzEMR.html` and this repository contain no client records; the example client and all test data are synthetic. Records are written only to the local folder you select, and the app sends no record data over the network. If you keep the default `Data` folder inside a clone of this repository, `.gitignore` excludes it so records are not committed by accident. Do not attach real records, exports, or backups to issues or pull requests.
+`EzEMR.html` contains no client records. The repository's [Data folder](Data/) contains only fictional demonstration records. Records are written only to the local folder you select, and the app sends no record data over the network. Git tracks the supplied demo roster and named sample files; other files under `Data` are ignored. Use a separate empty folder for real records. Do not attach real records, exports, or backups to issues or pull requests.
+
+### Try the system with fictional records
+
+The root [Data folder](Data/) includes eight fictional clients, each with a baseline assessment, a treatment record, and a post-rehabilitation assessment: 24 records in total, with CSV, PDF, and TXT files. The examples include SOAP notes, assessment results, activity scores, symptom or pain ratings, and COPM comparisons so you can try the dashboard, record editor, progress tracking, and exports.
+
+| Medical record number | Demonstration case |
+| --- | --- |
+| DEMO-STROKE | Stroke with right-sided weakness |
+| DEMO-TBI | Traumatic brain injury |
+| DEMO-DIPLOPIA | Double vision |
+| DEMO-MONOCULAR | Vision loss in one eye |
+| DEMO-FIELD | Visual field loss |
+| DEMO-NEGLECT | Left spatial neglect |
+| DEMO-MOTOR | Upper-limb motor impairment |
+| DEMO-SCI | Spinal cord injury with wheelchair mobility |
+
+1. Download the full repository, including `Data`, and open `EzEMR.html` in desktop Chrome or Edge. Downloading only the HTML does not include these records.
+2. Choose **I already have a record folder**, or **File → Open record folder** if the app is already open. Select the supplied `Data` folder containing `clients.csv` and allow access.
+3. Search for `DEMO-` or a medical record number from the table, then select a client. Open **Rehabilitation records** to inspect or edit a visit, or **Progress tracking** to compare results.
+
+Saving edits writes to the selected folder. Copy `Data` before experimenting if you want to keep the original examples. All identities, conditions, notes, and scores are fictional and provided for trying the software, not as clinical guidance.
 
 ## ⌨ Menus and keyboard shortcuts
 
 | Control | Purpose |
 | --- | --- |
-| File | Save, import CSV/Excel/backups/test score files or a legacy SOAP folder, choose a storage location, open or reload a record folder, and configure a second copy folder. |
+| File | Save, import CSV/Excel/backups/test score files or a legacy SOAP folder, choose a storage location, open or reload a record folder, and set up a synced copy folder. |
 | Client | Create or edit clients and add rehabilitation records. |
 | Settings | Choose required profile fields and switch appearance. |
+| Help | Open the seven-step Quick start guide, Keyboard shortcuts, or the existing example client action. Help is available before a folder is connected. |
 | Patient header | Add a record or edit the selected client's details. |
 | Toolbar | Import and open the export menu. Save, copy-note, and cancel actions appear while editing. |
 | Export | Export one client's Excel workbook, all clients' Excel workbook, `clients.csv`, or a full JSON backup. |
@@ -60,9 +87,13 @@ The browser requires you to select and authorize a folder. It cannot infer the H
 | Ctrl+O / ⌘O | Open a record folder. |
 | Arrow keys, Enter, Escape, Tab | Navigate menus; Escape closes a menu or dialog. |
 
-The header stays available while scrolling and contains client search alongside the title, menus, tools, and language selector. There is no sidebar or full client roster. Enter a name, medical record number, or diagnosis to show up to eight matches; an empty search shows none. Use Up/Down and Enter to select a result, or Escape to close the results. Switching clients protects unsaved drafts, and a late response from an earlier selection cannot replace the current client's records. Controls use 13px text and shared 2px vertical padding while retaining 44px targets. The header leaves 8px around controls and is 61px high on desktop. Adjacent actions have equal sizes and gaps. Storage details are available under **File → Storage location...** instead of occupying header space.
+The header stays available while scrolling and contains client search alongside the title, menus, tools, and language selector. There is no sidebar or full client roster. Enter a name, medical record number, or diagnosis to show up to eight matches. Focus an empty search to see up to five recently opened clients. Use Up/Down and Enter to select a result, or Escape to close the results. Switching clients protects unsaved drafts, and a late response from an earlier selection cannot replace the current client's records. Controls use 13px text and shared 2px vertical padding while retaining 44px targets. The header leaves 8px around controls and is 61px high on desktop. Adjacent actions have equal sizes and gaps. Storage details are available under **File → Storage location** instead of occupying header space.
 
-The client summary shows identity and diagnosis, the total record count, the latest record date, and the next session date from the latest record. Background details and source documents are folded below it. **Patient dashboard** opens when you select a client, with symptom scores before the selected visit's symptoms, clinical reasoning and evidence, and interventions. It defaults to the latest attended visit; its record selector excludes absences and marks older selections. A warning identifies the latest record when it is an absence, including clients with no attended records. Each selected visit keeps its own results and reasoning.
+While you edit, the app keeps a safety copy shortly after you stop typing and when the page is hidden or closed. This is not a saved record: use **Save** to write the record files. The copy stays in this browser on this device and is excluded from exports and backups. After reconnecting the same storage, **Continue writing** restores it as unsaved; **Discard this copy** removes it. Escape keeps it for next time. Saving successfully or confirming that you want to abandon editing also removes it. Assessment dialog changes enter the safety copy after **Done**. If automatic safekeeping is unavailable, save regularly.
+
+Failure messages remain until dismissed, explain a next step, and keep the original error under **Technical details**. A failed save keeps your typed contents on screen. The app also remembers up to eight recently opened client IDs per storage in this browser and returns to the last available client on startup. This history is excluded from records and backups.
+
+The client summary places date of birth and sex beside the name and medical record number, with diagnosis below. The latest record date and next session date remain visible; clinical profile details and medical history fold below them. The summary omits duplicate diagnoses, total record counts, raw intake data, and import provenance. Test cards show the test and its time. Clinical TXT, PDF, and Excel reports omit source files, worksheet names, row numbers, and raw intake appendices. Clinical notes, measurement references, test conditions, and report dates remain available. Original legacy fields and provenance remain in CSV and JSON backups. **Patient dashboard** opens when you select a client, with symptom scores before the selected visit's symptoms, clinical reasoning and evidence, and interventions. It defaults to the latest attended visit; its record selector excludes absences and marks older selections. A warning identifies the latest record when it is an absence, including clients with no attended records. Each selected visit keeps its own results and reasoning.
 
 **Rehabilitation records** shows the symptom chart and the record history, newest first; on wide screens the chart sits beside the history, and on narrow screens above it. Each record aligns before-session score, after-session score, and change in three labelled columns. Subtest scores, assessment count, recovery, tolerance, and training items have separate groups; absence records use labelled reason, notification, and rescheduling fields. The editor's symptom and COPM summaries also use labelled score groups. Filters by record type and date change only the listed records, not the summary. **Progress tracking** shows symptom changes, assessment results, COPM comparisons, and training records. **Item settings** manages the client's assessment and rehabilitation templates.
 
@@ -70,21 +101,35 @@ Under **Settings**, the initial appearance follows the system setting; manual ch
 
 ### Required profile fields
 
-Open **Settings → Profile fields...** to select required fields for every patient in the current record folder, or every patient in browser storage. The catalog has 14 fields: name, medical record number, national ID number, date of birth, sex, smoking, alcohol use, betel nut use, occupation, religion, chronic conditions, phone, address, and allergies. Name and medical record number are selected by default.
+Open **Settings → Profile fields...** to select required fields for every patient in the current record folder, or every patient in browser storage. The catalog has 14 fields: name, medical record number, national ID number, date of birth, sex, smoking, alcohol use, betel nut use, occupation, religion, chronic conditions, phone, address, and allergies. Name and medical record number are selected by default. National ID number, religion, phone, and address remain available for ordinary patient records and contact details. Existing values and required-field selections remain intact when opening settings or backups.
 
-Selected fields are required when saving patient details or rehabilitation records. Existing records remain readable after a new requirement is added; an incomplete patient profile must be completed before writing records. Unselected fields are hidden from entry and existing values are retained. An unnamed patient is shown with a generated display label; this does not replace stored data. Folder settings are saved in `settings.json`; browser storage keeps its own settings. Full JSON backups include the settings. CSV retains the existing column schema and stores added profile values in its existing extra-fields payload.
+Selected fields are required when saving patient details or rehabilitation records. Other fields remain available under **Other profile details (optional)**; a phone number or occupation can be entered without making it mandatory for everyone. Existing records remain readable after a new requirement is added; an incomplete patient profile must be completed before writing records, with the current SOAP draft preserved. An unnamed patient is shown with a generated display label; this does not replace stored data. Folder settings are saved in `settings.json`; browser storage keeps its own settings. Full JSON backups include the settings. CSV retains the existing column schema and stores added profile values in its existing extra-fields payload.
+
+### Assessment workflow
+
+The fixed record navigation shows the client, medical record number, visit date/type, edit status, and current SOAP/item/stage path. Use **Interview and goals** and **COPM**, choose an item under **Selected assessments**, then switch between **Before testing**, **Related activities**, **After testing**, **Response and recovery**, and **Reasoning and plan**. **Return to previous entry** brings you back to the earlier field. These are navigation shortcuts, not required steps in a wizard.
+
+Symptoms and the session response sit at the O entry. Unrated pursuit/fixation/saccade symptom rows appear only for the corresponding selected assessment; previously rated rows remain available. Assessments use a result dialog, including short-term stages, COPM and custom fields. **Done** updates the current record draft and its text summary; **Cancel** or Escape discards changes in the dialog. Rehabilitation items use the same dialog workflow and show a text summary with **Edit**. The record still needs to be saved. Deselecting retains results and excludes them from the report; **Clear results** separately confirms removal of that item's current results and notes. It leaves templates and other visits unchanged, and protects results that another item references.
+
+**Result source** explicitly links the long-term NPC, reading-speed, search-time, or eye-hand reaction-time fields to a compatible short-term measurement and stage in the same visit. Only the mapped fields become read-only and follow their source. Reading-speed links require confirmation that the source uses characters/min; words/min is not converted. **Activity result source** can link an OcuTrain/UFOV activity summary to a specific matching test run, with an **Open source test run** shortcut. Manual entries remain independent. This does not merge arbitrary assessments or turn an earlier visit into a new measurement.
+
+Use **Create a problem from the subjective note** to reference S as one problem in A; its text follows S until **Enter the problem manually** detaches it. Evidence previews show a short summary with full evidence available on expansion. New records can explicitly reuse selected previous problems, goals and conditions, filling blank draft fields without copying scores, performed selections or treatment durations. A new measure is current-record-only unless **Track in future records too** is selected; earlier notes are preserved and future scores start blank.
+
+Symptom comparisons show the number rated and suppress total changes when the rated symptom sets differ. COPM shows baseline/current activities and counts, and suppresses baseline changes when activities or rated items differ. Left/right omission inconsistencies produce a review reminder without rewriting source scores. Absences omit treatment time, service mode and SOAP from clinical outputs while retaining the draft for switching back; contradictory no-show/notification selections must be corrected before saving.
 
 ## Clinical reasoning and record structure
 
 ### Patient dashboard and linked clinical reasoning
 
-The dashboard follows the supplied Visual Rehabilitation Service Framework: **Visual function / Functional vision assessment → Person–Environment–Occupation (PEO) reasoning → In-person / Telerehab intervention → qualitative and quantitative reports**. In the A section of a record, add a clinical link for each main symptom or functional difficulty. Choose its assessment category, enter the clinical reasoning, mark the PEO areas involved, link that record's assessment results as evidence, and select the related Remediation, Adaptation, or Compensation strategies. Free-text evidence and intervention notes retain the clinician's original wording. The dashboard places these links side by side so their relationship is explicit.
+The dashboard follows the supplied Visual Rehabilitation Service Framework: **Visual function / Functional vision assessment → Person–Environment–Occupation (PEO) reasoning → In-person / Telerehab intervention → qualitative and quantitative reports**. In the A section of a record, add a clinical link for each main symptom or functional difficulty. The evidence picker follows O's assessment labels, order, periods and function groups, and shows whether each assessment is selected as done. Intervention choices follow P's rehabilitation items and mode-specific strategies, including custom strategies. Linking an item selects it in P; remove its symptom links before deselecting it in P. Historical choices remain in **Items from previous records**, where they can be removed. Free-text evidence and intervention notes retain the clinician's original wording. The dashboard places these links side by side so their relationship is explicit.
 
-Linked evidence uses the results in the selected record, including its saved assessment definitions. A link whose assessment was not recorded shows a missing-evidence message. Switching service mode preserves previously selected strategies. Older records without clinical links show their recorded symptoms, reasoning, and interventions separately; the app does not invent relationships between them. No clinical inference or intervention selection is automated. The framework has no separate symptom taxonomy; the application uses Visual function and Functional performance as its link categories, with the functional category covering vision and general rehabilitation. The framework's in-person Remediation entry pairs the Chinese term for visual perception with the inconsistent English label “Visual field training”; this application uses **Visual perception** for that entry.
+Linked evidence uses the results in the selected record, including its saved assessment definitions. A link whose assessment was not recorded shows a missing-evidence message. Switching service mode preserves previously selected strategies. Older records without clinical links show their recorded symptoms, reasoning, and interventions separately; the app does not invent relationships between them. No clinical inference or intervention selection is automated. The framework has no separate symptom taxonomy; the application uses Visual function and Functional performance as its link categories, with the functional category covering vision and general rehabilitation.
 
 Clinical links are stored in the session's `clinicalLinks` array, including stable assessment and intervention IDs. The existing CSV schema and JSON backups preserve these fields. TXT, PDF and the Excel SOAP form include the link text; the Excel workbook adds a **Clinical links** sheet with one row per symptom. Draft links retained in absent visits are excluded from clinical reports. Assessment results and clinical notes are never translated when the interface language changes.
 
-The editor follows the clinic's assessment-to-intervention flow while keeping SOAP: **S Subjective**, **O Assessment** (observations, symptom NRS, assessments), **A PEO clinical reasoning**, and **P Intervention and plan**. Person, Environment, and Occupation findings guide clinical judgement and intervention planning. P contains **Remediation** (the existing rehabilitation items, activity scores, test runs, EyeDot, and other treatment/home program), **Adaptation**, **Compensation**, tolerance, next steps, and the next session date.
+The editor follows the clinic's assessment-to-intervention flow while keeping SOAP: **S Subjective**, **O Assessment** (observations, symptom self-ratings, assessments, and session response), **A PEO clinical reasoning**, and **P Intervention and plan**. Session response, including optional overall tolerance, belongs to O. Person, Environment, and Occupation findings guide clinical judgement and intervention planning. P contains **Remediation** (rehabilitation items, activity scores, test runs, EyeDot, and other treatment/home program), **Adaptation**, **Compensation**, next steps, and the next session date.
+
+Hover over a **?** help button or focus it with the keyboard to read instructions. Tap or click to toggle help; Escape hides help before closing any underlying dialog. Warnings, empty states, save locations and backup consequences remain visible. Selecting a rehabilitation item opens its dialog for activities, scores, test cards, EyeDot and observations. **Done** commits the entry and shows a text summary; **Edit** reopens it. **Cancel** or Escape discards pending changes. Deselecting retains committed results and excludes them from the report. Workflow navigation opens the relevant item and returns to the previous field.
 
 Choose **In-person** or **Telerehab** in the basic information. New records default to In-person; older records without a mode show **Not specified** until you choose one. Adaptation and Compensation each have mode-specific checkboxes and notes. Changing mode retains checked strategies from the other mode, marked with that mode's name, and preserves the rest of the draft. In P, Remediation records training activities and results. The symptom links in A document the framework's intervention categories and the treatment or plan for each symptom.
 
@@ -96,7 +141,7 @@ The existing local-folder CSV schema serializes these nested fields without addi
 
 Eye fatigue, Blurred vision, Dizziness, Headache and Nausea, with their 0-to-10 questions, already appear in the first application commit (`af3ec91`). The code refers to symptom rating instructions, but the tracked project includes neither that document nor a citation for this exact five-item combination. The supplied service-framework slide does not specify these five symptoms. The aggregate is an unweighted sum of entered ratings: blank items are excluded, and all-blank ratings produce no total. The available project history does not establish this aggregate as a validated scale.
 
-Dashboard scores compare the first and last rated timepoints within the selected visit, excluding recovery ratings. Signed differences are green when lower, red when higher, and neutral when unchanged; **Visit change** identifies their scope. Missing ratings remain blank markers and have no calculated difference. These colors indicate direction, without assigning severity or inferring a clinical conclusion. Record cards retain **Change from first** for the difference between the first rating and the end-of-session rating; the prism-diopter symbol stays on the clinical measurement fields.
+Dashboard scores compare the first and last rated timepoints within the selected visit, excluding recovery ratings. Total changes are calculated only when both timepoints rate the same symptom set; the counts remain visible, and different sets show a missing-data notice without an improvement color. Comparable signed differences are green when lower, red when higher, and neutral when unchanged; **Visit change** identifies their scope. These colors indicate direction, without assigning severity or inferring a clinical conclusion. Record cards retain **Change from first** for the comparable difference between the first rating and the end-of-session rating; the prism-diopter symbol stays on the clinical measurement fields.
 
 ## Customize assessments and rehabilitation items
 
@@ -109,9 +154,11 @@ Select a client and open **Item settings**:
 
 ### Assessment groups
 
-O starts with observations, followed by separate **Short-term outcomes** and **Long-term assessments**. Each period groups available items under **Visual function**, **Functional vision**, **Motor function**, **Daily living function**, and **Cognitive function**. Select an item to open its result fields. Symptom NRS ratings have their own section after these groups; this section folds away when there are no enabled visual assessments or recorded vision symptoms. Each populated group retains its due/other lists. Existing notes and stored domains are preserved. Reports and progress tracking retain their earlier Visual function / Functional performance grouping; Excel keeps its existing translated **Category** column.
+O starts with observations, symptom ratings and the session response, followed by separate **Short-term outcomes** and **Long-term assessments**. Each period groups available items under **Visual function**, **Functional vision**, **Motor function**, **Daily living function**, and **Cognitive function**. Selecting an item opens its result dialog; completed results appear below as text. Vision-related symptom ratings fold away when there are no enabled visual assessments or recorded vision symptoms. Long-term Visual function lists acuity, field, contrast sensitivity, color vision, stereopsis, then eye movements, with initial/due items identified by their tooltip. Other groups retain their due/other lists. UFOV belongs to Functional vision. Existing notes and stored domains are preserved; Excel keeps its existing translated **Category** column.
 
-The standard template adds Medical record review, Optometry record, OT assessment record, Visual acuity, Refraction, Near visual acuity, Visual field, Contrast sensitivity, Color vision, and Stereopsis to Visual function. Functional performance includes Self-report questionnaire, OT assessment, Daily task performance, Participation needs, and the existing COPM and Work-related functional vision task. Record reviews and the questionnaire use milestone timing; the other new items use assessment timing. New clients using the standard template or created by Excel import start with no initial assessment items ticked; choose them under **Item settings**. Existing clients and items without a stored choice stay included; a client created from another client keeps that client's choices.
+Built-in assessment labels omit equipment prefixes and parenthetical source descriptions, including older `sacc`/`fix`/`purs` identifiers and translated workbook names with generated identifiers. Matching standard and imported assessments share a selection entry while retaining their separate result fields and original identifiers. Other assessment results from a source workbook are kept in saved data and reports, without an additional editor entry. **Reading speed**, **Visual search completion time**, and **Eye–hand reaction time** are separate functional vision assessments, each with one numeric result and its unit. Older combined task results remain in the original records and are not assigned to these new measures. Symptom self-ratings appear once at the O entry, outside the short-/long-term grouping. Training labels consistently use “training”; VOR and older VOR x1 activity labels share one control while retaining stored names and scores. Menus have no trailing ellipses, and every add action uses the same plus icon. The intervention heading is Remediation, followed by Adaptation and Compensation.
+
+The standard template includes Medical record review, Optometry record, OT assessment record, Visual acuity, Refraction, Near visual acuity, Visual field, Contrast sensitivity, Color vision, and Stereopsis in Visual function. Functional performance includes Self-report questionnaire, OT assessment, Daily task performance, Participation needs, COPM, UFOV, and the three separate reading/search/reaction measures. Record reviews and the questionnaire use milestone timing; the other visual tests use assessment timing. New clients using the standard template or created by Excel import start with no initial assessment items ticked; choose them under **Item settings**. Existing clients and items without a stored choice stay included; a client created from another client keeps that client's choices.
 
 Existing clients keep their stored templates. Open **Item settings → Add assessment → Start from a template**, or use **Add short-term measure** / **Add long-term assessment** in the record. Templates are grouped by the five functions and short-/long-term period, with concise bilingual labels and tool acronyms. The chosen function and period are saved as `functionCategory` and `outcomePeriod`; older templates are classified for display without rewriting them. The earlier `visual` / `functional` category values remain readable. Language changes do not alter stored definitions, results, or local-folder CSV filenames or schema.
 
@@ -145,9 +192,11 @@ In a record, the assessment section shows the items as tick boxes, following the
 - **Post-rehabilitation** and **Follow-up** assessments list the initial items due by their assessment timing as **Due this visit**; the rest appear under **Other items**.
 - Treatment visits list **Every session** items under **Due this visit**, with other available assessments alongside them. COPM appears only at baseline and post-rehabilitation assessments.
 
-Ticking an item opens its result fields; unticking closes it and keeps what you typed until you leave the record. Only ticked items are saved, so an untested item never appears in the note, PDF, Excel export, or progress tracking. Results already saved in an older record for an unticked item are kept.
+Tick an item, enter results in its dialog, then choose **Done**. The record shows field labels, values and notes as text; **Edit results** reopens the dialog. Canceling a newly selected assessment restores its previous selection and results. **Add measure** uses the same field definitions as item settings. New measures remain in the dialog draft until **Done**; **Track in future records too** also saves the definition to the client's template, with blank scores in later records. A failed template write keeps the dialog available for retry. Unticking retains results and excludes them from the clinical report. To remove results and notes from this record, use **Clear results** and confirm. Referenced results must be detached before clearing. See [the assessment data and editor contract](DATA_FORMAT.md#assessment-definitions-and-result-editing) for extension points.
 
 ### Rehabilitation items and activity scores
+
+The retired Saccadic fixation choice uses separate Saccade training and Fixation training controls. Existing combined results retain their original names and scores, without populating either separate result or a new visit.
 
 Rehabilitation items work the same way: tick the items done this visit to open them. Inside an item, tick each activity performed; every ticked activity gets its own score box, for example `85%`, `12 reps`, or `40 s`. Shared fields for program/equipment, duration, level/settings, perceived difficulty (0 to 10), and observations follow, then any custom result fields. An item without an activity list has a single **Performance** box instead. Older records that used the shared performance box keep it as **Overall performance**.
 
@@ -231,16 +280,30 @@ To update the app, save any draft and keep the complete record folder, or export
 To move records to another folder or computer, save any open draft and use either method:
 
 - Copy the complete record folder, including `clients.csv` and all client subfolders. On another computer, also copy `EzEMR.html`. Open the HTML and choose **File → Open record folder**, selecting the copied folder containing `clients.csv`. This preserves the existing files and filenames.
-- Export **Back up all data (JSON)**, then copy the backup and, if needed, `EzEMR.html` to the destination. Open the HTML, select an empty destination record folder, and use **Import** to restore the JSON. Restoration writes client data and creates session CSV, PDF, and TXT files in the selected folder.
+- Choose **Back up all data**, then copy the backup and, if needed, `EzEMR.html` to the destination. Open the HTML, select an empty destination record folder, and use **Import** to restore the backup. Restoration writes client data and creates session CSV, PDF, and TXT files in the selected folder.
 
 If you use a second copy folder, configure it again in the destination browser.
 
 ## Import, export, and backups
 
 - Use **Import**, or the import command under **File**, to import multiple CSV files produced by this app, a client roster, a single full JSON backup, supported `.xlsb` / `.xlsx` source workbooks, or test score files. Import Excel, CSV, JSON, and test score files separately.
-- Use **Export → Export client roster CSV** to download `clients.csv`, **Export client Excel** / **Export all clients Excel** for workbooks, or **Back up all data (JSON)** for a complete data backup.
+- Use **Export → Export client list** to download `clients.csv`, **Export client Excel** / **Export all clients Excel** for workbooks, or **Back up all data** for a complete JSON backup. Tooltips explain the file types and contents.
 - Custom assessments, rehabilitation items, and result fields are included in progress tracking, CSV, PDF, Excel, and full backups. COPM comparisons still use the corresponding baseline in the full history when the visible list is filtered to post-rehabilitation records.
-- In folder mode, **File → Set copy folder** can maintain a second local copy. Existing records are copied when connected; later writes, renames, and deletions are mirrored. Keep separate JSON backups when you need a copy unaffected by later deletions.
+- In folder mode, **File → Set up a synced copy folder** maintains a second local copy. Existing records are copied when connected; later writes, renames, and deletions are mirrored. This does not preserve past versions. Keep separate backups for that purpose.
+
+The top of **Export** shows **No backup yet** or **Last backup** with the elapsed days and date. This is only the last full backup download started from this browser, for the current storage location; check your download location to confirm that you kept the file. Both regular and password-protected full backups update it. When there are saved records and no backup time, or the last download was over 14 days ago, the patient dashboard offers a reminder. **Remind me in 7 days** hides it for seven days on this device. It never appears in the record editor. These times stay in this browser's localStorage and are excluded from record files, settings and backups. Browsers may block or clear this local information.
+
+### Password-encrypted backups and restore review
+
+Choose **Export → Back up all data (with a password)**, enter a password of at least 12 characters twice, and save the downloaded `.encrypted.json` file. Keep the password separately; there is no password recovery. Backups contain saved records, so save an open draft first. The regular **Back up all data** option remains available.
+
+Use **Import** for either backup format. Encrypted backups ask for their password before showing the review. Check the client and record counts, then choose **Restore backup**. If existing IDs match, review the overwrite counts and tick the agreement before continuing. Profile field settings are restored when included, while existing records absent from the backup remain in place. Cancel and Escape leave stored data unchanged. Duplicate medical record numbers and client IDs associated with different medical record numbers stop the entire restore before writing.
+
+Encryption runs entirely in the browser and applies to the encrypted backup file. The app does not save the password. Local CSV, PDF, TXT, Excel, regular JSON backups and browser records remain unencrypted. A write error stops restoration; earlier completed writes may remain, so retain a separate backup before replacing existing data. See the [local data contract](DATA_FORMAT.md) for formats, encryption parameters and compatibility boundaries.
+
+### Search saved record text
+
+In **Rehabilitation records** or **Progress tracking**, use **Search record text** to filter the selected client's saved clinical report text, including SOAP, recorded assessments, interventions, session response and absence contact notes. Searches match a literal phrase, ignore letter case and full-width versus half-width characters, and combine with type and date filters. Deselected assessment results and clinical drafts suppressed in absence reports are excluded. Clear filters to return to the full history. Search, theme and language changes leave source data unchanged; built-in report labels follow the interface language.
 
 ### Test score files
 
@@ -275,7 +338,7 @@ Editing an old record creates CSV, PDF, and TXT files and retains the original J
 
 The generated HTML embeds Metro UI 5.1.20, its CSS, fonts and icons, SheetJS Community Edition 0.20.3 for Excel imports, and xlsx-js-style 1.2.0 for styled exports. Local vendor files, licenses and provenance are checked before building. No CDN or application package installation is needed. Record editing, supported imports and exports work offline.
 
-A restrictive content policy and early privacy guard block network requests, remote scripts, frames, workers and form submissions. Downloads use local Blob URLs. The EyeDot mode-help dialog can copy its documentation URL; the app does not navigate to an external site. There is no remote fallback when an embedded library is unavailable.
+A restrictive content policy and early privacy guard block network requests, remote scripts, frames, workers and form submissions. Downloads use local Blob URLs. EyeDot mode help shows a selectable documentation URL in a tooltip; the app does not navigate to an external site. There is no remote fallback when an embedded library is unavailable.
 
 Browsers without folder access use browser storage instead. Each saved session then downloads a ZIP containing its CSV and PDF inside a folder named after the medical record number, the client name, or the internal client identifier when both are blank. Extract and merge these files into your record folders manually; this mode does not update a fixed folder on disk.
 
@@ -288,7 +351,7 @@ EzEMR is released under the [MIT License](LICENSE).
 ## Repository and verification
 
 ```text
-.gitignore             Excludes temporary test files and local Data folders
+.gitignore             Excludes temporary files and non-demo records under Data
 .gitattributes         Keeps Git hook line endings compatible across platforms
 .githooks/pre-push     Builds the distribution, then runs full CI before pushing
 .github/workflows/     Builds, verifies and uploads the single-file distribution
@@ -306,6 +369,7 @@ EzEMR.html             Generated distribution; do not hand-edit
 LICENSE                MIT License
 README.md              English documentation
 README.zh-TW.md        Traditional Chinese documentation
+Data/                  Eight fictional clients and 24 CSV/PDF/TXT records
 tests/                 Browser tests and PDF/ZIP checks
   VERIFICATION.md      Test setup, coverage, and limitations
   run-ci.cjs           Shared full-suite runner for Git hooks and GitHub Actions
@@ -318,6 +382,7 @@ tests/                 Browser tests and PDF/ZIP checks
   ci-runner.cjs        Failure handling and stop-on-error checks
   rehab-note.cjs       Record workflow, storage, and export tests
   storage.cjs          Client roster and folder tests
+  demo-data.cjs        Bundled demo folder, eight cases, bilingual editing and save/reload checks
   toolbar.cjs          Menu, toolbar, and shortcut tests
   templates.cjs        Custom item and appearance tests
   assessment-picks.cjs Initial assessment items, tick-to-open sections, and per-activity scores in both languages

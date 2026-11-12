@@ -1,0 +1,621 @@
+﻿schema_version,section,field,type,value
+1,client,,object,
+1,client,/id,string,demo_monocular
+1,client,/ref,string,DEMO-MONOCULAR
+1,client,/name,string,示範個案04｜單側視覺受損
+1,client,/dob,string,1970-04-22
+1,client,/doi,string,2025-12-03
+1,client,/occupation,string,商店店員
+1,client,/dx,string,虛構情境：右眼外傷後嚴重視覺受損，日常活動主要依靠左眼。
+1,client,/referral,string,完全虛構的操作示範資料，不含真實病人資訊，非診療建議。
+1,client,/eyeSurgery,null,
+1,client,/plan,array,
+1,client,/plan/0,object,
+1,client,/plan/0/id,string,copm
+1,client,/plan/0/category,string,functional
+1,client,/plan/0/domain,string,Occupational performance & satisfaction
+1,client,/plan/0/name,string,COPM
+1,client,/plan/0/timing,string,bp
+1,client,/plan/0/copm,boolean,true
+1,client,/plan/0/outcome,string,Performance and satisfaction ratings for the same priority occupations; change scores
+1,client,/plan/0/active,boolean,true
+1,client,/plan/0/initial,boolean,true
+1,client,/plan/1,object,
+1,client,/plan/1/id,string,daily_task
+1,client,/plan/1/category,string,functional
+1,client,/plan/1/domain,string,Functional performance
+1,client,/plan/1/name,string,Daily task performance
+1,client,/plan/1/timing,string,assessment
+1,client,/plan/1/fields,array,
+1,client,/plan/1/fields/0,object,
+1,client,/plan/1/fields/0/id,string,task
+1,client,/plan/1/fields/0/label,string,Task / measure
+1,client,/plan/1/fields/0/type,string,text
+1,client,/plan/1/fields/1,object,
+1,client,/plan/1/fields/1/id,string,performance
+1,client,/plan/1/fields/1/label,string,Performance / observation
+1,client,/plan/1/fields/1/type,string,textarea
+1,client,/plan/1/active,boolean,true
+1,client,/plan/1/initial,boolean,true
+1,client,/plan/2,object,
+1,client,/plan/2/id,string,va
+1,client,/plan/2/name,string,Visual acuity
+1,client,/plan/2/category,string,visual
+1,client,/plan/2/domain,string,Visual function
+1,client,/plan/2/timing,string,assessment
+1,client,/plan/2/fields,array,
+1,client,/plan/2/fields/0,object,
+1,client,/plan/2/fields/0/id,string,od
+1,client,/plan/2/fields/0/label,string,OD
+1,client,/plan/2/fields/0/type,string,text
+1,client,/plan/2/fields/1,object,
+1,client,/plan/2/fields/1/id,string,os
+1,client,/plan/2/fields/1/label,string,OS
+1,client,/plan/2/fields/1/type,string,text
+1,client,/plan/2/fields/2,object,
+1,client,/plan/2/fields/2/id,string,ou
+1,client,/plan/2/fields/2/label,string,OU
+1,client,/plan/2/fields/2/type,string,text
+1,client,/plan/2/fields/3,object,
+1,client,/plan/2/fields/3/id,string,notation
+1,client,/plan/2/fields/3/label,string,Chart / notation
+1,client,/plan/2/fields/3/type,string,text
+1,client,/plan/2/fields/4,object,
+1,client,/plan/2/fields/4/id,string,correction
+1,client,/plan/2/fields/4/label,string,Correction
+1,client,/plan/2/fields/4/type,string,select
+1,client,/plan/2/fields/4/options,array,
+1,client,/plan/2/fields/4/options/0,string,Uncorrected
+1,client,/plan/2/fields/4/options/1,string,Habitual
+1,client,/plan/2/fields/4/options/2,string,Best corrected
+1,client,/plan/2/active,boolean,true
+1,client,/plan/2/initial,boolean,true
+1,client,/plan/3,object,
+1,client,/plan/3/id,string,reading_speed
+1,client,/plan/3/name,string,Reading speed
+1,client,/plan/3/fields,array,
+1,client,/plan/3/fields/0,object,
+1,client,/plan/3/fields/0/id,string,value
+1,client,/plan/3/fields/0/label,string,Reading speed (characters/min)
+1,client,/plan/3/fields/0/type,string,number
+1,client,/plan/3/fields/0/min,number,0
+1,client,/plan/3/category,string,functional
+1,client,/plan/3/domain,string,Functional vision
+1,client,/plan/3/timing,string,milestone
+1,client,/plan/3/active,boolean,true
+1,client,/plan/3/initial,boolean,true
+1,client,/plan/4,object,
+1,client,/plan/4/id,string,st_reading
+1,client,/plan/4/category,string,functional
+1,client,/plan/4/domain,string,Short-term functional outcomes
+1,client,/plan/4/name,string,Reading performance (short-term)
+1,client,/plan/4/outcome,string,"Use MNREAD or equivalent passages. Specify characters/min or words/min; keep font, size, contrast and lighting constant. Generally seek faster reading with fewer errors; report both."
+1,client,/plan/4/timing,string,session
+1,client,/plan/4/fields,array,
+1,client,/plan/4/fields/0,object,
+1,client,/plan/4/fields/0/id,string,pre_context
+1,client,/plan/4/fields/0/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/0/type,string,text
+1,client,/plan/4/fields/0/phase,string,pre
+1,client,/plan/4/fields/1,object,
+1,client,/plan/4/fields/1/id,string,pre_speed
+1,client,/plan/4/fields/1/label,string,Reading speed (characters/min or words/min)
+1,client,/plan/4/fields/1/type,string,number
+1,client,/plan/4/fields/1/min,number,0
+1,client,/plan/4/fields/1/phase,string,pre
+1,client,/plan/4/fields/2,object,
+1,client,/plan/4/fields/2/id,string,pre_errors
+1,client,/plan/4/fields/2/label,string,Reading errors (n)
+1,client,/plan/4/fields/2/type,string,number
+1,client,/plan/4/fields/2/min,number,0
+1,client,/plan/4/fields/2/step,number,1
+1,client,/plan/4/fields/2/phase,string,pre
+1,client,/plan/4/fields/3,object,
+1,client,/plan/4/fields/3/id,string,pre_error_rate
+1,client,/plan/4/fields/3/label,string,Reading error rate (%)
+1,client,/plan/4/fields/3/type,string,number
+1,client,/plan/4/fields/3/min,number,0
+1,client,/plan/4/fields/3/max,number,100
+1,client,/plan/4/fields/3/phase,string,pre
+1,client,/plan/4/fields/4,object,
+1,client,/plan/4/fields/4/id,string,pre_comprehension
+1,client,/plan/4/fields/4/label,string,Comprehension (%)
+1,client,/plan/4/fields/4/type,string,number
+1,client,/plan/4/fields/4/min,number,0
+1,client,/plan/4/fields/4/max,number,100
+1,client,/plan/4/fields/4/phase,string,pre
+1,client,/plan/4/fields/5,object,
+1,client,/plan/4/fields/5/id,string,pre2_context
+1,client,/plan/4/fields/5/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/5/type,string,text
+1,client,/plan/4/fields/5/phase,string,pre2
+1,client,/plan/4/fields/6,object,
+1,client,/plan/4/fields/6/id,string,pre2_speed
+1,client,/plan/4/fields/6/label,string,Reading speed (characters/min or words/min)
+1,client,/plan/4/fields/6/type,string,number
+1,client,/plan/4/fields/6/min,number,0
+1,client,/plan/4/fields/6/phase,string,pre2
+1,client,/plan/4/fields/7,object,
+1,client,/plan/4/fields/7/id,string,pre2_errors
+1,client,/plan/4/fields/7/label,string,Reading errors (n)
+1,client,/plan/4/fields/7/type,string,number
+1,client,/plan/4/fields/7/min,number,0
+1,client,/plan/4/fields/7/step,number,1
+1,client,/plan/4/fields/7/phase,string,pre2
+1,client,/plan/4/fields/8,object,
+1,client,/plan/4/fields/8/id,string,pre2_error_rate
+1,client,/plan/4/fields/8/label,string,Reading error rate (%)
+1,client,/plan/4/fields/8/type,string,number
+1,client,/plan/4/fields/8/min,number,0
+1,client,/plan/4/fields/8/max,number,100
+1,client,/plan/4/fields/8/phase,string,pre2
+1,client,/plan/4/fields/9,object,
+1,client,/plan/4/fields/9/id,string,pre2_comprehension
+1,client,/plan/4/fields/9/label,string,Comprehension (%)
+1,client,/plan/4/fields/9/type,string,number
+1,client,/plan/4/fields/9/min,number,0
+1,client,/plan/4/fields/9/max,number,100
+1,client,/plan/4/fields/9/phase,string,pre2
+1,client,/plan/4/fields/10,object,
+1,client,/plan/4/fields/10/id,string,post_context
+1,client,/plan/4/fields/10/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/10/type,string,text
+1,client,/plan/4/fields/10/phase,string,post
+1,client,/plan/4/fields/11,object,
+1,client,/plan/4/fields/11/id,string,post_speed
+1,client,/plan/4/fields/11/label,string,Reading speed (characters/min or words/min)
+1,client,/plan/4/fields/11/type,string,number
+1,client,/plan/4/fields/11/min,number,0
+1,client,/plan/4/fields/11/phase,string,post
+1,client,/plan/4/fields/12,object,
+1,client,/plan/4/fields/12/id,string,post_errors
+1,client,/plan/4/fields/12/label,string,Reading errors (n)
+1,client,/plan/4/fields/12/type,string,number
+1,client,/plan/4/fields/12/min,number,0
+1,client,/plan/4/fields/12/step,number,1
+1,client,/plan/4/fields/12/phase,string,post
+1,client,/plan/4/fields/13,object,
+1,client,/plan/4/fields/13/id,string,post_error_rate
+1,client,/plan/4/fields/13/label,string,Reading error rate (%)
+1,client,/plan/4/fields/13/type,string,number
+1,client,/plan/4/fields/13/min,number,0
+1,client,/plan/4/fields/13/max,number,100
+1,client,/plan/4/fields/13/phase,string,post
+1,client,/plan/4/fields/14,object,
+1,client,/plan/4/fields/14/id,string,post_comprehension
+1,client,/plan/4/fields/14/label,string,Comprehension (%)
+1,client,/plan/4/fields/14/type,string,number
+1,client,/plan/4/fields/14/min,number,0
+1,client,/plan/4/fields/14/max,number,100
+1,client,/plan/4/fields/14/phase,string,post
+1,client,/plan/4/fields/15,object,
+1,client,/plan/4/fields/15/id,string,recovery_context
+1,client,/plan/4/fields/15/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/15/type,string,text
+1,client,/plan/4/fields/15/phase,string,recovery
+1,client,/plan/4/fields/16,object,
+1,client,/plan/4/fields/16/id,string,recovery_speed
+1,client,/plan/4/fields/16/label,string,Reading speed (characters/min or words/min)
+1,client,/plan/4/fields/16/type,string,number
+1,client,/plan/4/fields/16/min,number,0
+1,client,/plan/4/fields/16/phase,string,recovery
+1,client,/plan/4/fields/17,object,
+1,client,/plan/4/fields/17/id,string,recovery_errors
+1,client,/plan/4/fields/17/label,string,Reading errors (n)
+1,client,/plan/4/fields/17/type,string,number
+1,client,/plan/4/fields/17/min,number,0
+1,client,/plan/4/fields/17/step,number,1
+1,client,/plan/4/fields/17/phase,string,recovery
+1,client,/plan/4/fields/18,object,
+1,client,/plan/4/fields/18/id,string,recovery_error_rate
+1,client,/plan/4/fields/18/label,string,Reading error rate (%)
+1,client,/plan/4/fields/18/type,string,number
+1,client,/plan/4/fields/18/min,number,0
+1,client,/plan/4/fields/18/max,number,100
+1,client,/plan/4/fields/18/phase,string,recovery
+1,client,/plan/4/fields/19,object,
+1,client,/plan/4/fields/19/id,string,recovery_comprehension
+1,client,/plan/4/fields/19/label,string,Comprehension (%)
+1,client,/plan/4/fields/19/type,string,number
+1,client,/plan/4/fields/19/min,number,0
+1,client,/plan/4/fields/19/max,number,100
+1,client,/plan/4/fields/19/phase,string,recovery
+1,client,/plan/4/fields/20,object,
+1,client,/plan/4/fields/20/id,string,followup_context
+1,client,/plan/4/fields/20/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/20/type,string,text
+1,client,/plan/4/fields/20/phase,string,followup
+1,client,/plan/4/fields/21,object,
+1,client,/plan/4/fields/21/id,string,followup_speed
+1,client,/plan/4/fields/21/label,string,Reading speed (characters/min or words/min)
+1,client,/plan/4/fields/21/type,string,number
+1,client,/plan/4/fields/21/min,number,0
+1,client,/plan/4/fields/21/phase,string,followup
+1,client,/plan/4/fields/22,object,
+1,client,/plan/4/fields/22/id,string,followup_errors
+1,client,/plan/4/fields/22/label,string,Reading errors (n)
+1,client,/plan/4/fields/22/type,string,number
+1,client,/plan/4/fields/22/min,number,0
+1,client,/plan/4/fields/22/step,number,1
+1,client,/plan/4/fields/22/phase,string,followup
+1,client,/plan/4/fields/23,object,
+1,client,/plan/4/fields/23/id,string,followup_error_rate
+1,client,/plan/4/fields/23/label,string,Reading error rate (%)
+1,client,/plan/4/fields/23/type,string,number
+1,client,/plan/4/fields/23/min,number,0
+1,client,/plan/4/fields/23/max,number,100
+1,client,/plan/4/fields/23/phase,string,followup
+1,client,/plan/4/fields/24,object,
+1,client,/plan/4/fields/24/id,string,followup_comprehension
+1,client,/plan/4/fields/24/label,string,Comprehension (%)
+1,client,/plan/4/fields/24/type,string,number
+1,client,/plan/4/fields/24/min,number,0
+1,client,/plan/4/fields/24/max,number,100
+1,client,/plan/4/fields/24/phase,string,followup
+1,client,/plan/4/fields/25,object,
+1,client,/plan/4/fields/25/id,string,protocol
+1,client,/plan/4/fields/25/label,string,Tool / procedure / scoring / test conditions
+1,client,/plan/4/fields/25/type,string,textarea
+1,client,/plan/4/fields/25/group,string,setting
+1,client,/plan/4/fields/26,object,
+1,client,/plan/4/fields/26/id,string,primary
+1,client,/plan/4/fields/26/label,string,Primary outcome (choose one)
+1,client,/plan/4/fields/26/type,string,text
+1,client,/plan/4/fields/26/group,string,setting
+1,client,/plan/4/fields/27,object,
+1,client,/plan/4/fields/27/id,string,intervention
+1,client,/plan/4/fields/27/label,string,Training / duration / difficulty / breaks / comparison condition
+1,client,/plan/4/fields/27/type,string,textarea
+1,client,/plan/4/fields/27/group,string,setting
+1,client,/plan/4/active,boolean,true
+1,client,/plan/4/initial,boolean,true
+1,client,/trainingPlan,array,
+1,client,/trainingPlan/0,object,
+1,client,/trainingPlan/0/k,string,search
+1,client,/trainingPlan/0/label,string,Visual search
+1,client,/trainingPlan/0/acts,array,
+1,client,/trainingPlan/0/acts/0,string,Reading line tracking
+1,client,/trainingPlan/1,object,
+1,client,/trainingPlan/1/k,string,demo_daily
+1,client,/trainingPlan/1/label,string,日常作業練習
+1,client,/trainingPlan/1/fields,array,
+1,client,/trainingPlan/1/acts,array,
+1,client,/trainingPlan/1/acts/0,string,杯子取放練習
+1,client,/created,string,2026-10-01
+1,client,/demo,boolean,true
+1,session,,object,
+1,session,/id,string,demo_monocular_treatment
+1,session,/date,string,2026-10-12
+1,session,/num,number,2
+1,session,/visit,string,treatment
+1,session,/mode,string,inperson
+1,session,/clinician,string,示範治療師（虛構）
+1,session,/duration,number,45
+1,session,/subjective,string,閱讀商品標價與取放杯子較慢，估計物品距離時缺乏把握。
+1,session,/feedback,string,示範回饋：部分活動較熟悉，仍有困難。
+1,session,/sym,array,
+1,session,/sym/0,object,
+1,session,/sym/0/id,string,demo_monocular_treatment_pre
+1,session,/sym/0/kind,string,pre
+1,session,/sym/0/scores,object,
+1,session,/sym/0/scores/ef,number,2
+1,session,/sym/0/scores/bv,number,2
+1,session,/sym/0/scores/dz,number,0
+1,session,/sym/0/scores/ha,number,0
+1,session,/sym/0/scores/na,number,0
+1,session,/sym/1,object,
+1,session,/sym/1/id,string,demo_monocular_treatment_end
+1,session,/sym/1/kind,string,end
+1,session,/sym/1/scores,object,
+1,session,/sym/1/scores/ef,number,3
+1,session,/sym/1/scores/bv,number,2
+1,session,/sym/1/scores/dz,number,0
+1,session,/sym/1/scores/ha,number,0
+1,session,/sym/1/scores/na,number,0
+1,session,/sym/2,object,
+1,session,/sym/2/id,string,demo_monocular_treatment_rec
+1,session,/sym/2/kind,string,rec
+1,session,/sym/2/recMin,number,20
+1,session,/sym/2/scores,object,
+1,session,/sym/2/scores/ef,number,2
+1,session,/sym/2/scores/bv,number,2
+1,session,/sym/2/scores/dz,number,0
+1,session,/sym/2/scores/ha,number,0
+1,session,/sym/2/scores/na,number,0
+1,session,/assess,object,
+1,session,/assess/daily_task,object,
+1,session,/assess/daily_task/done,boolean,true
+1,session,/assess/daily_task/values,object,
+1,session,/assess/daily_task/values/task,string,閱讀商品標價並記錄價格
+1,session,/assess/daily_task/values/performance,string,視力條件相同，整理後的桌面可減少尋找時間。
+1,session,/assess/daily_task/notes,string,完全虛構的日常任務觀察。
+1,session,/assess/st_reading,object,
+1,session,/assess/st_reading/done,boolean,true
+1,session,/assess/st_reading/values,object,
+1,session,/assess/st_reading/values/pre_context,string,2026-10-12 09:00
+1,session,/assess/st_reading/values/post_context,string,2026-10-12 09:45
+1,session,/assess/st_reading/values/protocol,string,等難度 100 字中文短文，原始閱讀速度為字／分；相同字級、距離、對比與照明，非 MNREAD。
+1,session,/assess/st_reading/values/primary,string,閱讀速度（字／分或 words/min）
+1,session,/assess/st_reading/values/intervention,string,本次活動與條件見 P；前後使用等難度材料。
+1,session,/assess/st_reading/values/pre_speed,number,63
+1,session,/assess/st_reading/values/post_speed,number,66
+1,session,/assess/st_reading/values/pre_errors,number,5
+1,session,/assess/st_reading/values/post_errors,number,4
+1,session,/assess/st_reading/notes,string,示範數值，不代表治療效果或標準常模。
+1,session,/training,object,
+1,session,/training/search,object,
+1,session,/training/search/on,boolean,true
+1,session,/training/search/acts,array,
+1,session,/training/search/acts/0,string,Reading line tracking
+1,session,/training/search/actScores,object,
+1,session,/training/search/actScores/Reading line tracking,string,63 字／分
+1,session,/training/search/dur,number,10
+1,session,/training/search/diff,number,5
+1,session,/training/search/program,string,虛構操作示範
+1,session,/training/search/notes,string,相同商品標籤、工作距離與左眼慣用矯正；桌面增加對比並減少雜物。
+1,session,/training/demo_daily,object,
+1,session,/training/demo_daily/on,boolean,true
+1,session,/training/demo_daily/acts,array,
+1,session,/training/demo_daily/acts/0,string,杯子取放練習
+1,session,/training/demo_daily/actScores,object,
+1,session,/training/demo_daily/actScores/杯子取放練習,string,10 次，碰倒 1 次
+1,session,/training/demo_daily/dur,number,10
+1,session,/training/demo_daily/diff,number,5
+1,session,/training/demo_daily/program,string,虛構操作示範
+1,session,/training/demo_daily/notes,string,相同商品標籤、工作距離與左眼慣用矯正；桌面增加對比並減少雜物。
+1,session,/otherTx,string,虛構居家練習紀錄：依本次活動目標記錄執行情形與休息需求。
+1,session,/tolerance,number,6
+1,session,/assessment,string,記錄單眼視力及閱讀表現；本例的任務表現變化不代表右眼視力恢復。
+1,session,/plan,string,示範紀錄：以相同條件追蹤「閱讀商品標價並記錄價格」，分別記錄功能表現及活動後不適。
+1,session,/nextDate,string,2026-10-26
+1,session,/objective,string,視力條件相同，整理後的桌面可減少尋找時間。
+1,session,/peo,object,
+1,session,/peo/person,string,閱讀商品標價與取放杯子較慢，估計物品距離時缺乏把握。
+1,session,/peo/environment,string,相同商品標籤、工作距離與左眼慣用矯正；桌面增加對比並減少雜物。
+1,session,/peo/occupation,string,閱讀商品標價並記錄價格
+1,session,/interventions,object,
+1,session,/interventions/adaptation,object,
+1,session,/interventions/adaptation/picks,array,
+1,session,/interventions/adaptation/picks/0,string,task_setup
+1,session,/interventions/adaptation/picks/1,string,environment_mod
+1,session,/interventions/adaptation/notes,string,相同商品標籤、工作距離與左眼慣用矯正；桌面增加對比並減少雜物。
+1,session,/interventions/compensation,object,
+1,session,/interventions/compensation/picks,array,
+1,session,/interventions/compensation/picks/0,string,pacing_rest
+1,session,/interventions/compensation/notes,string,示範方案：記錄提示方式與分段休息，不以單次分數差推定療效。
+1,session,/created,string,2026-10-12T09:00:00+08:00
+1,session,/updated,string,2026-10-12T10:00:00+08:00
+1,session,/demo,boolean,true
+1,session,/assessmentPlan,array,
+1,session,/assessmentPlan/0,object,
+1,session,/assessmentPlan/0/id,string,daily_task
+1,session,/assessmentPlan/0/category,string,functional
+1,session,/assessmentPlan/0/domain,string,Functional performance
+1,session,/assessmentPlan/0/name,string,Daily task performance
+1,session,/assessmentPlan/0/timing,string,assessment
+1,session,/assessmentPlan/0/fields,array,
+1,session,/assessmentPlan/0/fields/0,object,
+1,session,/assessmentPlan/0/fields/0/id,string,task
+1,session,/assessmentPlan/0/fields/0/label,string,Task / measure
+1,session,/assessmentPlan/0/fields/0/type,string,text
+1,session,/assessmentPlan/0/fields/1,object,
+1,session,/assessmentPlan/0/fields/1/id,string,performance
+1,session,/assessmentPlan/0/fields/1/label,string,Performance / observation
+1,session,/assessmentPlan/0/fields/1/type,string,textarea
+1,session,/assessmentPlan/0/active,boolean,true
+1,session,/assessmentPlan/0/initial,boolean,true
+1,session,/assessmentPlan/1,object,
+1,session,/assessmentPlan/1/id,string,st_reading
+1,session,/assessmentPlan/1/category,string,functional
+1,session,/assessmentPlan/1/domain,string,Short-term functional outcomes
+1,session,/assessmentPlan/1/name,string,Reading performance (short-term)
+1,session,/assessmentPlan/1/outcome,string,"Use MNREAD or equivalent passages. Specify characters/min or words/min; keep font, size, contrast and lighting constant. Generally seek faster reading with fewer errors; report both."
+1,session,/assessmentPlan/1/timing,string,session
+1,session,/assessmentPlan/1/fields,array,
+1,session,/assessmentPlan/1/fields/0,object,
+1,session,/assessmentPlan/1/fields/0/id,string,pre_context
+1,session,/assessmentPlan/1/fields/0/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/0/type,string,text
+1,session,/assessmentPlan/1/fields/0/phase,string,pre
+1,session,/assessmentPlan/1/fields/1,object,
+1,session,/assessmentPlan/1/fields/1/id,string,pre_speed
+1,session,/assessmentPlan/1/fields/1/label,string,Reading speed (characters/min or words/min)
+1,session,/assessmentPlan/1/fields/1/type,string,number
+1,session,/assessmentPlan/1/fields/1/min,number,0
+1,session,/assessmentPlan/1/fields/1/phase,string,pre
+1,session,/assessmentPlan/1/fields/2,object,
+1,session,/assessmentPlan/1/fields/2/id,string,pre_errors
+1,session,/assessmentPlan/1/fields/2/label,string,Reading errors (n)
+1,session,/assessmentPlan/1/fields/2/type,string,number
+1,session,/assessmentPlan/1/fields/2/min,number,0
+1,session,/assessmentPlan/1/fields/2/step,number,1
+1,session,/assessmentPlan/1/fields/2/phase,string,pre
+1,session,/assessmentPlan/1/fields/3,object,
+1,session,/assessmentPlan/1/fields/3/id,string,pre_error_rate
+1,session,/assessmentPlan/1/fields/3/label,string,Reading error rate (%)
+1,session,/assessmentPlan/1/fields/3/type,string,number
+1,session,/assessmentPlan/1/fields/3/min,number,0
+1,session,/assessmentPlan/1/fields/3/max,number,100
+1,session,/assessmentPlan/1/fields/3/phase,string,pre
+1,session,/assessmentPlan/1/fields/4,object,
+1,session,/assessmentPlan/1/fields/4/id,string,pre_comprehension
+1,session,/assessmentPlan/1/fields/4/label,string,Comprehension (%)
+1,session,/assessmentPlan/1/fields/4/type,string,number
+1,session,/assessmentPlan/1/fields/4/min,number,0
+1,session,/assessmentPlan/1/fields/4/max,number,100
+1,session,/assessmentPlan/1/fields/4/phase,string,pre
+1,session,/assessmentPlan/1/fields/5,object,
+1,session,/assessmentPlan/1/fields/5/id,string,pre2_context
+1,session,/assessmentPlan/1/fields/5/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/5/type,string,text
+1,session,/assessmentPlan/1/fields/5/phase,string,pre2
+1,session,/assessmentPlan/1/fields/6,object,
+1,session,/assessmentPlan/1/fields/6/id,string,pre2_speed
+1,session,/assessmentPlan/1/fields/6/label,string,Reading speed (characters/min or words/min)
+1,session,/assessmentPlan/1/fields/6/type,string,number
+1,session,/assessmentPlan/1/fields/6/min,number,0
+1,session,/assessmentPlan/1/fields/6/phase,string,pre2
+1,session,/assessmentPlan/1/fields/7,object,
+1,session,/assessmentPlan/1/fields/7/id,string,pre2_errors
+1,session,/assessmentPlan/1/fields/7/label,string,Reading errors (n)
+1,session,/assessmentPlan/1/fields/7/type,string,number
+1,session,/assessmentPlan/1/fields/7/min,number,0
+1,session,/assessmentPlan/1/fields/7/step,number,1
+1,session,/assessmentPlan/1/fields/7/phase,string,pre2
+1,session,/assessmentPlan/1/fields/8,object,
+1,session,/assessmentPlan/1/fields/8/id,string,pre2_error_rate
+1,session,/assessmentPlan/1/fields/8/label,string,Reading error rate (%)
+1,session,/assessmentPlan/1/fields/8/type,string,number
+1,session,/assessmentPlan/1/fields/8/min,number,0
+1,session,/assessmentPlan/1/fields/8/max,number,100
+1,session,/assessmentPlan/1/fields/8/phase,string,pre2
+1,session,/assessmentPlan/1/fields/9,object,
+1,session,/assessmentPlan/1/fields/9/id,string,pre2_comprehension
+1,session,/assessmentPlan/1/fields/9/label,string,Comprehension (%)
+1,session,/assessmentPlan/1/fields/9/type,string,number
+1,session,/assessmentPlan/1/fields/9/min,number,0
+1,session,/assessmentPlan/1/fields/9/max,number,100
+1,session,/assessmentPlan/1/fields/9/phase,string,pre2
+1,session,/assessmentPlan/1/fields/10,object,
+1,session,/assessmentPlan/1/fields/10/id,string,post_context
+1,session,/assessmentPlan/1/fields/10/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/10/type,string,text
+1,session,/assessmentPlan/1/fields/10/phase,string,post
+1,session,/assessmentPlan/1/fields/11,object,
+1,session,/assessmentPlan/1/fields/11/id,string,post_speed
+1,session,/assessmentPlan/1/fields/11/label,string,Reading speed (characters/min or words/min)
+1,session,/assessmentPlan/1/fields/11/type,string,number
+1,session,/assessmentPlan/1/fields/11/min,number,0
+1,session,/assessmentPlan/1/fields/11/phase,string,post
+1,session,/assessmentPlan/1/fields/12,object,
+1,session,/assessmentPlan/1/fields/12/id,string,post_errors
+1,session,/assessmentPlan/1/fields/12/label,string,Reading errors (n)
+1,session,/assessmentPlan/1/fields/12/type,string,number
+1,session,/assessmentPlan/1/fields/12/min,number,0
+1,session,/assessmentPlan/1/fields/12/step,number,1
+1,session,/assessmentPlan/1/fields/12/phase,string,post
+1,session,/assessmentPlan/1/fields/13,object,
+1,session,/assessmentPlan/1/fields/13/id,string,post_error_rate
+1,session,/assessmentPlan/1/fields/13/label,string,Reading error rate (%)
+1,session,/assessmentPlan/1/fields/13/type,string,number
+1,session,/assessmentPlan/1/fields/13/min,number,0
+1,session,/assessmentPlan/1/fields/13/max,number,100
+1,session,/assessmentPlan/1/fields/13/phase,string,post
+1,session,/assessmentPlan/1/fields/14,object,
+1,session,/assessmentPlan/1/fields/14/id,string,post_comprehension
+1,session,/assessmentPlan/1/fields/14/label,string,Comprehension (%)
+1,session,/assessmentPlan/1/fields/14/type,string,number
+1,session,/assessmentPlan/1/fields/14/min,number,0
+1,session,/assessmentPlan/1/fields/14/max,number,100
+1,session,/assessmentPlan/1/fields/14/phase,string,post
+1,session,/assessmentPlan/1/fields/15,object,
+1,session,/assessmentPlan/1/fields/15/id,string,recovery_context
+1,session,/assessmentPlan/1/fields/15/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/15/type,string,text
+1,session,/assessmentPlan/1/fields/15/phase,string,recovery
+1,session,/assessmentPlan/1/fields/16,object,
+1,session,/assessmentPlan/1/fields/16/id,string,recovery_speed
+1,session,/assessmentPlan/1/fields/16/label,string,Reading speed (characters/min or words/min)
+1,session,/assessmentPlan/1/fields/16/type,string,number
+1,session,/assessmentPlan/1/fields/16/min,number,0
+1,session,/assessmentPlan/1/fields/16/phase,string,recovery
+1,session,/assessmentPlan/1/fields/17,object,
+1,session,/assessmentPlan/1/fields/17/id,string,recovery_errors
+1,session,/assessmentPlan/1/fields/17/label,string,Reading errors (n)
+1,session,/assessmentPlan/1/fields/17/type,string,number
+1,session,/assessmentPlan/1/fields/17/min,number,0
+1,session,/assessmentPlan/1/fields/17/step,number,1
+1,session,/assessmentPlan/1/fields/17/phase,string,recovery
+1,session,/assessmentPlan/1/fields/18,object,
+1,session,/assessmentPlan/1/fields/18/id,string,recovery_error_rate
+1,session,/assessmentPlan/1/fields/18/label,string,Reading error rate (%)
+1,session,/assessmentPlan/1/fields/18/type,string,number
+1,session,/assessmentPlan/1/fields/18/min,number,0
+1,session,/assessmentPlan/1/fields/18/max,number,100
+1,session,/assessmentPlan/1/fields/18/phase,string,recovery
+1,session,/assessmentPlan/1/fields/19,object,
+1,session,/assessmentPlan/1/fields/19/id,string,recovery_comprehension
+1,session,/assessmentPlan/1/fields/19/label,string,Comprehension (%)
+1,session,/assessmentPlan/1/fields/19/type,string,number
+1,session,/assessmentPlan/1/fields/19/min,number,0
+1,session,/assessmentPlan/1/fields/19/max,number,100
+1,session,/assessmentPlan/1/fields/19/phase,string,recovery
+1,session,/assessmentPlan/1/fields/20,object,
+1,session,/assessmentPlan/1/fields/20/id,string,followup_context
+1,session,/assessmentPlan/1/fields/20/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/20/type,string,text
+1,session,/assessmentPlan/1/fields/20/phase,string,followup
+1,session,/assessmentPlan/1/fields/21,object,
+1,session,/assessmentPlan/1/fields/21/id,string,followup_speed
+1,session,/assessmentPlan/1/fields/21/label,string,Reading speed (characters/min or words/min)
+1,session,/assessmentPlan/1/fields/21/type,string,number
+1,session,/assessmentPlan/1/fields/21/min,number,0
+1,session,/assessmentPlan/1/fields/21/phase,string,followup
+1,session,/assessmentPlan/1/fields/22,object,
+1,session,/assessmentPlan/1/fields/22/id,string,followup_errors
+1,session,/assessmentPlan/1/fields/22/label,string,Reading errors (n)
+1,session,/assessmentPlan/1/fields/22/type,string,number
+1,session,/assessmentPlan/1/fields/22/min,number,0
+1,session,/assessmentPlan/1/fields/22/step,number,1
+1,session,/assessmentPlan/1/fields/22/phase,string,followup
+1,session,/assessmentPlan/1/fields/23,object,
+1,session,/assessmentPlan/1/fields/23/id,string,followup_error_rate
+1,session,/assessmentPlan/1/fields/23/label,string,Reading error rate (%)
+1,session,/assessmentPlan/1/fields/23/type,string,number
+1,session,/assessmentPlan/1/fields/23/min,number,0
+1,session,/assessmentPlan/1/fields/23/max,number,100
+1,session,/assessmentPlan/1/fields/23/phase,string,followup
+1,session,/assessmentPlan/1/fields/24,object,
+1,session,/assessmentPlan/1/fields/24/id,string,followup_comprehension
+1,session,/assessmentPlan/1/fields/24/label,string,Comprehension (%)
+1,session,/assessmentPlan/1/fields/24/type,string,number
+1,session,/assessmentPlan/1/fields/24/min,number,0
+1,session,/assessmentPlan/1/fields/24/max,number,100
+1,session,/assessmentPlan/1/fields/24/phase,string,followup
+1,session,/assessmentPlan/1/fields/25,object,
+1,session,/assessmentPlan/1/fields/25/id,string,protocol
+1,session,/assessmentPlan/1/fields/25/label,string,Tool / procedure / scoring / test conditions
+1,session,/assessmentPlan/1/fields/25/type,string,textarea
+1,session,/assessmentPlan/1/fields/25/group,string,setting
+1,session,/assessmentPlan/1/fields/26,object,
+1,session,/assessmentPlan/1/fields/26/id,string,primary
+1,session,/assessmentPlan/1/fields/26/label,string,Primary outcome (choose one)
+1,session,/assessmentPlan/1/fields/26/type,string,text
+1,session,/assessmentPlan/1/fields/26/group,string,setting
+1,session,/assessmentPlan/1/fields/27,object,
+1,session,/assessmentPlan/1/fields/27/id,string,intervention
+1,session,/assessmentPlan/1/fields/27/label,string,Training / duration / difficulty / breaks / comparison condition
+1,session,/assessmentPlan/1/fields/27/type,string,textarea
+1,session,/assessmentPlan/1/fields/27/group,string,setting
+1,session,/assessmentPlan/1/active,boolean,true
+1,session,/assessmentPlan/1/initial,boolean,true
+1,session,/trainingPlan,array,
+1,session,/trainingPlan/0,object,
+1,session,/trainingPlan/0/k,string,search
+1,session,/trainingPlan/0/label,string,Visual search
+1,session,/trainingPlan/0/acts,array,
+1,session,/trainingPlan/0/acts/0,string,Reading line tracking
+1,session,/trainingPlan/1,object,
+1,session,/trainingPlan/1/k,string,demo_daily
+1,session,/trainingPlan/1/label,string,日常作業練習
+1,session,/trainingPlan/1/fields,array,
+1,session,/trainingPlan/1/acts,array,
+1,session,/trainingPlan/1/acts/0,string,杯子取放練習
+1,session,/clinicalLinks,array,
+1,session,/clinicalLinks/0,object,
+1,session,/clinicalLinks/0/id,string,demo_monocular_treatment_link
+1,session,/clinicalLinks/0/category,string,functional
+1,session,/clinicalLinks/0/symptom,string,閱讀商品標價與取放杯子較慢，估計物品距離時缺乏把握。
+1,session,/clinicalLinks/0/reasoning,string,記錄單眼視力及閱讀表現；本例的任務表現變化不代表右眼視力恢復。
+1,session,/clinicalLinks/0/peo,array,
+1,session,/clinicalLinks/0/peo/0,string,person
+1,session,/clinicalLinks/0/peo/1,string,environment
+1,session,/clinicalLinks/0/peo/2,string,occupation
+1,session,/clinicalLinks/0/evidence,array,
+1,session,/clinicalLinks/0/evidence/0,string,st_reading
+1,session,/clinicalLinks/0/evidence/1,string,daily_task
+1,session,/clinicalLinks/0/evidenceNotes,string,完全虛構的示範數據，未施測項目不填數值。
+1,session,/clinicalLinks/0/interventions,array,
+1,session,/clinicalLinks/0/interventions/0,string,pacing_rest
+1,session,/clinicalLinks/0/interventions/1,string,task_setup
+1,session,/clinicalLinks/0/interventionNotes,string,閱讀行追蹤、杯子取放練習

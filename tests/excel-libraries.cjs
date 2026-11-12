@@ -116,8 +116,9 @@ function zipText(bytes, name) {
       await open('/missing');
       await page.evaluate(() => { window.XLSX = undefined; });
       await page.locator('#importFile').setInputFiles({ name: 'missing-reader.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('synthetic') });
-      const message = locale === 'en' ? 'Import failed: The Excel import component is unavailable. Reopen the complete EzEMR.html file.' : '匯入失敗：Excel 匯入元件無法使用，請重新開啟完整的 EzEMR.html。';
-      await page.waitForFunction(message => [...document.querySelectorAll('.toast')].some(node => node.textContent === message), message);
+      const message = locale === 'en' ? 'The Excel import component is unavailable. Reopen the complete EzEMR.html file.' : 'Excel 匯入元件無法使用，請重新開啟完整的 EzEMR.html。';
+      await page.waitForFunction(message => [...document.querySelectorAll('.failure-message pre')].some(node => node.textContent === message), message);
+      assert.equal(await page.locator('.failure-message strong').innerText(), locale === 'en' ? 'Import failed' : '匯入失敗');
       assert.deepEqual(await page.evaluate(() => ({ clients: clients.length, sessions: sessions.length })), { clients: 0, sessions: 0 });
       console.log(`PASS: ${locale} missing-reader error is translated and does not load the export CDN fallback`);
       await context.close();

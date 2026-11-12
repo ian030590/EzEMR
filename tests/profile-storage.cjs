@@ -30,10 +30,10 @@ const output = path.join(root, '.tmp', 'verification', 'profile-storage');
         const aDir = await disk.getDirectoryHandle('profile-a', { create: true }), bDir = await disk.getDirectoryHandle('profile-b', { create: true });
         const a = folderStore(aDir), b = folderStore(bDir), defaults = clone(DEFAULT_APP_SETTINGS);
         const initial = await a.getSettings(), emptyFiles = await fileNames(aDir);
-        const configured = { version: 1, requiredFields: ['name', 'nationalId', 'sex', 'smoking', 'chronicConditions'] };
+        const configured = { version: 1, requiredFields: ['name', 'dob', 'sex', 'smoking', 'chronicConditions'] };
         await a.saveSettings(configured);
         const reread = await folderStore(aDir).getSettings(), untouched = await b.getSettings();
-        reread.requiredFields.push('religion');
+        reread.requiredFields.push('occupation');
         const stable = await a.getSettings();
         const invalid = [null, [], {}, { version: 2, requiredFields: [] }, { version: 1, requiredFields: ['unknown'] }, { version: 1, requiredFields: ['name', 'name'] }];
         const rejected = [];
@@ -75,7 +75,7 @@ const output = path.join(root, '.tmp', 'verification', 'profile-storage');
         const second = { ...clone(profile), id: 'anonymous-two' };
         await storage.saveClient(profile); await storage.saveClient(second);
         const folders = [storage.folderOf(profile.id), storage.folderOf(second.id)], bytes = await (await (await dir.getFileHandle('clients.csv')).getFile()).text();
-        await storage.saveSettings({ version: 1, requiredFields: ['name', 'nationalId'] });
+        await storage.saveSettings({ version: 1, requiredFields: ['name', 'dob'] });
         const unchanged = bytes === await (await (await dir.getFileHandle('clients.csv')).getFile()).text();
         const loaded = await folderStore(dir).listClients();
         const csv = readClientsCSV(clientsCSV(loaded.map(client => ({ client, folder: storage.folderOf(client.id) }))));
@@ -111,7 +111,7 @@ const output = path.join(root, '.tmp', 'verification', 'profile-storage');
       evidence.push(`${locale}: optional name/MRN, duplicate names, stable IDs, profile types and unchanged CSV schemas preserve original patient data`);
 
       const local = await page.evaluate(async () => {
-        const storage = localStore(), value = { version: 1, requiredFields: ['nationalId', 'religion'] };
+        const storage = localStore(), value = { version: 1, requiredFields: ['dob', 'occupation'] };
         await storage.saveSettings(value);
         const persisted = await localStore().getSettings(), originalSet = Storage.prototype.setItem;
         let error = '';
@@ -144,7 +144,7 @@ const output = path.join(root, '.tmp', 'verification', 'profile-storage');
 
       const backup = await page.evaluate(async profile => {
         store = localStore(); await store.saveClient(profile);
-        const configured = { version: 1, requiredFields: ['nationalId', 'sex'] };
+        const configured = { version: 1, requiredFields: ['dob', 'sex'] };
         await store.saveSettings(configured); appSettings = clone(configured); clients = await store.listClients();
         const originalSave = saveFile; let captured;
         try { saveFile = async (name, data) => { captured = { name, data: String(data) }; }; await exportAll(); }

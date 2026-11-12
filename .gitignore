@@ -1,4 +1,18 @@
 .tmp/
-# Local record folders and browser logs must never be committed.
-/Data/
+# Keep local records ignored; allow only the bundled synthetic examples.
+/Data/*
+!/Data/README.md
+!/Data/clients.csv
+!/Data/DEMO-STROKE/
+!/Data/DEMO-TBI/
+!/Data/DEMO-DIPLOPIA/
+!/Data/DEMO-MONOCULAR/
+!/Data/DEMO-FIELD/
+!/Data/DEMO-NEGLECT/
+!/Data/DEMO-MOTOR/
+!/Data/DEMO-SCI/
+/Data/DEMO-*/*
+!/Data/DEMO-*/2026-10-05_S01_基準評估.*
+!/Data/DEMO-*/2026-10-12_S02_復健.*
+!/Data/DEMO-*/2026-10-26_S03_療程後評估.*
 debug.log

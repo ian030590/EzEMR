@@ -92,7 +92,7 @@ function checkPair(bytes, base) {
         ] };
         await page.evaluate(() => document.querySelectorAll('.toast').forEach(node => node.remove()));
         await page.locator('#importFile').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
-        await page.waitForFunction(message => document.querySelector('.toast')?.textContent.endsWith(message), messages[field]);
+        await page.waitForFunction(message => [...document.querySelectorAll('.failure-message pre')].some(node => node.textContent === message), messages[field]);
         assert.deepEqual(await page.evaluate(async () => {
           const entries = []; for await (const [name] of exportRoot.entries()) entries.push(name);
           return { entries, clients: clients.length, sessions: sessions.length };

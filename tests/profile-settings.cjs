@@ -65,8 +65,12 @@ const fields = ['name', 'ref', 'nationalId', 'dob', 'sex', 'smoking', 'alcohol',
         await action('new-client').click();
         await page.locator('#cf-name').fill('Profile fixture 原文'); await page.locator('#cf-ref').fill('PROFILE-001');
         assert.equal(await page.locator('#cf-name').getAttribute('required') !== null, true);
-        assert.equal(await page.locator('#cf-dob').count(), 0, 'Unselected basic fields are not required or shown');
+        assert.equal(await page.locator('#cf-dob').count(), 1);
+        assert.equal(await page.locator('#cf-dob').getAttribute('required'), null, 'Unselected basic fields remain optional');
+        await page.locator('#cForm details summary').first().click();
+        await page.locator('#cf-occupation').fill('Synthetic occupation');
         await saveClient();
+        assert.equal(await page.evaluate(() => cur().occupation), 'Synthetic occupation', 'An optional clinical field can be saved without changing global requirements');
         const firstId = await page.evaluate(() => curId);
         check('default fields preserve the prior name/record-number workflow; settings and required names are bilingual');
 
@@ -86,7 +90,7 @@ const fields = ['name', 'ref', 'nationalId', 'dob', 'sex', 'smoking', 'alcohol',
         await saveSettings();
         assert.deepEqual(await page.evaluate(() => appSettings.requiredFields), fields);
         assert.equal(await page.locator('#profileIncomplete').isVisible(), true, 'Existing patients are marked incomplete, not backfilled');
-        assert.equal(await page.evaluate(() => cur().nationalId), undefined);
+        assert.equal(await page.evaluate(() => cur().dob), '');
         const recordCount = await page.evaluate(async () => (await store.listSessions(curId)).length);
         const newRecord = page.locator('.client-head [data-action="new-session"]');
         if (await newRecord.isEnabled()) { await newRecord.click(); await page.waitForSelector('#cForm'); }
@@ -100,7 +104,7 @@ const fields = ['name', 'ref', 'nationalId', 'dob', 'sex', 'smoking', 'alcohol',
         const missingMessage = await page.locator('#cf-nationalId').evaluate(control => control.validationMessage);
         assert.equal(missingMessage, locale === 'en' ? 'Enter National ID number' : '請填寫身分證字號', 'Required-field validation follows the application language');
         assert.equal(await page.evaluate(async () => JSON.stringify(await store.listClients())), beforeIncomplete, 'Incomplete profile submission writes nothing');
-        const values = { name: 'Profile fixture 原文', ref: 'PROFILE-001', nationalId: 'ID-原文-0', dob: '1984-04-12', sex: 'unknown', smoking: 'never', alcohol: 'former', betel: 'unknown', occupation: '0', religion: '原文信仰', chronicConditions: '0', phone: '+886 02 1234', address: '<img src=x> 原文地址', allergies: '無已知過敏 / original' };
+        const values = { name: 'Profile fixture 原文', ref: 'PROFILE-001', nationalId: 'ID-原文-0', dob: '1984-04-12', sex: 'unknown', smoking: 'never', alcohol: 'former', betel: 'unknown', occupation: '0', religion: '原文信仰', chronicConditions: '<img src=x> 原文慢性病', phone: '0012345 ext 6', address: '<img src=x> 原文地址', allergies: '無已知過敏 / original' };
         for (const key of fields) {
           const input = page.locator(`#cf-${key}`);
           if (['sex', 'smoking', 'alcohol', 'betel'].includes(key)) await input.selectOption(values[key]); else await input.fill(values[key]);
@@ -128,13 +132,14 @@ const fields = ['name', 'ref', 'nationalId', 'dob', 'sex', 'smoking', 'alcohol',
 
         await openSettings(); await chooseFields(['name', 'ref']); await saveSettings();
         await action('edit-client').click();
-        for (const key of fields.slice(2)) assert.equal(await page.locator(`#cf-${key}`).count(), 0);
+        for (const key of fields.slice(2)) assert.equal(await page.locator(`#cf-${key}`).getAttribute('required'), null);
         await saveClient();
         assert.deepEqual(await page.evaluate(keys => Object.fromEntries(keys.map(key => [key, cur()[key]])), fields), values, 'Unchecking fields preserves existing patient data');
         await openSettings(); await chooseFields(['name', 'ref', 'occupation']);
         await page.evaluate(() => { window.realProfileSettingsSave = store.saveSettings; store.saveSettings = async () => { throw new Error('Settings write fixture'); }; });
         await page.locator('#settingsSave').click();
-        await page.waitForFunction(() => document.querySelector('#settingsError')?.textContent.includes('Settings write fixture'));
+        await page.waitForFunction(() => [...document.querySelectorAll('.failure-message pre')].some(node => node.textContent.includes('Settings write fixture')));
+        assert.equal(await page.locator('#settingsError').isVisible(), true);
         assert.equal(await page.locator('#appSettingsForm').isVisible(), true);
         assert.deepEqual(await page.evaluate(() => appSettings.requiredFields), ['name', 'ref'], 'A failed write does not change the active policy');
         await page.evaluate(() => { store.saveSettings = realProfileSettingsSave; delete window.realProfileSettingsSave; });
@@ -144,21 +149,22 @@ const fields = ['name', 'ref', 'nationalId', 'dob', 'sex', 'smoking', 'alcohol',
         await action('new-client').click();
         await page.locator('#cf-name').fill('Legacy profile gap'); await page.locator('#cf-ref').fill('PROFILE-LEGACY'); await saveClient();
         await action('new-session').click(); await page.locator('#s-subj').fill('SOAP draft 原文 retained');
-        await openSettings(); await chooseFields(['name', 'ref', 'nationalId']); await saveSettings();
+        await openSettings(); await chooseFields(['name', 'ref', 'occupation']); await saveSettings();
         assert.equal(await page.locator('#s-subj').inputValue(), 'SOAP draft 原文 retained', 'Changing global settings keeps the current SOAP draft');
         const beforeProfileSave = await page.evaluate(async () => (await store.listSessions(curId)).length);
         await action('save-session').click(); await page.waitForSelector('#cForm');
         assert.equal(await page.evaluate(async () => (await store.listSessions(curId)).length), beforeProfileSave, 'A missing global requirement blocks session writes');
-        await page.locator('#cf-nationalId').fill('ID-修訂-0'); await saveClient();
+        await page.locator('#cf-occupation').fill('職業-修訂-0'); await saveClient();
         assert.equal(await page.locator('#s-subj').inputValue(), 'SOAP draft 原文 retained', 'Completing profile data keeps the current SOAP draft');
-        assert.equal(await page.evaluate(() => cur().nationalId), 'ID-修訂-0');
+        assert.equal(await page.evaluate(() => cur().occupation), '職業-修訂-0');
         await action('cancel-edit').click(); await page.waitForSelector('#askYes'); await page.locator('#askYes').click();
         await page.waitForSelector('#soapForm', { state: 'detached' });
         check('settings and profile editing preserve the active SOAP draft');
 
         await openSettings(); await chooseFields([]); await saveSettings();
         await action('new-client').click();
-        assert.equal(await page.locator('#cf-name, #cf-ref').count(), 0);
+        assert.equal(await page.locator('#cf-name, #cf-ref').count(), 2);
+        assert.equal(await page.locator('#cf-name[required], #cf-ref[required]').count(), 0);
         await saveClient();
         const anonymous = await page.evaluate(() => ({ id: curId, name: cur().name, ref: cur().ref }));
         assert.notEqual(anonymous.id, firstId); assert.equal(anonymous.name, ''); assert.equal(anonymous.ref, '');

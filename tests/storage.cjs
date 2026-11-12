@@ -37,7 +37,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
   };
   try {
     await page.goto(url); await ready();
-    assert.match(await page.locator('#main').innerText(), /開啟本機病歷資料夾/);
+    assert.match(await page.locator('#main').innerText(), /開始記錄病歷/);
     const fonts = await page.evaluate(() => ['h1', 'h2', 'button', '#clientSearch'].map(selector => getComputedStyle(document.querySelector(selector)).fontFamily));
     for (const font of fonts) assert.match(font, /^"?Noto Sans TC/);
     check('Noto Sans TC leads UI headings, buttons and inputs; storage setup describes local folders');

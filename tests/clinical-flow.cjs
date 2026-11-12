@@ -5,6 +5,8 @@ const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const { appPath } = require('./lib/app.cjs');
+const { openTraining, completeTraining } = require('./training-modal.cjs');
+const { completeAssessment } = require('./lib/assessments.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'clinical-flow');
 const extraColumns = ['Service mode', 'PEO – Person', 'PEO – Environment', 'PEO – Occupation', 'Adaptation', 'Adaptation notes', 'Compensation', 'Compensation notes'];
@@ -51,11 +53,13 @@ const ordered = (text, parts) => {
         await page.locator('#cForm [type="submit"]').click(); await page.waitForSelector('.client-summary');
         await action('new-session').click();
         assert.deepEqual(await page.locator('.soap-sec > .letter').allTextContents(), ['S', 'O', 'A', 'P']);
-        assert.deepEqual(await page.locator('.soap-sec .sec-title > h3').allTextContents(), headings);
+        assert.deepEqual(await page.locator('.soap-sec .sec-title > h3').evaluateAll(nodes => nodes.map(node => { const label = node.cloneNode(true); label.querySelectorAll('.help').forEach(help => help.remove()); return label.textContent; })), headings);
         const pSection = page.locator('.soap-sec').nth(3);
-        for (const selector of ['#tx-ocular-on', '#s-otx', '#s-tol', '#s-plan', '#s-next']) assert.equal(await pSection.locator(selector).count(), 1, selector);
+        for (const selector of ['#tx-ocular-on', '#s-otx', '#s-plan', '#s-next']) assert.equal(await pSection.locator(selector).count(), 1, selector);
+        assert.equal(await pSection.locator('#sessionResponse, #s-tol').count(), 0);
+        assert.equal(await page.locator('.soap-sec').nth(1).locator('#sessionResponse #s-tol').count(), 1);
         assert.equal(await page.locator('.soap-sec').nth(1).locator('#assessList, #symWrap, #s-obj').count(), 3);
-        assert.deepEqual(await pSection.locator('.sec-body > h4, .sec-body > .sub > h4').allTextContents(), [...terms.slice(0, 3), en ? 'Session response' : '本次反應']);
+        assert.deepEqual(await pSection.locator('#remediation > .spread > h4, .sec-body > .sub > h4').evaluateAll(nodes => nodes.map(node => { const label = node.cloneNode(true); label.querySelectorAll('.help').forEach(help => help.remove()); return label.textContent; })), terms.slice(0, 3));
         assert.equal(await page.locator('#s-mode').inputValue(), 'inperson');
         assert.equal(await page.locator('#s-mode option[value=""]').count(), 0);
         assert.equal(await page.locator('#s-mode').getAttribute('id'), await page.getByLabel(en ? 'Service mode' : '服務型態', { exact: true }).getAttribute('id'));
@@ -73,7 +77,9 @@ const ordered = (text, parts) => {
         await page.locator('#s-next').fill('2026-11-14'); await page.locator('#s-tol').fill('8');
         await page.locator('#tx-ocular-on').check(); await page.locator('#tx-ocular-a0').check(); await page.locator('#tx-ocular-s0').fill('85%');
         await page.locator('#tx-ocular-run-item').selectOption('fixation'); await action('run-add').click();
+        await completeTraining(page);
         await page.locator('#ac-npc').check();
+        await completeAssessment(page);
         await pick('adaptation', 'workstation_setup').focus(); await page.keyboard.press('Space');
         assert.equal(await pick('adaptation', 'workstation_setup').isChecked(), true);
         await pick('compensation', 'scanning').check();
@@ -92,8 +98,10 @@ const ordered = (text, parts) => {
         await page.locator('#s-mode').selectOption('telerehab');
         assert.equal(await page.locator('#s-subj').inputValue(), text);
         assert.equal(await page.locator('#s-person').inputValue(), text);
+        await openTraining(page, 'ocular');
         assert.equal(await page.locator('#tx-ocular-s0').inputValue(), '85%');
         assert.equal(await page.locator('#tx-ocular-runs .run').count(), 1);
+        await completeTraining(page);
         assert.equal(await page.locator('#s-adaptation-notes').inputValue(), '=1+1');
         assert.equal(await page.locator('#ac-npc').isChecked(), true);
         check(`${locale}: keyboard checkbox and bidirectional mode changes retain cross-mode ticks, text, assessment and training drafts`);
@@ -117,7 +125,7 @@ const ordered = (text, parts) => {
         assert.deepEqual(saved.csv, saved.s); assert.equal(saved.txt, saved.note);
         assert.match(Buffer.from(saved.pdf).toString(), /^%PDF-/);
         for (const report of [saved.note, saved.lines.join('\n')]) ordered(report, [...sections, ...terms.slice(0, 3), terms[3]]);
-        ordered(saved.note, [sections[3], '85%', 'Home exercise fixture', terms[1], '=1+1', terms[2], '休息與活動原文', '8/10', terms[3], 'Next steps fixture', '2026-11-14']);
+        ordered(saved.note, [sections[1], '8/10', sections[2], sections[3], '85%', 'Home exercise fixture', terms[1], '=1+1', terms[2], '休息與活動原文', terms[3], 'Next steps fixture', '2026-11-14']);
         assert.ok(saved.note.includes(en ? 'Service mode: Telerehab' : '服務型態：遠距復健'));
         await page.reload(); await ready(); await connect('flow-records');
         assert.deepEqual(await page.evaluate(() => sessions[0]), saved.s);
@@ -199,6 +207,7 @@ const ordered = (text, parts) => {
         assert.deepEqual([...new Set(workbook.interventions.map(row => row.Approach))], terms.slice(1, 3));
         assert.deepEqual(workbook.form.flat().filter(value => sections.includes(value)), sections);
         ordered(workbook.form.flat().join('\n'), [...sections, ...terms.slice(0, 3), terms[3]]);
+        ordered(workbook.form.flat().join('\n'), [sections[1], en ? 'Session response' : '本次反應', sections[2], sections[3]]);
         assert.ok(workbook.form.flat().includes(text)); assert.ok(workbook.form.flat().includes('=1+1'));
         assert.deepEqual(workbook.styled, [en ? 'S: Subjective' : 'S：主觀描述', ...sections.slice(1)]);
         assert.deepEqual(workbook.formulas, []);
@@ -212,6 +221,7 @@ const ordered = (text, parts) => {
         await connect('flow-restored');
         assert.equal(await page.evaluate(() => clients.length), 0);
         await page.locator('#importFile').setInputFiles(backupPath);
+        await page.locator('#restoreBackupConfirm').click();
         await page.waitForFunction(() => sessions.length === 2 && !savingSession);
         assert.deepEqual(await page.evaluate(() => sessions), before);
         check(`${locale}: actual JSON backup download/import into a fresh folder round-trips mode, PEO, cross-mode/unknown strategy IDs and notes`);

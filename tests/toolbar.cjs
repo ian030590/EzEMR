@@ -91,7 +91,7 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
     await action('open-session').click(); await page.locator('#s-subj').fill('失敗後仍保留的草稿');
     await page.evaluate(() => { window.realSave = store.saveSession; store.saveSession = async () => { throw new Error('測試寫入失敗'); }; });
     await openMenu('file'); await page.locator('#fileMenu [data-action="save-session"]').click();
-    await page.waitForFunction(() => document.querySelector('.toast')?.textContent.includes('測試寫入失敗'));
+    await page.waitForFunction(() => [...document.querySelectorAll('.failure-message pre')].some(node => node.textContent.includes('測試寫入失敗')));
     assert.equal(await page.locator('#s-subj').inputValue(), '失敗後仍保留的草稿');
     assert.equal(await page.locator('#toolbarSave').isEnabled(), true);
     assert.equal(await page.locator('#toolbarSave svg').count(), 1);
@@ -129,14 +129,15 @@ const check = name => { evidence.push(name); console.log('PASS: ' + name); };
       await page.locator('#languageSelect').selectOption(locale);
       for (const theme of ['light', 'dark']) {
         await page.evaluate(theme => { document.documentElement.dataset.theme = theme; renderTheme(); }, theme);
-        for (const width of [320, 360, 600, 768, 900, 1024, 1100, 1280, 1440]) {
+        for (const width of [320, 360, 600, 768, 861, 900, 1024, 1100, 1199, 1280, 1440]) {
           await page.setViewportSize({ width, height: 800 });
           await page.waitForFunction(width => innerWidth === width, width);
           const browse = await page.locator('.app-chrome').evaluate(chrome => ({ height: chrome.getBoundingClientRect().height, searchWidth: chrome.querySelector('#clientSearch').getBoundingClientRect().width }));
           assert.ok(browse.searchWidth <= 224, `${locale} ${theme} ${width}px: search stays within its useful width`);
+          assert.ok(browse.searchWidth >= 44, `${locale} ${theme} ${width}px: browsing search retains a 44px target`);
           if (width >= 900) assert.ok(browse.height <= 68, `${locale} ${theme}: desktop browsing controls stay in one row`);
           if (width === 600 || width === 768) assert.ok(browse.height <= 120, `${locale} ${theme}: tablet browsing uses two rows`);
-          for (const name of ['file', 'client', 'view', 'export']) {
+          for (const name of ['file', 'client', 'view', 'help', 'export']) {
             await openMenu(name);
             const rect = await page.locator(`#${name}Menu`).boundingBox();
             assert.ok(rect.x >= 0 && rect.x + rect.width <= width && rect.y + rect.height <= 800, `${locale} ${theme} ${width}px ${name} menu bounds`);

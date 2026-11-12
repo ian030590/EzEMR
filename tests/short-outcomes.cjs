@@ -4,6 +4,7 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const { appPath } = require('./lib/app.cjs');
+const { openAssessment, completeAssessment, selectAssessment } = require('./lib/assessments.cjs');
 
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification', 'short-outcomes');
@@ -36,7 +37,12 @@ const expected = {
         window.shortRoot = await (await navigator.storage.getDirectory()).getDirectoryHandle('short-outcome-records', { create: true });
         store = folderStore(shortRoot); await finishBoot();
       });
-      const field = async (item, key) => page.locator('#af-' + item + '-' + await page.evaluate(({ item, key }) => fieldsFor(cur().plan.find(p => p.id === item)).findIndex(f => f.id === key), { item, key }));
+      const field = async (item, key) => {
+        await openAssessment(page, item);
+        const input = page.locator('#af-' + item + '-' + await page.evaluate(({ item, key }) => fieldsFor(cur().plan.find(p => p.id === item)).findIndex(f => f.id === key), { item, key }));
+        await input.evaluate(node => { for (let parent = node.parentElement; parent; parent = parent.parentElement) if (parent.tagName === 'DETAILS') parent.open = true; });
+        return input;
+      };
       const fill = async (item, key, value) => (await field(item, key)).fill(String(value));
       try {
         await page.goto(`http://127.0.0.1:${server.address().port}/`); await ready(); await connect();
@@ -54,7 +60,7 @@ const expected = {
         }
         await action('new-session').click(); await page.locator('#s-visit').selectOption('treatment');
         assert.equal(await page.locator('[aria-labelledby^="assessPlanned-"] input').count(), 14);
-        for (const item of ['st_search', 'st_neglect', 'st_tolerance', 'st_load', 'st_reading']) await page.locator('#ac-' + item).check();
+        for (const item of ['st_search', 'st_neglect', 'st_tolerance', 'st_load', 'st_reading']) await selectAssessment(page, item);
         const searchValues = {
           pre_context: '09:00 form A', pre_time_s: 50, pre_accuracy: 90, pre_omissions: 3,
           pre2_context: '09:05 form B', pre2_time_s: 48,
@@ -63,29 +69,28 @@ const expected = {
           followup_context: '2026-11-12 09:00 form E, 48 h', followup_time_s: 42,
           protocol: '等值題型 <test> / fixed difficulty', primary: 'Completion time', intervention: 'Search / 20 min / level 2 / 1 break / rest comparator'
         };
-        for (const summary of await page.locator('#as-st_search details > summary').all()) await summary.click();
         for (const [key, value] of Object.entries(searchValues)) await fill('st_search', key, value);
         await fill('st_neglect', 'pre_bisection_mm', -8); await fill('st_neglect', 'post_bisection_mm', -3);
         await fill('st_tolerance', 'pre_symptom_0', 1); await fill('st_tolerance', 'post_symptom_0', 3);
         await fill('st_tolerance', 'post_symptom_1', 11);
         assert.equal(await (await field('st_tolerance', 'post_symptom_1')).evaluate(el => el.validity.rangeOverflow), true);
-        await action('save-session').click(); assert.equal(await page.locator('#soapForm').count(), 1); assert.equal(await page.evaluate(() => sessions.length), 0);
+        await page.locator('#assessment-done').click(); assert.equal(await page.locator('#assessmentResultForm').count(), 1); assert.equal(await page.evaluate(() => sessions.length), 0);
         await fill('st_tolerance', 'post_symptom_1', 0); await fill('st_tolerance', 'recovery_min', 20);
         await fill('st_load', 'pre_before_load', 1); await fill('st_load', 'pre_after_load', 4);
         await fill('st_load', 'post_before_load', 2); await fill('st_load', 'post_after_load', 3);
         await fill('st_load', 'symptom', 'Eye fatigue / same 2-minute reading load');
-        await fill('st_reading', 'pre_speed', 80); await page.locator('#ac-st_reading').uncheck();
-        assert.equal(await (await field('st_reading', 'pre_speed')).isDisabled(), true);
+        await fill('st_reading', 'pre_speed', 80); await completeAssessment(page); await page.locator('#ac-st_reading').uncheck();
+        assert.equal(await page.locator('[id^="af-st_reading-"]').count(), 0);
         await page.locator('#languageSelect').selectOption(locale === 'en' ? 'zh-TW' : 'en');
         assert.equal(await (await field('st_search', 'protocol')).inputValue(), searchValues.protocol);
+        await completeAssessment(page);
         await page.locator('#languageSelect').selectOption(locale);
         for (const theme of ['light', 'dark']) {
           await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
           for (const width of [320, 360, 768, 1280]) {
             await page.setViewportSize({ width, height: 900 });
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${locale} ${theme} ${width}px`);
-            const sizes = await page.locator('#as-st_search input:visible, #as-st_search textarea:visible').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height })));
-            assert.ok(sizes.every(size => size.width >= 44 && size.height >= 44));
+            assert.equal(await page.locator('#as-st_search input, #as-st_search textarea').count(), 0, 'The completed assessment is plain text');
             if (width === 360 || width === 1280) await page.locator('#as-st_search').screenshot({ path: path.join(output, `${locale}-${theme}-${width}.png`) });
           }
         }
@@ -96,7 +101,10 @@ const expected = {
           return { c: clone(c), s: clone(s), csv: readRecordCSV(await text('.csv')), note: await text('.txt') };
         });
         assert.deepEqual(saved.s.assess.st_search.values, searchValues); assert.equal(saved.s.assess.st_neglect.values.pre_bisection_mm, -8);
-        assert.deepEqual(Object.keys(saved.s.assess).sort(), ['st_load', 'st_neglect', 'st_search', 'st_tolerance']);
+        assert.deepEqual(Object.keys(saved.s.assess).sort(), ['st_load', 'st_neglect', 'st_reading', 'st_search', 'st_tolerance']);
+        assert.equal(saved.s.assess.st_reading.done, false);
+        assert.equal(saved.s.assess.st_reading.values.pre_speed, 80, 'Deselecting retains an entered measurement');
+        assert.doesNotMatch(saved.note, /Reading performance|閱讀表現/, 'An excluded assessment is absent from the clinical report');
         assert.deepEqual(saved.csv, { client: saved.c, session: saved.s });
         assert.match(saved.note, locale === 'en' ? /Immediate post: Completion time \(s\)/ : /訓練後立即：完成時間（秒）/);
         assert.match(saved.note, /2026-11-12 09:00 form E, 48 h/);
@@ -104,6 +112,7 @@ const expected = {
         await page.reload(); await ready(); await connect(); assert.deepEqual(await page.evaluate(() => sessions[0]), saved.s);
         await action('open-session').click();
         for (const [key, value] of Object.entries(searchValues)) assert.equal(await (await field('st_search', key)).inputValue(), String(value));
+        await completeAssessment(page);
         assert.equal(await page.locator('#as-st_search img').count(), 0);
         await action('cancel-edit').click(); await page.waitForSelector('#soapForm', { state: 'detached' });
         await page.locator('#tab-outcomes').click();
@@ -117,7 +126,7 @@ const expected = {
         assert.ok(excel.some(row => row.Value === 42 && /24–72/.test(row.Measure)));
         // An older client receives no automatic template edits; the Add dialog makes new seeds available.
         await page.evaluate(async () => { const next = clone(cur()); next.plan = next.plan.filter(p => !p.id.startsWith('st_')); await store.saveClient(next); await finishBoot(); });
-        const oldPlan = await page.evaluate(() => clone(cur().plan)); assert.equal(oldPlan.length, 24);
+        const oldPlan = await page.evaluate(() => clone(cur().plan)); assert.equal(oldPlan.length, 26);
         await action('new-session').click(); await action('plan-add').click();
         const seedIndex = await page.evaluate(() => DEFAULT_PLAN.filter(p => !p.copm).findIndex(p => p.id === 'st_reading'));
         await page.locator('#item-base').selectOption(String(seedIndex));
@@ -125,7 +134,7 @@ const expected = {
         assert.equal(await page.locator('#item-category').inputValue(), 'functional');
         await page.evaluate(() => { window.actualShortSave = store.saveClient; store.saveClient = async () => { throw new Error('Synthetic storage failure'); }; });
         await page.locator('#itemForm [type="submit"]').click();
-        await page.waitForFunction(() => document.querySelector('#item-error')?.textContent.includes('Synthetic storage failure'));
+        await page.waitForFunction(() => [...document.querySelectorAll('.failure-message pre')].some(node => node.textContent.includes('Synthetic storage failure')));
         assert.equal(await page.locator('#itemForm [type="submit"]').isEnabled(), true);
         assert.deepEqual(await page.evaluate(() => cur().plan), oldPlan);
         await page.evaluate(() => { store.saveClient = actualShortSave; });
@@ -133,12 +142,13 @@ const expected = {
         const added = await page.evaluate(() => cur().plan.at(-1));
         assert.equal(added.fields.filter(f => f.phase).length, 25);
         assert.equal(await page.locator('#ac-' + added.id).isChecked(), true);
-        assert.equal(await page.locator('#as-' + added.id + ' .short-stage').count(), 5);
+        assert.equal(await page.locator('#assessmentResultForm .short-stage').count(), 5);
         assert.deepEqual(await page.evaluate(() => cur().plan.slice(0, -1)), oldPlan);
         assert.deepEqual(await page.evaluate(() => sessions[0]), saved.s);
         const preSpeed = added.fields.find(f => f.phase === 'pre' && f.label === 'Reading speed (characters/min or words/min)');
         const postSpeed = added.fields.find(f => f.phase === 'post' && f.label === 'Reading speed (characters/min or words/min)');
         await fill(added.id, preSpeed.id, 40); await fill(added.id, postSpeed.id, 50);
+        await completeAssessment(page);
         await action('save-session').click(); await page.waitForSelector('.sess');
         await page.locator('#tab-outcomes').click();
         const cloned = page.locator(`.short-outcomes[data-item-id="${added.id}"]`);

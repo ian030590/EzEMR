@@ -1,0 +1,1126 @@
+﻿schema_version,section,field,type,value
+1,client,,object,
+1,client,/id,string,demo_stroke
+1,client,/ref,string,DEMO-STROKE
+1,client,/name,string,示範個案01｜中風
+1,client,/dob,string,1960-02-12
+1,client,/doi,string,2026-08-01
+1,client,/occupation,string,退休人員
+1,client,/dx,string,虛構情境：左側大腦中動脈缺血性中風後右側偏癱。
+1,client,/referral,string,完全虛構的操作示範資料，不含真實病人資訊，非診療建議。
+1,client,/eyeSurgery,null,
+1,client,/plan,array,
+1,client,/plan/0,object,
+1,client,/plan/0/id,string,copm
+1,client,/plan/0/category,string,functional
+1,client,/plan/0/domain,string,Occupational performance & satisfaction
+1,client,/plan/0/name,string,COPM
+1,client,/plan/0/timing,string,bp
+1,client,/plan/0/copm,boolean,true
+1,client,/plan/0/outcome,string,Performance and satisfaction ratings for the same priority occupations; change scores
+1,client,/plan/0/active,boolean,true
+1,client,/plan/0/initial,boolean,true
+1,client,/plan/1,object,
+1,client,/plan/1/id,string,daily_task
+1,client,/plan/1/category,string,functional
+1,client,/plan/1/domain,string,Functional performance
+1,client,/plan/1/name,string,Daily task performance
+1,client,/plan/1/timing,string,assessment
+1,client,/plan/1/fields,array,
+1,client,/plan/1/fields/0,object,
+1,client,/plan/1/fields/0/id,string,task
+1,client,/plan/1/fields/0/label,string,Task / measure
+1,client,/plan/1/fields/0/type,string,text
+1,client,/plan/1/fields/1,object,
+1,client,/plan/1/fields/1/id,string,performance
+1,client,/plan/1/fields/1/label,string,Performance / observation
+1,client,/plan/1/fields/1/type,string,textarea
+1,client,/plan/1/active,boolean,true
+1,client,/plan/1/initial,boolean,true
+1,client,/plan/2,object,
+1,client,/plan/2/id,string,st_tug
+1,client,/plan/2/name,string,Timed Up and Go (short-term TUG)
+1,client,/plan/2/outcome,string,"Generally seek a shorter completion time; keep chair, walking aid, assistance and procedure consistent."
+1,client,/plan/2/category,string,functional
+1,client,/plan/2/domain,string,Short-term functional outcomes
+1,client,/plan/2/timing,string,session
+1,client,/plan/2/fields,array,
+1,client,/plan/2/fields/0,object,
+1,client,/plan/2/fields/0/id,string,pre_context
+1,client,/plan/2/fields/0/label,string,Measurement time / equivalent form
+1,client,/plan/2/fields/0/type,string,text
+1,client,/plan/2/fields/0/phase,string,pre
+1,client,/plan/2/fields/1,object,
+1,client,/plan/2/fields/1/id,string,pre_time_s
+1,client,/plan/2/fields/1/label,string,Completion time (s)
+1,client,/plan/2/fields/1/type,string,number
+1,client,/plan/2/fields/1/min,number,0
+1,client,/plan/2/fields/1/phase,string,pre
+1,client,/plan/2/fields/2,object,
+1,client,/plan/2/fields/2/id,string,pre2_context
+1,client,/plan/2/fields/2/label,string,Measurement time / equivalent form
+1,client,/plan/2/fields/2/type,string,text
+1,client,/plan/2/fields/2/phase,string,pre2
+1,client,/plan/2/fields/3,object,
+1,client,/plan/2/fields/3/id,string,pre2_time_s
+1,client,/plan/2/fields/3/label,string,Completion time (s)
+1,client,/plan/2/fields/3/type,string,number
+1,client,/plan/2/fields/3/min,number,0
+1,client,/plan/2/fields/3/phase,string,pre2
+1,client,/plan/2/fields/4,object,
+1,client,/plan/2/fields/4/id,string,post_context
+1,client,/plan/2/fields/4/label,string,Measurement time / equivalent form
+1,client,/plan/2/fields/4/type,string,text
+1,client,/plan/2/fields/4/phase,string,post
+1,client,/plan/2/fields/5,object,
+1,client,/plan/2/fields/5/id,string,post_time_s
+1,client,/plan/2/fields/5/label,string,Completion time (s)
+1,client,/plan/2/fields/5/type,string,number
+1,client,/plan/2/fields/5/min,number,0
+1,client,/plan/2/fields/5/phase,string,post
+1,client,/plan/2/fields/6,object,
+1,client,/plan/2/fields/6/id,string,recovery_context
+1,client,/plan/2/fields/6/label,string,Measurement time / equivalent form
+1,client,/plan/2/fields/6/type,string,text
+1,client,/plan/2/fields/6/phase,string,recovery
+1,client,/plan/2/fields/7,object,
+1,client,/plan/2/fields/7/id,string,recovery_time_s
+1,client,/plan/2/fields/7/label,string,Completion time (s)
+1,client,/plan/2/fields/7/type,string,number
+1,client,/plan/2/fields/7/min,number,0
+1,client,/plan/2/fields/7/phase,string,recovery
+1,client,/plan/2/fields/8,object,
+1,client,/plan/2/fields/8/id,string,followup_context
+1,client,/plan/2/fields/8/label,string,Measurement time / equivalent form
+1,client,/plan/2/fields/8/type,string,text
+1,client,/plan/2/fields/8/phase,string,followup
+1,client,/plan/2/fields/9,object,
+1,client,/plan/2/fields/9/id,string,followup_time_s
+1,client,/plan/2/fields/9/label,string,Completion time (s)
+1,client,/plan/2/fields/9/type,string,number
+1,client,/plan/2/fields/9/min,number,0
+1,client,/plan/2/fields/9/phase,string,followup
+1,client,/plan/2/fields/10,object,
+1,client,/plan/2/fields/10/id,string,protocol
+1,client,/plan/2/fields/10/label,string,Tool / procedure / scoring / test conditions
+1,client,/plan/2/fields/10/type,string,textarea
+1,client,/plan/2/fields/10/group,string,setting
+1,client,/plan/2/fields/11,object,
+1,client,/plan/2/fields/11/id,string,primary
+1,client,/plan/2/fields/11/label,string,Primary outcome (choose one)
+1,client,/plan/2/fields/11/type,string,text
+1,client,/plan/2/fields/11/group,string,setting
+1,client,/plan/2/fields/12,object,
+1,client,/plan/2/fields/12/id,string,intervention
+1,client,/plan/2/fields/12/label,string,Training / duration / difficulty / breaks / comparison condition
+1,client,/plan/2/fields/12/type,string,textarea
+1,client,/plan/2/fields/12/group,string,setting
+1,client,/plan/2/active,boolean,true
+1,client,/plan/2/initial,boolean,true
+1,client,/plan/3,object,
+1,client,/plan/3/id,string,st_bbt
+1,client,/plan/3/name,string,Box and Block Test (short-term BBT)
+1,client,/plan/3/outcome,string,Record blocks transferred in 60 seconds and the tested hand. More blocks is generally better; keep the protocol consistent.
+1,client,/plan/3/category,string,functional
+1,client,/plan/3/domain,string,Short-term functional outcomes
+1,client,/plan/3/timing,string,session
+1,client,/plan/3/fields,array,
+1,client,/plan/3/fields/0,object,
+1,client,/plan/3/fields/0/id,string,pre_context
+1,client,/plan/3/fields/0/label,string,Measurement time / equivalent form
+1,client,/plan/3/fields/0/type,string,text
+1,client,/plan/3/fields/0/phase,string,pre
+1,client,/plan/3/fields/1,object,
+1,client,/plan/3/fields/1/id,string,pre_blocks
+1,client,/plan/3/fields/1/label,string,Blocks transferred in 60 s (n)
+1,client,/plan/3/fields/1/type,string,number
+1,client,/plan/3/fields/1/min,number,0
+1,client,/plan/3/fields/1/step,number,1
+1,client,/plan/3/fields/1/phase,string,pre
+1,client,/plan/3/fields/2,object,
+1,client,/plan/3/fields/2/id,string,pre_hand
+1,client,/plan/3/fields/2/label,string,Tested hand
+1,client,/plan/3/fields/2/type,string,text
+1,client,/plan/3/fields/2/phase,string,pre
+1,client,/plan/3/fields/3,object,
+1,client,/plan/3/fields/3/id,string,pre2_context
+1,client,/plan/3/fields/3/label,string,Measurement time / equivalent form
+1,client,/plan/3/fields/3/type,string,text
+1,client,/plan/3/fields/3/phase,string,pre2
+1,client,/plan/3/fields/4,object,
+1,client,/plan/3/fields/4/id,string,pre2_blocks
+1,client,/plan/3/fields/4/label,string,Blocks transferred in 60 s (n)
+1,client,/plan/3/fields/4/type,string,number
+1,client,/plan/3/fields/4/min,number,0
+1,client,/plan/3/fields/4/step,number,1
+1,client,/plan/3/fields/4/phase,string,pre2
+1,client,/plan/3/fields/5,object,
+1,client,/plan/3/fields/5/id,string,pre2_hand
+1,client,/plan/3/fields/5/label,string,Tested hand
+1,client,/plan/3/fields/5/type,string,text
+1,client,/plan/3/fields/5/phase,string,pre2
+1,client,/plan/3/fields/6,object,
+1,client,/plan/3/fields/6/id,string,post_context
+1,client,/plan/3/fields/6/label,string,Measurement time / equivalent form
+1,client,/plan/3/fields/6/type,string,text
+1,client,/plan/3/fields/6/phase,string,post
+1,client,/plan/3/fields/7,object,
+1,client,/plan/3/fields/7/id,string,post_blocks
+1,client,/plan/3/fields/7/label,string,Blocks transferred in 60 s (n)
+1,client,/plan/3/fields/7/type,string,number
+1,client,/plan/3/fields/7/min,number,0
+1,client,/plan/3/fields/7/step,number,1
+1,client,/plan/3/fields/7/phase,string,post
+1,client,/plan/3/fields/8,object,
+1,client,/plan/3/fields/8/id,string,post_hand
+1,client,/plan/3/fields/8/label,string,Tested hand
+1,client,/plan/3/fields/8/type,string,text
+1,client,/plan/3/fields/8/phase,string,post
+1,client,/plan/3/fields/9,object,
+1,client,/plan/3/fields/9/id,string,recovery_context
+1,client,/plan/3/fields/9/label,string,Measurement time / equivalent form
+1,client,/plan/3/fields/9/type,string,text
+1,client,/plan/3/fields/9/phase,string,recovery
+1,client,/plan/3/fields/10,object,
+1,client,/plan/3/fields/10/id,string,recovery_blocks
+1,client,/plan/3/fields/10/label,string,Blocks transferred in 60 s (n)
+1,client,/plan/3/fields/10/type,string,number
+1,client,/plan/3/fields/10/min,number,0
+1,client,/plan/3/fields/10/step,number,1
+1,client,/plan/3/fields/10/phase,string,recovery
+1,client,/plan/3/fields/11,object,
+1,client,/plan/3/fields/11/id,string,recovery_hand
+1,client,/plan/3/fields/11/label,string,Tested hand
+1,client,/plan/3/fields/11/type,string,text
+1,client,/plan/3/fields/11/phase,string,recovery
+1,client,/plan/3/fields/12,object,
+1,client,/plan/3/fields/12/id,string,followup_context
+1,client,/plan/3/fields/12/label,string,Measurement time / equivalent form
+1,client,/plan/3/fields/12/type,string,text
+1,client,/plan/3/fields/12/phase,string,followup
+1,client,/plan/3/fields/13,object,
+1,client,/plan/3/fields/13/id,string,followup_blocks
+1,client,/plan/3/fields/13/label,string,Blocks transferred in 60 s (n)
+1,client,/plan/3/fields/13/type,string,number
+1,client,/plan/3/fields/13/min,number,0
+1,client,/plan/3/fields/13/step,number,1
+1,client,/plan/3/fields/13/phase,string,followup
+1,client,/plan/3/fields/14,object,
+1,client,/plan/3/fields/14/id,string,followup_hand
+1,client,/plan/3/fields/14/label,string,Tested hand
+1,client,/plan/3/fields/14/type,string,text
+1,client,/plan/3/fields/14/phase,string,followup
+1,client,/plan/3/fields/15,object,
+1,client,/plan/3/fields/15/id,string,protocol
+1,client,/plan/3/fields/15/label,string,Tool / procedure / scoring / test conditions
+1,client,/plan/3/fields/15/type,string,textarea
+1,client,/plan/3/fields/15/group,string,setting
+1,client,/plan/3/fields/16,object,
+1,client,/plan/3/fields/16/id,string,primary
+1,client,/plan/3/fields/16/label,string,Primary outcome (choose one)
+1,client,/plan/3/fields/16/type,string,text
+1,client,/plan/3/fields/16/group,string,setting
+1,client,/plan/3/fields/17,object,
+1,client,/plan/3/fields/17/id,string,intervention
+1,client,/plan/3/fields/17/label,string,Training / duration / difficulty / breaks / comparison condition
+1,client,/plan/3/fields/17/type,string,textarea
+1,client,/plan/3/fields/17/group,string,setting
+1,client,/plan/3/active,boolean,true
+1,client,/plan/3/initial,boolean,true
+1,client,/plan/4,object,
+1,client,/plan/4/id,string,st_tolerance
+1,client,/plan/4/category,string,visual
+1,client,/plan/4/domain,string,Short-term tolerability / safety
+1,client,/plan/4/name,string,Symptoms / recovery (short-term tolerability)
+1,client,/plan/4/outcome,string,"Rate each current symptom from 0–10 for tolerability/safety, separately from functional efficacy. Symptoms can rise while function improves. Record baseline symptoms, adverse events and recovery to a predefined baseline range; VOMS is screening, not a validated single-session efficacy test."
+1,client,/plan/4/timing,string,session
+1,client,/plan/4/fields,array,
+1,client,/plan/4/fields/0,object,
+1,client,/plan/4/fields/0/id,string,pre_context
+1,client,/plan/4/fields/0/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/0/type,string,text
+1,client,/plan/4/fields/0/phase,string,pre
+1,client,/plan/4/fields/1,object,
+1,client,/plan/4/fields/1/id,string,pre_symptom_0
+1,client,/plan/4/fields/1/label,string,Eye fatigue
+1,client,/plan/4/fields/1/type,string,number
+1,client,/plan/4/fields/1/min,number,0
+1,client,/plan/4/fields/1/max,number,10
+1,client,/plan/4/fields/1/phase,string,pre
+1,client,/plan/4/fields/2,object,
+1,client,/plan/4/fields/2/id,string,pre_symptom_1
+1,client,/plan/4/fields/2/label,string,Headache
+1,client,/plan/4/fields/2/type,string,number
+1,client,/plan/4/fields/2/min,number,0
+1,client,/plan/4/fields/2/max,number,10
+1,client,/plan/4/fields/2/phase,string,pre
+1,client,/plan/4/fields/3,object,
+1,client,/plan/4/fields/3/id,string,pre_symptom_2
+1,client,/plan/4/fields/3/label,string,Eye soreness
+1,client,/plan/4/fields/3/type,string,number
+1,client,/plan/4/fields/3/min,number,0
+1,client,/plan/4/fields/3/max,number,10
+1,client,/plan/4/fields/3/phase,string,pre
+1,client,/plan/4/fields/4,object,
+1,client,/plan/4/fields/4/id,string,pre_symptom_3
+1,client,/plan/4/fields/4/label,string,Dizziness
+1,client,/plan/4/fields/4/type,string,number
+1,client,/plan/4/fields/4/min,number,0
+1,client,/plan/4/fields/4/max,number,10
+1,client,/plan/4/fields/4/phase,string,pre
+1,client,/plan/4/fields/5,object,
+1,client,/plan/4/fields/5/id,string,pre_symptom_4
+1,client,/plan/4/fields/5/label,string,Nausea
+1,client,/plan/4/fields/5/type,string,number
+1,client,/plan/4/fields/5/min,number,0
+1,client,/plan/4/fields/5/max,number,10
+1,client,/plan/4/fields/5/phase,string,pre
+1,client,/plan/4/fields/6,object,
+1,client,/plan/4/fields/6/id,string,pre_symptom_5
+1,client,/plan/4/fields/6/label,string,Pain
+1,client,/plan/4/fields/6/type,string,number
+1,client,/plan/4/fields/6/min,number,0
+1,client,/plan/4/fields/6/max,number,10
+1,client,/plan/4/fields/6/phase,string,pre
+1,client,/plan/4/fields/7,object,
+1,client,/plan/4/fields/7/id,string,pre2_context
+1,client,/plan/4/fields/7/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/7/type,string,text
+1,client,/plan/4/fields/7/phase,string,pre2
+1,client,/plan/4/fields/8,object,
+1,client,/plan/4/fields/8/id,string,pre2_symptom_0
+1,client,/plan/4/fields/8/label,string,Eye fatigue
+1,client,/plan/4/fields/8/type,string,number
+1,client,/plan/4/fields/8/min,number,0
+1,client,/plan/4/fields/8/max,number,10
+1,client,/plan/4/fields/8/phase,string,pre2
+1,client,/plan/4/fields/9,object,
+1,client,/plan/4/fields/9/id,string,pre2_symptom_1
+1,client,/plan/4/fields/9/label,string,Headache
+1,client,/plan/4/fields/9/type,string,number
+1,client,/plan/4/fields/9/min,number,0
+1,client,/plan/4/fields/9/max,number,10
+1,client,/plan/4/fields/9/phase,string,pre2
+1,client,/plan/4/fields/10,object,
+1,client,/plan/4/fields/10/id,string,pre2_symptom_2
+1,client,/plan/4/fields/10/label,string,Eye soreness
+1,client,/plan/4/fields/10/type,string,number
+1,client,/plan/4/fields/10/min,number,0
+1,client,/plan/4/fields/10/max,number,10
+1,client,/plan/4/fields/10/phase,string,pre2
+1,client,/plan/4/fields/11,object,
+1,client,/plan/4/fields/11/id,string,pre2_symptom_3
+1,client,/plan/4/fields/11/label,string,Dizziness
+1,client,/plan/4/fields/11/type,string,number
+1,client,/plan/4/fields/11/min,number,0
+1,client,/plan/4/fields/11/max,number,10
+1,client,/plan/4/fields/11/phase,string,pre2
+1,client,/plan/4/fields/12,object,
+1,client,/plan/4/fields/12/id,string,pre2_symptom_4
+1,client,/plan/4/fields/12/label,string,Nausea
+1,client,/plan/4/fields/12/type,string,number
+1,client,/plan/4/fields/12/min,number,0
+1,client,/plan/4/fields/12/max,number,10
+1,client,/plan/4/fields/12/phase,string,pre2
+1,client,/plan/4/fields/13,object,
+1,client,/plan/4/fields/13/id,string,pre2_symptom_5
+1,client,/plan/4/fields/13/label,string,Pain
+1,client,/plan/4/fields/13/type,string,number
+1,client,/plan/4/fields/13/min,number,0
+1,client,/plan/4/fields/13/max,number,10
+1,client,/plan/4/fields/13/phase,string,pre2
+1,client,/plan/4/fields/14,object,
+1,client,/plan/4/fields/14/id,string,post_context
+1,client,/plan/4/fields/14/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/14/type,string,text
+1,client,/plan/4/fields/14/phase,string,post
+1,client,/plan/4/fields/15,object,
+1,client,/plan/4/fields/15/id,string,post_symptom_0
+1,client,/plan/4/fields/15/label,string,Eye fatigue
+1,client,/plan/4/fields/15/type,string,number
+1,client,/plan/4/fields/15/min,number,0
+1,client,/plan/4/fields/15/max,number,10
+1,client,/plan/4/fields/15/phase,string,post
+1,client,/plan/4/fields/16,object,
+1,client,/plan/4/fields/16/id,string,post_symptom_1
+1,client,/plan/4/fields/16/label,string,Headache
+1,client,/plan/4/fields/16/type,string,number
+1,client,/plan/4/fields/16/min,number,0
+1,client,/plan/4/fields/16/max,number,10
+1,client,/plan/4/fields/16/phase,string,post
+1,client,/plan/4/fields/17,object,
+1,client,/plan/4/fields/17/id,string,post_symptom_2
+1,client,/plan/4/fields/17/label,string,Eye soreness
+1,client,/plan/4/fields/17/type,string,number
+1,client,/plan/4/fields/17/min,number,0
+1,client,/plan/4/fields/17/max,number,10
+1,client,/plan/4/fields/17/phase,string,post
+1,client,/plan/4/fields/18,object,
+1,client,/plan/4/fields/18/id,string,post_symptom_3
+1,client,/plan/4/fields/18/label,string,Dizziness
+1,client,/plan/4/fields/18/type,string,number
+1,client,/plan/4/fields/18/min,number,0
+1,client,/plan/4/fields/18/max,number,10
+1,client,/plan/4/fields/18/phase,string,post
+1,client,/plan/4/fields/19,object,
+1,client,/plan/4/fields/19/id,string,post_symptom_4
+1,client,/plan/4/fields/19/label,string,Nausea
+1,client,/plan/4/fields/19/type,string,number
+1,client,/plan/4/fields/19/min,number,0
+1,client,/plan/4/fields/19/max,number,10
+1,client,/plan/4/fields/19/phase,string,post
+1,client,/plan/4/fields/20,object,
+1,client,/plan/4/fields/20/id,string,post_symptom_5
+1,client,/plan/4/fields/20/label,string,Pain
+1,client,/plan/4/fields/20/type,string,number
+1,client,/plan/4/fields/20/min,number,0
+1,client,/plan/4/fields/20/max,number,10
+1,client,/plan/4/fields/20/phase,string,post
+1,client,/plan/4/fields/21,object,
+1,client,/plan/4/fields/21/id,string,recovery_context
+1,client,/plan/4/fields/21/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/21/type,string,text
+1,client,/plan/4/fields/21/phase,string,recovery
+1,client,/plan/4/fields/22,object,
+1,client,/plan/4/fields/22/id,string,recovery_symptom_0
+1,client,/plan/4/fields/22/label,string,Eye fatigue
+1,client,/plan/4/fields/22/type,string,number
+1,client,/plan/4/fields/22/min,number,0
+1,client,/plan/4/fields/22/max,number,10
+1,client,/plan/4/fields/22/phase,string,recovery
+1,client,/plan/4/fields/23,object,
+1,client,/plan/4/fields/23/id,string,recovery_symptom_1
+1,client,/plan/4/fields/23/label,string,Headache
+1,client,/plan/4/fields/23/type,string,number
+1,client,/plan/4/fields/23/min,number,0
+1,client,/plan/4/fields/23/max,number,10
+1,client,/plan/4/fields/23/phase,string,recovery
+1,client,/plan/4/fields/24,object,
+1,client,/plan/4/fields/24/id,string,recovery_symptom_2
+1,client,/plan/4/fields/24/label,string,Eye soreness
+1,client,/plan/4/fields/24/type,string,number
+1,client,/plan/4/fields/24/min,number,0
+1,client,/plan/4/fields/24/max,number,10
+1,client,/plan/4/fields/24/phase,string,recovery
+1,client,/plan/4/fields/25,object,
+1,client,/plan/4/fields/25/id,string,recovery_symptom_3
+1,client,/plan/4/fields/25/label,string,Dizziness
+1,client,/plan/4/fields/25/type,string,number
+1,client,/plan/4/fields/25/min,number,0
+1,client,/plan/4/fields/25/max,number,10
+1,client,/plan/4/fields/25/phase,string,recovery
+1,client,/plan/4/fields/26,object,
+1,client,/plan/4/fields/26/id,string,recovery_symptom_4
+1,client,/plan/4/fields/26/label,string,Nausea
+1,client,/plan/4/fields/26/type,string,number
+1,client,/plan/4/fields/26/min,number,0
+1,client,/plan/4/fields/26/max,number,10
+1,client,/plan/4/fields/26/phase,string,recovery
+1,client,/plan/4/fields/27,object,
+1,client,/plan/4/fields/27/id,string,recovery_symptom_5
+1,client,/plan/4/fields/27/label,string,Pain
+1,client,/plan/4/fields/27/type,string,number
+1,client,/plan/4/fields/27/min,number,0
+1,client,/plan/4/fields/27/max,number,10
+1,client,/plan/4/fields/27/phase,string,recovery
+1,client,/plan/4/fields/28,object,
+1,client,/plan/4/fields/28/id,string,followup_context
+1,client,/plan/4/fields/28/label,string,Measurement time / equivalent form
+1,client,/plan/4/fields/28/type,string,text
+1,client,/plan/4/fields/28/phase,string,followup
+1,client,/plan/4/fields/29,object,
+1,client,/plan/4/fields/29/id,string,followup_symptom_0
+1,client,/plan/4/fields/29/label,string,Eye fatigue
+1,client,/plan/4/fields/29/type,string,number
+1,client,/plan/4/fields/29/min,number,0
+1,client,/plan/4/fields/29/max,number,10
+1,client,/plan/4/fields/29/phase,string,followup
+1,client,/plan/4/fields/30,object,
+1,client,/plan/4/fields/30/id,string,followup_symptom_1
+1,client,/plan/4/fields/30/label,string,Headache
+1,client,/plan/4/fields/30/type,string,number
+1,client,/plan/4/fields/30/min,number,0
+1,client,/plan/4/fields/30/max,number,10
+1,client,/plan/4/fields/30/phase,string,followup
+1,client,/plan/4/fields/31,object,
+1,client,/plan/4/fields/31/id,string,followup_symptom_2
+1,client,/plan/4/fields/31/label,string,Eye soreness
+1,client,/plan/4/fields/31/type,string,number
+1,client,/plan/4/fields/31/min,number,0
+1,client,/plan/4/fields/31/max,number,10
+1,client,/plan/4/fields/31/phase,string,followup
+1,client,/plan/4/fields/32,object,
+1,client,/plan/4/fields/32/id,string,followup_symptom_3
+1,client,/plan/4/fields/32/label,string,Dizziness
+1,client,/plan/4/fields/32/type,string,number
+1,client,/plan/4/fields/32/min,number,0
+1,client,/plan/4/fields/32/max,number,10
+1,client,/plan/4/fields/32/phase,string,followup
+1,client,/plan/4/fields/33,object,
+1,client,/plan/4/fields/33/id,string,followup_symptom_4
+1,client,/plan/4/fields/33/label,string,Nausea
+1,client,/plan/4/fields/33/type,string,number
+1,client,/plan/4/fields/33/min,number,0
+1,client,/plan/4/fields/33/max,number,10
+1,client,/plan/4/fields/33/phase,string,followup
+1,client,/plan/4/fields/34,object,
+1,client,/plan/4/fields/34/id,string,followup_symptom_5
+1,client,/plan/4/fields/34/label,string,Pain
+1,client,/plan/4/fields/34/type,string,number
+1,client,/plan/4/fields/34/min,number,0
+1,client,/plan/4/fields/34/max,number,10
+1,client,/plan/4/fields/34/phase,string,followup
+1,client,/plan/4/fields/35,object,
+1,client,/plan/4/fields/35/id,string,protocol
+1,client,/plan/4/fields/35/label,string,Tool / procedure / scoring / test conditions
+1,client,/plan/4/fields/35/type,string,textarea
+1,client,/plan/4/fields/35/group,string,setting
+1,client,/plan/4/fields/36,object,
+1,client,/plan/4/fields/36/id,string,primary
+1,client,/plan/4/fields/36/label,string,Primary outcome (choose one)
+1,client,/plan/4/fields/36/type,string,text
+1,client,/plan/4/fields/36/group,string,setting
+1,client,/plan/4/fields/37,object,
+1,client,/plan/4/fields/37/id,string,intervention
+1,client,/plan/4/fields/37/label,string,Training / duration / difficulty / breaks / comparison condition
+1,client,/plan/4/fields/37/type,string,textarea
+1,client,/plan/4/fields/37/group,string,setting
+1,client,/plan/4/fields/38,object,
+1,client,/plan/4/fields/38/id,string,baseline_range
+1,client,/plan/4/fields/38/label,string,Predefined symptom baseline range
+1,client,/plan/4/fields/38/type,string,text
+1,client,/plan/4/fields/39,object,
+1,client,/plan/4/fields/39/id,string,recovery_min
+1,client,/plan/4/fields/39/label,string,Time to baseline range (min)
+1,client,/plan/4/fields/39/type,string,number
+1,client,/plan/4/fields/39/min,number,0
+1,client,/plan/4/fields/40,object,
+1,client,/plan/4/fields/40/id,string,events
+1,client,/plan/4/fields/40/label,string,Adverse events / symptom context
+1,client,/plan/4/fields/40/type,string,textarea
+1,client,/plan/4/active,boolean,true
+1,client,/plan/4/initial,boolean,true
+1,client,/plan/4/functionCategory,string,motor
+1,client,/trainingPlan,array,
+1,client,/trainingPlan/0,object,
+1,client,/trainingPlan/0/k,string,demo_motor
+1,client,/trainingPlan/0/label,string,動作訓練
+1,client,/trainingPlan/0/fields,array,
+1,client,/trainingPlan/0/acts,array,
+1,client,/trainingPlan/0/acts/0,string,起立坐下練習
+1,client,/trainingPlan/0/acts/1,string,四腳拐步行練習
+1,client,/trainingPlan/0/acts/2,string,右手取放練習
+1,client,/created,string,2026-10-01
+1,client,/demo,boolean,true
+1,session,,object,
+1,session,/id,string,demo_stroke_treatment
+1,session,/date,string,2026-10-12
+1,session,/num,number,2
+1,session,/visit,string,treatment
+1,session,/mode,string,inperson
+1,session,/clinician,string,示範治療師（虛構）
+1,session,/duration,number,45
+1,session,/subjective,string,在家使用四腳拐行走；右手取放餐具較慢。希望自己走到餐桌並準備簡單餐點。
+1,session,/feedback,string,示範回饋：部分活動較熟悉，仍有困難。
+1,session,/sym,array,
+1,session,/sym/0,object,
+1,session,/sym/0/id,string,demo_stroke_treatment_pre
+1,session,/sym/0/kind,string,pre
+1,session,/sym/0/scores,object,
+1,session,/sym/1,object,
+1,session,/sym/1/id,string,demo_stroke_treatment_end
+1,session,/sym/1/kind,string,end
+1,session,/sym/1/scores,object,
+1,session,/assess,object,
+1,session,/assess/daily_task,object,
+1,session,/assess/daily_task/done,boolean,true
+1,session,/assess/daily_task/values,object,
+1,session,/assess/daily_task/values/task,string,使用四腳拐從臥室走到餐桌
+1,session,/assess/daily_task/values/performance,string,轉彎仍需提示一次，右手取放餐具時動作緩慢。
+1,session,/assess/daily_task/notes,string,完全虛構的日常任務觀察。
+1,session,/assess/st_tug,object,
+1,session,/assess/st_tug/done,boolean,true
+1,session,/assess/st_tug/values,object,
+1,session,/assess/st_tug/values/pre_context,string,2026-10-12 09:00
+1,session,/assess/st_tug/values/post_context,string,2026-10-12 09:45
+1,session,/assess/st_tug/values/protocol,string,標準座椅、四腳拐、3 公尺折返，旁站且不提供肢體協助；本例數值完全虛構。
+1,session,/assess/st_tug/values/primary,string,完成時間（秒）
+1,session,/assess/st_tug/values/intervention,string,本次活動與條件見 P；前後使用等難度材料。
+1,session,/assess/st_tug/values/pre_time_s,number,30
+1,session,/assess/st_tug/values/post_time_s,number,29
+1,session,/assess/st_tug/notes,string,示範數值，不代表治療效果或標準常模。
+1,session,/assess/st_bbt,object,
+1,session,/assess/st_bbt/done,boolean,true
+1,session,/assess/st_bbt/values,object,
+1,session,/assess/st_bbt/values/pre_context,string,2026-10-12 09:00
+1,session,/assess/st_bbt/values/post_context,string,2026-10-12 09:45
+1,session,/assess/st_bbt/values/protocol,string,右手 60 秒搬移，使用同一設備與坐姿；本例數值完全虛構。
+1,session,/assess/st_bbt/values/primary,string,60 秒搬移方塊數
+1,session,/assess/st_bbt/values/intervention,string,本次活動與條件見 P；前後使用等難度材料。
+1,session,/assess/st_bbt/values/pre_blocks,number,20
+1,session,/assess/st_bbt/values/post_blocks,number,22
+1,session,/assess/st_bbt/values/pre_hand,string,右手
+1,session,/assess/st_bbt/values/post_hand,string,右手
+1,session,/assess/st_bbt/notes,string,示範數值，不代表治療效果或標準常模。
+1,session,/assess/st_tolerance,object,
+1,session,/assess/st_tolerance/done,boolean,true
+1,session,/assess/st_tolerance/values,object,
+1,session,/assess/st_tolerance/values/pre_symptom_5,number,1
+1,session,/assess/st_tolerance/values/post_symptom_5,number,2
+1,session,/assess/st_tolerance/values/recovery_symptom_5,number,1
+1,session,/assess/st_tolerance/values/recovery_min,number,15
+1,session,/assess/st_tolerance/values/pre_context,string,2026-10-12 09:00
+1,session,/assess/st_tolerance/values/post_context,string,2026-10-12 09:45
+1,session,/assess/st_tolerance/values/recovery_context,string,2026-10-12 10:00
+1,session,/assess/st_tolerance/values/protocol,string,記錄當下疼痛自評 0 至 10；0 為無疼痛，10 為能想像的最嚴重疼痛。
+1,session,/assess/st_tolerance/values/baseline_range,string,1
+1,session,/assess/st_tolerance/values/events,string,虛構自評資料，與功能表現分別紀錄。
+1,session,/assess/st_tolerance/notes,string,本例的視覺症狀未施測，保留空白。
+1,session,/training,object,
+1,session,/training/demo_motor,object,
+1,session,/training/demo_motor/on,boolean,true
+1,session,/training/demo_motor/acts,array,
+1,session,/training/demo_motor/acts/0,string,起立坐下練習
+1,session,/training/demo_motor/acts/1,string,四腳拐步行練習
+1,session,/training/demo_motor/acts/2,string,右手取放練習
+1,session,/training/demo_motor/actScores,object,
+1,session,/training/demo_motor/actScores/起立坐下練習,string,5 次，旁站
+1,session,/training/demo_motor/actScores/四腳拐步行練習,string,25 m，旁站
+1,session,/training/demo_motor/actScores/右手取放練習,string,20 個／分鐘
+1,session,/training/demo_motor/dur,number,20
+1,session,/training/demo_motor/diff,number,5
+1,session,/training/demo_motor/program,string,虛構操作示範
+1,session,/training/demo_motor/notes,string,平坦室內走道、固定座高座椅與四腳拐；測試時旁站。
+1,session,/otherTx,string,虛構居家練習紀錄：依本次活動目標記錄執行情形與休息需求。
+1,session,/tolerance,number,6
+1,session,/assessment,string,以起身行走時間與右手搬移方塊數描述活動表現，並保留相同輔具及協助條件。
+1,session,/plan,string,示範紀錄：以相同條件追蹤「使用四腳拐從臥室走到餐桌」，分別記錄功能表現及活動後不適。
+1,session,/nextDate,string,2026-10-26
+1,session,/objective,string,轉彎仍需提示一次，右手取放餐具時動作緩慢。
+1,session,/peo,object,
+1,session,/peo/person,string,在家使用四腳拐行走；右手取放餐具較慢。希望自己走到餐桌並準備簡單餐點。
+1,session,/peo/environment,string,平坦室內走道、固定座高座椅與四腳拐；測試時旁站。
+1,session,/peo/occupation,string,使用四腳拐從臥室走到餐桌
+1,session,/interventions,object,
+1,session,/interventions/adaptation,object,
+1,session,/interventions/adaptation/picks,array,
+1,session,/interventions/adaptation/picks/0,string,task_setup
+1,session,/interventions/adaptation/picks/1,string,environment_mod
+1,session,/interventions/adaptation/notes,string,平坦室內走道、固定座高座椅與四腳拐；測試時旁站。
+1,session,/interventions/compensation,object,
+1,session,/interventions/compensation/picks,array,
+1,session,/interventions/compensation/picks/0,string,pacing_rest
+1,session,/interventions/compensation/notes,string,示範方案：記錄提示方式與分段休息，不以單次分數差推定療效。
+1,session,/created,string,2026-10-12T09:00:00+08:00
+1,session,/updated,string,2026-10-12T10:00:00+08:00
+1,session,/demo,boolean,true
+1,session,/assessmentPlan,array,
+1,session,/assessmentPlan/0,object,
+1,session,/assessmentPlan/0/id,string,daily_task
+1,session,/assessmentPlan/0/category,string,functional
+1,session,/assessmentPlan/0/domain,string,Functional performance
+1,session,/assessmentPlan/0/name,string,Daily task performance
+1,session,/assessmentPlan/0/timing,string,assessment
+1,session,/assessmentPlan/0/fields,array,
+1,session,/assessmentPlan/0/fields/0,object,
+1,session,/assessmentPlan/0/fields/0/id,string,task
+1,session,/assessmentPlan/0/fields/0/label,string,Task / measure
+1,session,/assessmentPlan/0/fields/0/type,string,text
+1,session,/assessmentPlan/0/fields/1,object,
+1,session,/assessmentPlan/0/fields/1/id,string,performance
+1,session,/assessmentPlan/0/fields/1/label,string,Performance / observation
+1,session,/assessmentPlan/0/fields/1/type,string,textarea
+1,session,/assessmentPlan/0/active,boolean,true
+1,session,/assessmentPlan/0/initial,boolean,true
+1,session,/assessmentPlan/1,object,
+1,session,/assessmentPlan/1/id,string,st_tug
+1,session,/assessmentPlan/1/name,string,Timed Up and Go (short-term TUG)
+1,session,/assessmentPlan/1/outcome,string,"Generally seek a shorter completion time; keep chair, walking aid, assistance and procedure consistent."
+1,session,/assessmentPlan/1/category,string,functional
+1,session,/assessmentPlan/1/domain,string,Short-term functional outcomes
+1,session,/assessmentPlan/1/timing,string,session
+1,session,/assessmentPlan/1/fields,array,
+1,session,/assessmentPlan/1/fields/0,object,
+1,session,/assessmentPlan/1/fields/0/id,string,pre_context
+1,session,/assessmentPlan/1/fields/0/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/0/type,string,text
+1,session,/assessmentPlan/1/fields/0/phase,string,pre
+1,session,/assessmentPlan/1/fields/1,object,
+1,session,/assessmentPlan/1/fields/1/id,string,pre_time_s
+1,session,/assessmentPlan/1/fields/1/label,string,Completion time (s)
+1,session,/assessmentPlan/1/fields/1/type,string,number
+1,session,/assessmentPlan/1/fields/1/min,number,0
+1,session,/assessmentPlan/1/fields/1/phase,string,pre
+1,session,/assessmentPlan/1/fields/2,object,
+1,session,/assessmentPlan/1/fields/2/id,string,pre2_context
+1,session,/assessmentPlan/1/fields/2/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/2/type,string,text
+1,session,/assessmentPlan/1/fields/2/phase,string,pre2
+1,session,/assessmentPlan/1/fields/3,object,
+1,session,/assessmentPlan/1/fields/3/id,string,pre2_time_s
+1,session,/assessmentPlan/1/fields/3/label,string,Completion time (s)
+1,session,/assessmentPlan/1/fields/3/type,string,number
+1,session,/assessmentPlan/1/fields/3/min,number,0
+1,session,/assessmentPlan/1/fields/3/phase,string,pre2
+1,session,/assessmentPlan/1/fields/4,object,
+1,session,/assessmentPlan/1/fields/4/id,string,post_context
+1,session,/assessmentPlan/1/fields/4/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/4/type,string,text
+1,session,/assessmentPlan/1/fields/4/phase,string,post
+1,session,/assessmentPlan/1/fields/5,object,
+1,session,/assessmentPlan/1/fields/5/id,string,post_time_s
+1,session,/assessmentPlan/1/fields/5/label,string,Completion time (s)
+1,session,/assessmentPlan/1/fields/5/type,string,number
+1,session,/assessmentPlan/1/fields/5/min,number,0
+1,session,/assessmentPlan/1/fields/5/phase,string,post
+1,session,/assessmentPlan/1/fields/6,object,
+1,session,/assessmentPlan/1/fields/6/id,string,recovery_context
+1,session,/assessmentPlan/1/fields/6/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/6/type,string,text
+1,session,/assessmentPlan/1/fields/6/phase,string,recovery
+1,session,/assessmentPlan/1/fields/7,object,
+1,session,/assessmentPlan/1/fields/7/id,string,recovery_time_s
+1,session,/assessmentPlan/1/fields/7/label,string,Completion time (s)
+1,session,/assessmentPlan/1/fields/7/type,string,number
+1,session,/assessmentPlan/1/fields/7/min,number,0
+1,session,/assessmentPlan/1/fields/7/phase,string,recovery
+1,session,/assessmentPlan/1/fields/8,object,
+1,session,/assessmentPlan/1/fields/8/id,string,followup_context
+1,session,/assessmentPlan/1/fields/8/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/1/fields/8/type,string,text
+1,session,/assessmentPlan/1/fields/8/phase,string,followup
+1,session,/assessmentPlan/1/fields/9,object,
+1,session,/assessmentPlan/1/fields/9/id,string,followup_time_s
+1,session,/assessmentPlan/1/fields/9/label,string,Completion time (s)
+1,session,/assessmentPlan/1/fields/9/type,string,number
+1,session,/assessmentPlan/1/fields/9/min,number,0
+1,session,/assessmentPlan/1/fields/9/phase,string,followup
+1,session,/assessmentPlan/1/fields/10,object,
+1,session,/assessmentPlan/1/fields/10/id,string,protocol
+1,session,/assessmentPlan/1/fields/10/label,string,Tool / procedure / scoring / test conditions
+1,session,/assessmentPlan/1/fields/10/type,string,textarea
+1,session,/assessmentPlan/1/fields/10/group,string,setting
+1,session,/assessmentPlan/1/fields/11,object,
+1,session,/assessmentPlan/1/fields/11/id,string,primary
+1,session,/assessmentPlan/1/fields/11/label,string,Primary outcome (choose one)
+1,session,/assessmentPlan/1/fields/11/type,string,text
+1,session,/assessmentPlan/1/fields/11/group,string,setting
+1,session,/assessmentPlan/1/fields/12,object,
+1,session,/assessmentPlan/1/fields/12/id,string,intervention
+1,session,/assessmentPlan/1/fields/12/label,string,Training / duration / difficulty / breaks / comparison condition
+1,session,/assessmentPlan/1/fields/12/type,string,textarea
+1,session,/assessmentPlan/1/fields/12/group,string,setting
+1,session,/assessmentPlan/1/active,boolean,true
+1,session,/assessmentPlan/1/initial,boolean,true
+1,session,/assessmentPlan/2,object,
+1,session,/assessmentPlan/2/id,string,st_bbt
+1,session,/assessmentPlan/2/name,string,Box and Block Test (short-term BBT)
+1,session,/assessmentPlan/2/outcome,string,Record blocks transferred in 60 seconds and the tested hand. More blocks is generally better; keep the protocol consistent.
+1,session,/assessmentPlan/2/category,string,functional
+1,session,/assessmentPlan/2/domain,string,Short-term functional outcomes
+1,session,/assessmentPlan/2/timing,string,session
+1,session,/assessmentPlan/2/fields,array,
+1,session,/assessmentPlan/2/fields/0,object,
+1,session,/assessmentPlan/2/fields/0/id,string,pre_context
+1,session,/assessmentPlan/2/fields/0/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/2/fields/0/type,string,text
+1,session,/assessmentPlan/2/fields/0/phase,string,pre
+1,session,/assessmentPlan/2/fields/1,object,
+1,session,/assessmentPlan/2/fields/1/id,string,pre_blocks
+1,session,/assessmentPlan/2/fields/1/label,string,Blocks transferred in 60 s (n)
+1,session,/assessmentPlan/2/fields/1/type,string,number
+1,session,/assessmentPlan/2/fields/1/min,number,0
+1,session,/assessmentPlan/2/fields/1/step,number,1
+1,session,/assessmentPlan/2/fields/1/phase,string,pre
+1,session,/assessmentPlan/2/fields/2,object,
+1,session,/assessmentPlan/2/fields/2/id,string,pre_hand
+1,session,/assessmentPlan/2/fields/2/label,string,Tested hand
+1,session,/assessmentPlan/2/fields/2/type,string,text
+1,session,/assessmentPlan/2/fields/2/phase,string,pre
+1,session,/assessmentPlan/2/fields/3,object,
+1,session,/assessmentPlan/2/fields/3/id,string,pre2_context
+1,session,/assessmentPlan/2/fields/3/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/2/fields/3/type,string,text
+1,session,/assessmentPlan/2/fields/3/phase,string,pre2
+1,session,/assessmentPlan/2/fields/4,object,
+1,session,/assessmentPlan/2/fields/4/id,string,pre2_blocks
+1,session,/assessmentPlan/2/fields/4/label,string,Blocks transferred in 60 s (n)
+1,session,/assessmentPlan/2/fields/4/type,string,number
+1,session,/assessmentPlan/2/fields/4/min,number,0
+1,session,/assessmentPlan/2/fields/4/step,number,1
+1,session,/assessmentPlan/2/fields/4/phase,string,pre2
+1,session,/assessmentPlan/2/fields/5,object,
+1,session,/assessmentPlan/2/fields/5/id,string,pre2_hand
+1,session,/assessmentPlan/2/fields/5/label,string,Tested hand
+1,session,/assessmentPlan/2/fields/5/type,string,text
+1,session,/assessmentPlan/2/fields/5/phase,string,pre2
+1,session,/assessmentPlan/2/fields/6,object,
+1,session,/assessmentPlan/2/fields/6/id,string,post_context
+1,session,/assessmentPlan/2/fields/6/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/2/fields/6/type,string,text
+1,session,/assessmentPlan/2/fields/6/phase,string,post
+1,session,/assessmentPlan/2/fields/7,object,
+1,session,/assessmentPlan/2/fields/7/id,string,post_blocks
+1,session,/assessmentPlan/2/fields/7/label,string,Blocks transferred in 60 s (n)
+1,session,/assessmentPlan/2/fields/7/type,string,number
+1,session,/assessmentPlan/2/fields/7/min,number,0
+1,session,/assessmentPlan/2/fields/7/step,number,1
+1,session,/assessmentPlan/2/fields/7/phase,string,post
+1,session,/assessmentPlan/2/fields/8,object,
+1,session,/assessmentPlan/2/fields/8/id,string,post_hand
+1,session,/assessmentPlan/2/fields/8/label,string,Tested hand
+1,session,/assessmentPlan/2/fields/8/type,string,text
+1,session,/assessmentPlan/2/fields/8/phase,string,post
+1,session,/assessmentPlan/2/fields/9,object,
+1,session,/assessmentPlan/2/fields/9/id,string,recovery_context
+1,session,/assessmentPlan/2/fields/9/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/2/fields/9/type,string,text
+1,session,/assessmentPlan/2/fields/9/phase,string,recovery
+1,session,/assessmentPlan/2/fields/10,object,
+1,session,/assessmentPlan/2/fields/10/id,string,recovery_blocks
+1,session,/assessmentPlan/2/fields/10/label,string,Blocks transferred in 60 s (n)
+1,session,/assessmentPlan/2/fields/10/type,string,number
+1,session,/assessmentPlan/2/fields/10/min,number,0
+1,session,/assessmentPlan/2/fields/10/step,number,1
+1,session,/assessmentPlan/2/fields/10/phase,string,recovery
+1,session,/assessmentPlan/2/fields/11,object,
+1,session,/assessmentPlan/2/fields/11/id,string,recovery_hand
+1,session,/assessmentPlan/2/fields/11/label,string,Tested hand
+1,session,/assessmentPlan/2/fields/11/type,string,text
+1,session,/assessmentPlan/2/fields/11/phase,string,recovery
+1,session,/assessmentPlan/2/fields/12,object,
+1,session,/assessmentPlan/2/fields/12/id,string,followup_context
+1,session,/assessmentPlan/2/fields/12/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/2/fields/12/type,string,text
+1,session,/assessmentPlan/2/fields/12/phase,string,followup
+1,session,/assessmentPlan/2/fields/13,object,
+1,session,/assessmentPlan/2/fields/13/id,string,followup_blocks
+1,session,/assessmentPlan/2/fields/13/label,string,Blocks transferred in 60 s (n)
+1,session,/assessmentPlan/2/fields/13/type,string,number
+1,session,/assessmentPlan/2/fields/13/min,number,0
+1,session,/assessmentPlan/2/fields/13/step,number,1
+1,session,/assessmentPlan/2/fields/13/phase,string,followup
+1,session,/assessmentPlan/2/fields/14,object,
+1,session,/assessmentPlan/2/fields/14/id,string,followup_hand
+1,session,/assessmentPlan/2/fields/14/label,string,Tested hand
+1,session,/assessmentPlan/2/fields/14/type,string,text
+1,session,/assessmentPlan/2/fields/14/phase,string,followup
+1,session,/assessmentPlan/2/fields/15,object,
+1,session,/assessmentPlan/2/fields/15/id,string,protocol
+1,session,/assessmentPlan/2/fields/15/label,string,Tool / procedure / scoring / test conditions
+1,session,/assessmentPlan/2/fields/15/type,string,textarea
+1,session,/assessmentPlan/2/fields/15/group,string,setting
+1,session,/assessmentPlan/2/fields/16,object,
+1,session,/assessmentPlan/2/fields/16/id,string,primary
+1,session,/assessmentPlan/2/fields/16/label,string,Primary outcome (choose one)
+1,session,/assessmentPlan/2/fields/16/type,string,text
+1,session,/assessmentPlan/2/fields/16/group,string,setting
+1,session,/assessmentPlan/2/fields/17,object,
+1,session,/assessmentPlan/2/fields/17/id,string,intervention
+1,session,/assessmentPlan/2/fields/17/label,string,Training / duration / difficulty / breaks / comparison condition
+1,session,/assessmentPlan/2/fields/17/type,string,textarea
+1,session,/assessmentPlan/2/fields/17/group,string,setting
+1,session,/assessmentPlan/2/active,boolean,true
+1,session,/assessmentPlan/2/initial,boolean,true
+1,session,/assessmentPlan/3,object,
+1,session,/assessmentPlan/3/id,string,st_tolerance
+1,session,/assessmentPlan/3/category,string,visual
+1,session,/assessmentPlan/3/domain,string,Short-term tolerability / safety
+1,session,/assessmentPlan/3/name,string,Symptoms / recovery (short-term tolerability)
+1,session,/assessmentPlan/3/outcome,string,"Rate each current symptom from 0–10 for tolerability/safety, separately from functional efficacy. Symptoms can rise while function improves. Record baseline symptoms, adverse events and recovery to a predefined baseline range; VOMS is screening, not a validated single-session efficacy test."
+1,session,/assessmentPlan/3/timing,string,session
+1,session,/assessmentPlan/3/fields,array,
+1,session,/assessmentPlan/3/fields/0,object,
+1,session,/assessmentPlan/3/fields/0/id,string,pre_context
+1,session,/assessmentPlan/3/fields/0/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/3/fields/0/type,string,text
+1,session,/assessmentPlan/3/fields/0/phase,string,pre
+1,session,/assessmentPlan/3/fields/1,object,
+1,session,/assessmentPlan/3/fields/1/id,string,pre_symptom_0
+1,session,/assessmentPlan/3/fields/1/label,string,Eye fatigue
+1,session,/assessmentPlan/3/fields/1/type,string,number
+1,session,/assessmentPlan/3/fields/1/min,number,0
+1,session,/assessmentPlan/3/fields/1/max,number,10
+1,session,/assessmentPlan/3/fields/1/phase,string,pre
+1,session,/assessmentPlan/3/fields/2,object,
+1,session,/assessmentPlan/3/fields/2/id,string,pre_symptom_1
+1,session,/assessmentPlan/3/fields/2/label,string,Headache
+1,session,/assessmentPlan/3/fields/2/type,string,number
+1,session,/assessmentPlan/3/fields/2/min,number,0
+1,session,/assessmentPlan/3/fields/2/max,number,10
+1,session,/assessmentPlan/3/fields/2/phase,string,pre
+1,session,/assessmentPlan/3/fields/3,object,
+1,session,/assessmentPlan/3/fields/3/id,string,pre_symptom_2
+1,session,/assessmentPlan/3/fields/3/label,string,Eye soreness
+1,session,/assessmentPlan/3/fields/3/type,string,number
+1,session,/assessmentPlan/3/fields/3/min,number,0
+1,session,/assessmentPlan/3/fields/3/max,number,10
+1,session,/assessmentPlan/3/fields/3/phase,string,pre
+1,session,/assessmentPlan/3/fields/4,object,
+1,session,/assessmentPlan/3/fields/4/id,string,pre_symptom_3
+1,session,/assessmentPlan/3/fields/4/label,string,Dizziness
+1,session,/assessmentPlan/3/fields/4/type,string,number
+1,session,/assessmentPlan/3/fields/4/min,number,0
+1,session,/assessmentPlan/3/fields/4/max,number,10
+1,session,/assessmentPlan/3/fields/4/phase,string,pre
+1,session,/assessmentPlan/3/fields/5,object,
+1,session,/assessmentPlan/3/fields/5/id,string,pre_symptom_4
+1,session,/assessmentPlan/3/fields/5/label,string,Nausea
+1,session,/assessmentPlan/3/fields/5/type,string,number
+1,session,/assessmentPlan/3/fields/5/min,number,0
+1,session,/assessmentPlan/3/fields/5/max,number,10
+1,session,/assessmentPlan/3/fields/5/phase,string,pre
+1,session,/assessmentPlan/3/fields/6,object,
+1,session,/assessmentPlan/3/fields/6/id,string,pre_symptom_5
+1,session,/assessmentPlan/3/fields/6/label,string,Pain
+1,session,/assessmentPlan/3/fields/6/type,string,number
+1,session,/assessmentPlan/3/fields/6/min,number,0
+1,session,/assessmentPlan/3/fields/6/max,number,10
+1,session,/assessmentPlan/3/fields/6/phase,string,pre
+1,session,/assessmentPlan/3/fields/7,object,
+1,session,/assessmentPlan/3/fields/7/id,string,pre2_context
+1,session,/assessmentPlan/3/fields/7/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/3/fields/7/type,string,text
+1,session,/assessmentPlan/3/fields/7/phase,string,pre2
+1,session,/assessmentPlan/3/fields/8,object,
+1,session,/assessmentPlan/3/fields/8/id,string,pre2_symptom_0
+1,session,/assessmentPlan/3/fields/8/label,string,Eye fatigue
+1,session,/assessmentPlan/3/fields/8/type,string,number
+1,session,/assessmentPlan/3/fields/8/min,number,0
+1,session,/assessmentPlan/3/fields/8/max,number,10
+1,session,/assessmentPlan/3/fields/8/phase,string,pre2
+1,session,/assessmentPlan/3/fields/9,object,
+1,session,/assessmentPlan/3/fields/9/id,string,pre2_symptom_1
+1,session,/assessmentPlan/3/fields/9/label,string,Headache
+1,session,/assessmentPlan/3/fields/9/type,string,number
+1,session,/assessmentPlan/3/fields/9/min,number,0
+1,session,/assessmentPlan/3/fields/9/max,number,10
+1,session,/assessmentPlan/3/fields/9/phase,string,pre2
+1,session,/assessmentPlan/3/fields/10,object,
+1,session,/assessmentPlan/3/fields/10/id,string,pre2_symptom_2
+1,session,/assessmentPlan/3/fields/10/label,string,Eye soreness
+1,session,/assessmentPlan/3/fields/10/type,string,number
+1,session,/assessmentPlan/3/fields/10/min,number,0
+1,session,/assessmentPlan/3/fields/10/max,number,10
+1,session,/assessmentPlan/3/fields/10/phase,string,pre2
+1,session,/assessmentPlan/3/fields/11,object,
+1,session,/assessmentPlan/3/fields/11/id,string,pre2_symptom_3
+1,session,/assessmentPlan/3/fields/11/label,string,Dizziness
+1,session,/assessmentPlan/3/fields/11/type,string,number
+1,session,/assessmentPlan/3/fields/11/min,number,0
+1,session,/assessmentPlan/3/fields/11/max,number,10
+1,session,/assessmentPlan/3/fields/11/phase,string,pre2
+1,session,/assessmentPlan/3/fields/12,object,
+1,session,/assessmentPlan/3/fields/12/id,string,pre2_symptom_4
+1,session,/assessmentPlan/3/fields/12/label,string,Nausea
+1,session,/assessmentPlan/3/fields/12/type,string,number
+1,session,/assessmentPlan/3/fields/12/min,number,0
+1,session,/assessmentPlan/3/fields/12/max,number,10
+1,session,/assessmentPlan/3/fields/12/phase,string,pre2
+1,session,/assessmentPlan/3/fields/13,object,
+1,session,/assessmentPlan/3/fields/13/id,string,pre2_symptom_5
+1,session,/assessmentPlan/3/fields/13/label,string,Pain
+1,session,/assessmentPlan/3/fields/13/type,string,number
+1,session,/assessmentPlan/3/fields/13/min,number,0
+1,session,/assessmentPlan/3/fields/13/max,number,10
+1,session,/assessmentPlan/3/fields/13/phase,string,pre2
+1,session,/assessmentPlan/3/fields/14,object,
+1,session,/assessmentPlan/3/fields/14/id,string,post_context
+1,session,/assessmentPlan/3/fields/14/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/3/fields/14/type,string,text
+1,session,/assessmentPlan/3/fields/14/phase,string,post
+1,session,/assessmentPlan/3/fields/15,object,
+1,session,/assessmentPlan/3/fields/15/id,string,post_symptom_0
+1,session,/assessmentPlan/3/fields/15/label,string,Eye fatigue
+1,session,/assessmentPlan/3/fields/15/type,string,number
+1,session,/assessmentPlan/3/fields/15/min,number,0
+1,session,/assessmentPlan/3/fields/15/max,number,10
+1,session,/assessmentPlan/3/fields/15/phase,string,post
+1,session,/assessmentPlan/3/fields/16,object,
+1,session,/assessmentPlan/3/fields/16/id,string,post_symptom_1
+1,session,/assessmentPlan/3/fields/16/label,string,Headache
+1,session,/assessmentPlan/3/fields/16/type,string,number
+1,session,/assessmentPlan/3/fields/16/min,number,0
+1,session,/assessmentPlan/3/fields/16/max,number,10
+1,session,/assessmentPlan/3/fields/16/phase,string,post
+1,session,/assessmentPlan/3/fields/17,object,
+1,session,/assessmentPlan/3/fields/17/id,string,post_symptom_2
+1,session,/assessmentPlan/3/fields/17/label,string,Eye soreness
+1,session,/assessmentPlan/3/fields/17/type,string,number
+1,session,/assessmentPlan/3/fields/17/min,number,0
+1,session,/assessmentPlan/3/fields/17/max,number,10
+1,session,/assessmentPlan/3/fields/17/phase,string,post
+1,session,/assessmentPlan/3/fields/18,object,
+1,session,/assessmentPlan/3/fields/18/id,string,post_symptom_3
+1,session,/assessmentPlan/3/fields/18/label,string,Dizziness
+1,session,/assessmentPlan/3/fields/18/type,string,number
+1,session,/assessmentPlan/3/fields/18/min,number,0
+1,session,/assessmentPlan/3/fields/18/max,number,10
+1,session,/assessmentPlan/3/fields/18/phase,string,post
+1,session,/assessmentPlan/3/fields/19,object,
+1,session,/assessmentPlan/3/fields/19/id,string,post_symptom_4
+1,session,/assessmentPlan/3/fields/19/label,string,Nausea
+1,session,/assessmentPlan/3/fields/19/type,string,number
+1,session,/assessmentPlan/3/fields/19/min,number,0
+1,session,/assessmentPlan/3/fields/19/max,number,10
+1,session,/assessmentPlan/3/fields/19/phase,string,post
+1,session,/assessmentPlan/3/fields/20,object,
+1,session,/assessmentPlan/3/fields/20/id,string,post_symptom_5
+1,session,/assessmentPlan/3/fields/20/label,string,Pain
+1,session,/assessmentPlan/3/fields/20/type,string,number
+1,session,/assessmentPlan/3/fields/20/min,number,0
+1,session,/assessmentPlan/3/fields/20/max,number,10
+1,session,/assessmentPlan/3/fields/20/phase,string,post
+1,session,/assessmentPlan/3/fields/21,object,
+1,session,/assessmentPlan/3/fields/21/id,string,recovery_context
+1,session,/assessmentPlan/3/fields/21/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/3/fields/21/type,string,text
+1,session,/assessmentPlan/3/fields/21/phase,string,recovery
+1,session,/assessmentPlan/3/fields/22,object,
+1,session,/assessmentPlan/3/fields/22/id,string,recovery_symptom_0
+1,session,/assessmentPlan/3/fields/22/label,string,Eye fatigue
+1,session,/assessmentPlan/3/fields/22/type,string,number
+1,session,/assessmentPlan/3/fields/22/min,number,0
+1,session,/assessmentPlan/3/fields/22/max,number,10
+1,session,/assessmentPlan/3/fields/22/phase,string,recovery
+1,session,/assessmentPlan/3/fields/23,object,
+1,session,/assessmentPlan/3/fields/23/id,string,recovery_symptom_1
+1,session,/assessmentPlan/3/fields/23/label,string,Headache
+1,session,/assessmentPlan/3/fields/23/type,string,number
+1,session,/assessmentPlan/3/fields/23/min,number,0
+1,session,/assessmentPlan/3/fields/23/max,number,10
+1,session,/assessmentPlan/3/fields/23/phase,string,recovery
+1,session,/assessmentPlan/3/fields/24,object,
+1,session,/assessmentPlan/3/fields/24/id,string,recovery_symptom_2
+1,session,/assessmentPlan/3/fields/24/label,string,Eye soreness
+1,session,/assessmentPlan/3/fields/24/type,string,number
+1,session,/assessmentPlan/3/fields/24/min,number,0
+1,session,/assessmentPlan/3/fields/24/max,number,10
+1,session,/assessmentPlan/3/fields/24/phase,string,recovery
+1,session,/assessmentPlan/3/fields/25,object,
+1,session,/assessmentPlan/3/fields/25/id,string,recovery_symptom_3
+1,session,/assessmentPlan/3/fields/25/label,string,Dizziness
+1,session,/assessmentPlan/3/fields/25/type,string,number
+1,session,/assessmentPlan/3/fields/25/min,number,0
+1,session,/assessmentPlan/3/fields/25/max,number,10
+1,session,/assessmentPlan/3/fields/25/phase,string,recovery
+1,session,/assessmentPlan/3/fields/26,object,
+1,session,/assessmentPlan/3/fields/26/id,string,recovery_symptom_4
+1,session,/assessmentPlan/3/fields/26/label,string,Nausea
+1,session,/assessmentPlan/3/fields/26/type,string,number
+1,session,/assessmentPlan/3/fields/26/min,number,0
+1,session,/assessmentPlan/3/fields/26/max,number,10
+1,session,/assessmentPlan/3/fields/26/phase,string,recovery
+1,session,/assessmentPlan/3/fields/27,object,
+1,session,/assessmentPlan/3/fields/27/id,string,recovery_symptom_5
+1,session,/assessmentPlan/3/fields/27/label,string,Pain
+1,session,/assessmentPlan/3/fields/27/type,string,number
+1,session,/assessmentPlan/3/fields/27/min,number,0
+1,session,/assessmentPlan/3/fields/27/max,number,10
+1,session,/assessmentPlan/3/fields/27/phase,string,recovery
+1,session,/assessmentPlan/3/fields/28,object,
+1,session,/assessmentPlan/3/fields/28/id,string,followup_context
+1,session,/assessmentPlan/3/fields/28/label,string,Measurement time / equivalent form
+1,session,/assessmentPlan/3/fields/28/type,string,text
+1,session,/assessmentPlan/3/fields/28/phase,string,followup
+1,session,/assessmentPlan/3/fields/29,object,
+1,session,/assessmentPlan/3/fields/29/id,string,followup_symptom_0
+1,session,/assessmentPlan/3/fields/29/label,string,Eye fatigue
+1,session,/assessmentPlan/3/fields/29/type,string,number
+1,session,/assessmentPlan/3/fields/29/min,number,0
+1,session,/assessmentPlan/3/fields/29/max,number,10
+1,session,/assessmentPlan/3/fields/29/phase,string,followup
+1,session,/assessmentPlan/3/fields/30,object,
+1,session,/assessmentPlan/3/fields/30/id,string,followup_symptom_1
+1,session,/assessmentPlan/3/fields/30/label,string,Headache
+1,session,/assessmentPlan/3/fields/30/type,string,number
+1,session,/assessmentPlan/3/fields/30/min,number,0
+1,session,/assessmentPlan/3/fields/30/max,number,10
+1,session,/assessmentPlan/3/fields/30/phase,string,followup
+1,session,/assessmentPlan/3/fields/31,object,
+1,session,/assessmentPlan/3/fields/31/id,string,followup_symptom_2
+1,session,/assessmentPlan/3/fields/31/label,string,Eye soreness
+1,session,/assessmentPlan/3/fields/31/type,string,number
+1,session,/assessmentPlan/3/fields/31/min,number,0
+1,session,/assessmentPlan/3/fields/31/max,number,10
+1,session,/assessmentPlan/3/fields/31/phase,string,followup
+1,session,/assessmentPlan/3/fields/32,object,
+1,session,/assessmentPlan/3/fields/32/id,string,followup_symptom_3
+1,session,/assessmentPlan/3/fields/32/label,string,Dizziness
+1,session,/assessmentPlan/3/fields/32/type,string,number
+1,session,/assessmentPlan/3/fields/32/min,number,0
+1,session,/assessmentPlan/3/fields/32/max,number,10
+1,session,/assessmentPlan/3/fields/32/phase,string,followup
+1,session,/assessmentPlan/3/fields/33,object,
+1,session,/assessmentPlan/3/fields/33/id,string,followup_symptom_4
+1,session,/assessmentPlan/3/fields/33/label,string,Nausea
+1,session,/assessmentPlan/3/fields/33/type,string,number
+1,session,/assessmentPlan/3/fields/33/min,number,0
+1,session,/assessmentPlan/3/fields/33/max,number,10
+1,session,/assessmentPlan/3/fields/33/phase,string,followup
+1,session,/assessmentPlan/3/fields/34,object,
+1,session,/assessmentPlan/3/fields/34/id,string,followup_symptom_5
+1,session,/assessmentPlan/3/fields/34/label,string,Pain
+1,session,/assessmentPlan/3/fields/34/type,string,number
+1,session,/assessmentPlan/3/fields/34/min,number,0
+1,session,/assessmentPlan/3/fields/34/max,number,10
+1,session,/assessmentPlan/3/fields/34/phase,string,followup
+1,session,/assessmentPlan/3/fields/35,object,
+1,session,/assessmentPlan/3/fields/35/id,string,protocol
+1,session,/assessmentPlan/3/fields/35/label,string,Tool / procedure / scoring / test conditions
+1,session,/assessmentPlan/3/fields/35/type,string,textarea
+1,session,/assessmentPlan/3/fields/35/group,string,setting
+1,session,/assessmentPlan/3/fields/36,object,
+1,session,/assessmentPlan/3/fields/36/id,string,primary
+1,session,/assessmentPlan/3/fields/36/label,string,Primary outcome (choose one)
+1,session,/assessmentPlan/3/fields/36/type,string,text
+1,session,/assessmentPlan/3/fields/36/group,string,setting
+1,session,/assessmentPlan/3/fields/37,object,
+1,session,/assessmentPlan/3/fields/37/id,string,intervention
+1,session,/assessmentPlan/3/fields/37/label,string,Training / duration / difficulty / breaks / comparison condition
+1,session,/assessmentPlan/3/fields/37/type,string,textarea
+1,session,/assessmentPlan/3/fields/37/group,string,setting
+1,session,/assessmentPlan/3/fields/38,object,
+1,session,/assessmentPlan/3/fields/38/id,string,baseline_range
+1,session,/assessmentPlan/3/fields/38/label,string,Predefined symptom baseline range
+1,session,/assessmentPlan/3/fields/38/type,string,text
+1,session,/assessmentPlan/3/fields/39,object,
+1,session,/assessmentPlan/3/fields/39/id,string,recovery_min
+1,session,/assessmentPlan/3/fields/39/label,string,Time to baseline range (min)
+1,session,/assessmentPlan/3/fields/39/type,string,number
+1,session,/assessmentPlan/3/fields/39/min,number,0
+1,session,/assessmentPlan/3/fields/40,object,
+1,session,/assessmentPlan/3/fields/40/id,string,events
+1,session,/assessmentPlan/3/fields/40/label,string,Adverse events / symptom context
+1,session,/assessmentPlan/3/fields/40/type,string,textarea
+1,session,/assessmentPlan/3/active,boolean,true
+1,session,/assessmentPlan/3/initial,boolean,true
+1,session,/assessmentPlan/3/functionCategory,string,motor
+1,session,/trainingPlan,array,
+1,session,/trainingPlan/0,object,
+1,session,/trainingPlan/0/k,string,demo_motor
+1,session,/trainingPlan/0/label,string,動作訓練
+1,session,/trainingPlan/0/fields,array,
+1,session,/trainingPlan/0/acts,array,
+1,session,/trainingPlan/0/acts/0,string,起立坐下練習
+1,session,/trainingPlan/0/acts/1,string,四腳拐步行練習
+1,session,/trainingPlan/0/acts/2,string,右手取放練習
+1,session,/clinicalLinks,array,
+1,session,/clinicalLinks/0,object,
+1,session,/clinicalLinks/0/id,string,demo_stroke_treatment_link
+1,session,/clinicalLinks/0/category,string,functional
+1,session,/clinicalLinks/0/symptom,string,在家使用四腳拐行走；右手取放餐具較慢。希望自己走到餐桌並準備簡單餐點。
+1,session,/clinicalLinks/0/reasoning,string,以起身行走時間與右手搬移方塊數描述活動表現，並保留相同輔具及協助條件。
+1,session,/clinicalLinks/0/peo,array,
+1,session,/clinicalLinks/0/peo/0,string,person
+1,session,/clinicalLinks/0/peo/1,string,environment
+1,session,/clinicalLinks/0/peo/2,string,occupation
+1,session,/clinicalLinks/0/evidence,array,
+1,session,/clinicalLinks/0/evidence/0,string,st_tug
+1,session,/clinicalLinks/0/evidence/1,string,st_bbt
+1,session,/clinicalLinks/0/evidence/2,string,daily_task
+1,session,/clinicalLinks/0/evidenceNotes,string,完全虛構的示範數據，未施測項目不填數值。
+1,session,/clinicalLinks/0/interventions,array,
+1,session,/clinicalLinks/0/interventions/0,string,pacing_rest
+1,session,/clinicalLinks/0/interventions/1,string,task_setup
+1,session,/clinicalLinks/0/interventionNotes,string,起立坐下練習、四腳拐步行練習、右手取放練習

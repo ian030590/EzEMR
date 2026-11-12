@@ -5,6 +5,7 @@ const { pathToFileURL } = require('node:url');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const { appPath } = require('./lib/app.cjs');
+const { openAssessment } = require('./lib/assessments.cjs');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, '.tmp', 'verification');
 
@@ -34,7 +35,7 @@ const output = path.join(root, '.tmp', 'verification');
       await page.locator('#languageSelect').selectOption(locale);
       assert.equal(await page.locator('h1').innerText(), 'EzEMR');
       assert.match(await page.title(), /^EzEMR \|/);
-      assert.equal(await page.locator('.storage-preview').isVisible(), true);
+      assert.equal(await page.locator('.storage-preview').isVisible(), false, 'File mechanics start in collapsed advanced details');
       assert.equal(await action('pick-folder').isVisible(), true);
       assert.equal(await page.evaluate(() => clients.length), 0);
       await fits('connect'); await capture('connect');
@@ -53,6 +54,7 @@ const output = path.join(root, '.tmp', 'verification');
       await page.locator('#cf-name').fill('Workspace test client');
       await page.locator('#cf-ref').fill('TEST-WORKSPACE');
       await page.locator('#cf-dx').fill('Synthetic history for layout checks.\n'.repeat(20));
+      await page.locator('#cf-history').fill('Synthetic medical history for layout checks.\n'.repeat(20));
       await page.locator('#cForm [type="submit"]').click();
       await page.waitForSelector('.client-summary');
       assert.equal(await page.locator('#tab-dashboard').getAttribute('aria-selected'), 'true');
@@ -60,7 +62,7 @@ const output = path.join(root, '.tmp', 'verification');
       assert.equal(await page.locator('#tabBody .empty').isVisible(), true);
       assert.equal(await page.locator('.sess').count(), 0);
       assert.equal(await page.evaluate(() => clients.length), 1);
-      assert.deepEqual(await page.locator('.client-stats dd').allTextContents(), ['0', en ? 'No records yet' : '尚無紀錄', en ? 'Not selected' : '尚未指定']);
+      assert.deepEqual(await page.locator('.client-stats dd').allTextContents(), [en ? 'No records yet' : '尚無紀錄', en ? 'Not selected' : '尚未指定']);
       await action('edit-client').click();
       assert.equal(await page.locator('#cf-name').inputValue(), 'Workspace test client');
       await page.keyboard.press('Escape');
@@ -79,7 +81,7 @@ const output = path.join(root, '.tmp', 'verification');
           training: record.num === 1 ? { ocular: { on: true, dur: 0, notes: 'Synthetic observation' } } : {}
         });
         await loadSessions(); renderMain();
-        return ['2', fmtDate('2026-11-02'), fmtDate('2026-11-09')];
+        return [fmtDate('2026-11-02'), fmtDate('2026-11-09')];
       });
       assert.deepEqual(await page.locator('.client-stats dd').allTextContents(), expectedStats);
       await page.locator('#tab-sessions').click();
@@ -87,7 +89,7 @@ const output = path.join(root, '.tmp', 'verification');
       assert.equal(await page.locator('.sess .line, .sess .chip').count(), 0, 'Record data does not depend on unlabelled chip rows');
       assert.equal(await page.locator('.sess .metric-change').count(), 2);
       for (const change of await page.locator('.sess .metric-change').all()) {
-        assert.match(await change.locator('dt').innerText(), en ? /change/i : /變化|差異/);
+        assert.equal(await change.locator('dt').innerText(), en ? 'Pre/post change' : '前後差異');
         assert.equal(await change.locator('dd').innerText(), '-5');
       }
       for (const metric of ['.metric-pre', '.metric-end', '.metric-change']) {
@@ -98,16 +100,25 @@ const output = path.join(root, '.tmp', 'verification');
         const zero = { ...clone(sessions[0]), sym: [row('pre'), row('sub', { test: SUBTESTS[0].k }), row('end'), row('rec', { recMin: 0 })],
           tolerance: 0, assess: {}, training: { ocular: { on: true, eyedot: [{ id: 'zero-eye', count: 0 }] } } };
         const empty = { ...zero, sym: [], tolerance: null, training: {} };
+        const score = value => Object.fromEntries(SK.map(key => [key, value]));
+        const subtest = row('sub', { test: SUBTESTS[0].k, scores: score(3) });
+        const after = row('end', { scores: score(1) });
         const parse = session => { const template = document.createElement('template'); template.innerHTML = sessCard(session); return template.content; };
         const a = parse(zero), b = parse(empty);
         const values = node => [...node.querySelectorAll('.session-metrics dd')].map(cell => cell.textContent);
         const labels = node => [...node.querySelectorAll('.session-metrics dt')].map(cell => cell.textContent);
         const context = label => [...a.querySelectorAll('.session-context > div')].find(node => node.querySelector('dt').textContent === label)?.querySelector('dd').textContent;
         return { zero: values(a), empty: values(b), zeroLabels: labels(a), emptyLabels: labels(b), stages: [...a.querySelectorAll('.session-stages dd')].map(cell => cell.textContent),
+          missingPre: values(parse({ ...zero, sym: [subtest, after] })),
+          unratedPre: values(parse({ ...zero, sym: [row('pre', { scores: {} }), subtest, after] })),
+          reordered: values(parse({ ...zero, sym: [subtest, row('pre', { scores: score(2) }), after] })),
           recovery: context(ui('恢復時間')), tolerance: context(ui('耐受度')), assessments: context(ui('評估')), eyeDot: context(ui('EyeDot 次數')) };
       });
       assert.deepEqual(edgeCards.zero, ['0', '0', '0'], 'Zero ratings remain visible before, after and in the signed change');
       assert.deepEqual(edgeCards.empty, ['-', '-', '-'], 'Missing scores retain the same three slots');
+      assert.deepEqual(edgeCards.missingPre, ['-', '5', '-'], 'Subtest ratings cannot replace missing pre-session scores');
+      assert.deepEqual(edgeCards.unratedPre, ['-', '5', '-'], 'Unrated pre-session scores leave the pre/post change blank');
+      assert.deepEqual(edgeCards.reordered, ['10', '5', '-5'], 'Pre/post change uses the pre-session rating regardless of row order');
       assert.deepEqual(edgeCards.emptyLabels, edgeCards.zeroLabels, 'Empty scores do not shift the field labels');
       assert.deepEqual(edgeCards.stages, ['0', '-', '-'], 'Subtest zero and missing subtests remain distinct');
       assert.match(edgeCards.recovery, /^0\s/); assert.equal(edgeCards.tolerance, '0/10');
@@ -124,15 +135,20 @@ const output = path.join(root, '.tmp', 'verification');
       assert.equal(await page.locator('#symSummary .metric-change dd').innerText(), '-5');
       const summaryLabels = await page.locator('#symSummary dt').allTextContents();
       assert.equal(summaryLabels.some(label => /\p{Script=Han}/u.test(label)), !en, 'Editor symptom metric labels follow the selected language');
+      await openAssessment(page, 'copm');
       assert.equal(await page.locator('#copmSum').evaluate(node => node.tagName), 'DL');
       assert.equal(await page.locator('#copmSum .chip').count(), 0);
       assert.deepEqual(await page.locator('#copmSum dd').allTextContents(), ['0', '0'], 'COPM average zero remains visible in labelled fields');
       const copmLabels = await page.locator('#copmSum dt').allTextContents();
       assert.equal(copmLabels.some(label => /\p{Script=Han}/u.test(label)), !en, 'COPM summary labels follow the selected language');
+      await page.keyboard.press('Escape');
       const controlFonts = await page.locator('#soapForm button:visible, #soapForm input:not([type="checkbox"]):not([type="range"]):visible, #soapForm select:visible, #soapForm textarea:visible').evaluateAll(nodes => nodes.map(node => ({ id: node.id, size: parseFloat(getComputedStyle(node).fontSize) })));
       assert.ok(controlFonts.length > 10 && controlFonts.every(control => control.size < 16), `Editor text controls are smaller than the 16px clinical text: ${JSON.stringify(controlFonts)}`);
-      assert.match((await page.locator('#as-npc label').allTextContents()).join(' '), /Δ/, 'Prism-diopter notation stays on the clinical measurement field');
+      await openAssessment(page, 'npc');
+      assert.match((await page.locator('.modal label').allTextContents()).join(' '), /Δ/, 'Prism-diopter notation stays on the clinical measurement field');
+      await page.keyboard.press('Escape');
       assert.equal(await page.locator('#s-date').inputValue(), '2026-11-02');
+      assert.equal(await page.evaluate(() => dirty), false, 'Reading and canceling assessment dialogs does not mark the record changed');
       await action('cancel-edit').click();
       await page.locator('.sess [data-action="open-session"][data-id="workspace-earlier"]').click();
       assert.equal(await page.evaluate(() => editing.training.ocular.dur), 0);
@@ -239,10 +255,10 @@ const output = path.join(root, '.tmp', 'verification');
       assert.equal(await page.locator('.client-head h2').innerText(), 'Other patient');
       assert.equal(await page.locator('#tab-dashboard').getAttribute('aria-selected'), 'true');
       assert.equal(await page.locator('#patientDashboard').isVisible(), true);
-      assert.equal(await page.locator('.client-stats dd').first().innerText(), '0');
+      assert.equal(await page.locator('.client-stats dd').first().innerText(), en ? 'No records yet' : '尚無紀錄');
       assert.equal(await page.locator('.sess').count(), 0);
       await page.locator('#clientSearch').fill('');
-      assert.equal(await page.locator('.client-btn').count(), 0);
+      assert.deepEqual(await page.locator('.client-btn').evaluateAll(nodes => nodes.map(node => node.dataset.id)), await page.evaluate(() => recentClientIds().slice(0, 5)));
 
       const race = await page.evaluate(async () => {
         const a = clients.find(client => client.ref === 'TEST-WORKSPACE');
@@ -285,7 +301,7 @@ const output = path.join(root, '.tmp', 'verification');
           assert.equal(await page.evaluate(() => curId), race.b, 'A late read cannot select its old patient again');
           assert.equal(await page.evaluate(() => sessions.length), 0, 'A late read cannot attach another patient\'s records');
           assert.equal(await page.locator('[data-action="retry-load"]').count(), 0, 'A stale failure cannot replace the current patient with a load error');
-          assert.equal(await page.locator('.toast').filter({ hasText: 'Stale patient read fixture' }).count(), 0, 'A stale failure cannot show an error for the current patient');
+          assert.equal(await page.locator('.failure-message').filter({ hasText: 'Stale patient read fixture' }).count(), 0, 'A stale failure cannot show an error for the current patient');
           if (!reject) {
             assert.equal(await page.locator('#s-subj').inputValue(), 'Keep the current patient draft');
             assert.equal(await page.evaluate(() => JSON.stringify(collectSession())), currentDraft, 'A late read cannot rerender and discard the current draft');
