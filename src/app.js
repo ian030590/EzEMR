@@ -58,8 +58,10 @@ const UI_EN = {
   "上次備份：{0} 天前（{1}）": "Last backup: {0} days ago ({1})",
   "上次備份：1 天前（{0}）": "Last backup: 1 day ago ({0})",
   "僅記錄從此瀏覽器開始下載備份的時間，請自行確認檔案已保存。": "This records only when a backup download was started from this browser. Check that you kept the file.",
-  "此瀏覽器尚未製作備份，可另存一份完整備份。": "No backup has been made from this browser yet. You can keep a full backup.",
-  "此瀏覽器已超過 14 天沒有製作備份，可另存一份完整備份。": "It has been over 14 days since a backup was made from this browser. You can keep a full backup.",
+  "病歷已存在「{0}」資料夾。尚未另存完整備份，可下載一份備份檔。": "Records are saved in the “{0}” folder. No full backup has been saved yet. You can download a backup file.",
+  "病歷已存在「{0}」資料夾。上次完整備份已超過 14 天，可再下載一份備份檔。": "Records are saved in the “{0}” folder. The last full backup is more than 14 days old. You can download a new backup file.",
+  "病歷暫存在此瀏覽器，清除瀏覽器資料會一併刪除。尚未另存完整備份，請下載一份備份檔。": "Records are kept in this browser's storage and are deleted if browser data is cleared. No full backup has been saved yet. Download a backup file.",
+  "病歷暫存在此瀏覽器，清除瀏覽器資料會一併刪除。上次完整備份已超過 14 天，請再下載一份備份檔。": "Records are kept in this browser's storage and are deleted if browser data is cleared. The last full backup is more than 14 days old. Download a new backup file.",
   "7 天後再提醒": "Remind me in 7 days",
   "完成": "Done",
   "視野": "Visual field",
@@ -2973,7 +2975,18 @@ async function renderBackupReminder() {
     } catch (_) { return; }
   }
   if (!saved || !slot.isConnected || source !== store || curId !== clientId || view !== 'dashboard' || !backupReminderDue()) return;
-  slot.innerHTML = `<div class="backup-reminder" id="backupReminder"><p>${deviceBackupStatus().startedAt ? ui('此瀏覽器已超過 14 天沒有製作備份，可另存一份完整備份。') : ui('此瀏覽器尚未製作備份，可另存一份完整備份。')}</p><div class="row"><button type="button" class="btn small" data-action="backup-options">${ui('備份全部資料')}</button><button type="button" class="btn small" data-action="dismiss-backup-reminder">${ui('7 天後再提醒')}</button></div></div>`;
+  const backedUp = deviceBackupStatus().startedAt;
+  let message;
+  if (store.kind === 'folder') {
+    message = backedUp
+      ? ui('病歷已存在「{0}」資料夾。上次完整備份已超過 14 天，可再下載一份備份檔。', esc(storageName()))
+      : ui('病歷已存在「{0}」資料夾。尚未另存完整備份，可下載一份備份檔。', esc(storageName()));
+  } else {
+    message = backedUp
+      ? ui('病歷暫存在此瀏覽器，清除瀏覽器資料會一併刪除。上次完整備份已超過 14 天，請再下載一份備份檔。')
+      : ui('病歷暫存在此瀏覽器，清除瀏覽器資料會一併刪除。尚未另存完整備份，請下載一份備份檔。');
+  }
+  slot.innerHTML = `<div class="backup-reminder" id="backupReminder"><p>${message}</p><div class="row"><button type="button" class="btn small" data-action="backup-options">${ui('備份全部資料')}</button><button type="button" class="btn small" data-action="dismiss-backup-reminder">${ui('7 天後再提醒')}</button></div></div>`;
 }
 function rememberBackupDownload(storage) {
   updateDeviceBackupStatus({ startedAt: new Date().toISOString() }, storage);

@@ -388,10 +388,10 @@ const withoutHelp = node => { const label = node.cloneNode(true); label.querySel
       const en = locale === 'en';
       await page.evaluate(() => { localStorage.removeItem(BACKUP_STATUS_KEY); view = 'dashboard'; renderMain(); });
       await page.waitForSelector('#backupReminder');
-      assert.match(await page.locator('#backupReminder p').innerText(), en ? /No backup has been made from this browser/ : /此瀏覽器尚未製作備份/);
+      assert.equal(await page.locator('#backupReminder p').innerText(), en ? 'Records are saved in the “language-records” folder. No full backup has been saved yet. You can download a backup file.' : '病歷已存在「language-records」資料夾。尚未另存完整備份，可下載一份備份檔。');
       if (en) await checkEnglish('#backupReminder');
       await page.evaluate(() => { updateDeviceBackupStatus({ startedAt: new Date(Date.now() - 15 * BACKUP_DAY).toISOString() }); renderMain(); });
-      assert.match(await page.locator('#backupReminder p').innerText(), en ? /over 14 days/ : /超過 14 天/);
+      assert.equal(await page.locator('#backupReminder p').innerText(), en ? 'Records are saved in the “language-records” folder. The last full backup is more than 14 days old. You can download a new backup file.' : '病歷已存在「language-records」資料夾。上次完整備份已超過 14 天，可再下載一份備份檔。');
       if (en) await checkEnglish('#backupReminder');
       await page.locator('#backupReminder [data-action="backup-options"]').click();
       assert.match(await page.locator('#lastBackupStatus').innerText(), en ? /Last backup: 15 days ago/ : /上次備份：15 天前/);
@@ -633,6 +633,24 @@ const withoutHelp = node => { const label = node.cloneNode(true); label.querySel
       }
       await page.screenshot({ path: path.join(output, `language-${locale}.png`), fullPage: true });
     }
+    await page.evaluate(async () => {
+      store = localStore();
+      await store.saveClient({ id: 'language-browser-client', name: 'Synthetic browser client', ref: 'TEST-BROWSER-REMINDER', plan: newClientPlan(), trainingPlan: clone(TRAIN) });
+      await store.saveSession('language-browser-client', { id: 'language-browser-session', date: '2026-11-12', visit: 'treatment', num: 1, sym: [], assess: {}, training: {}, subjective: 'Synthetic browser reminder record' });
+      await finishBoot();
+    });
+    for (const locale of ['zh-TW', 'en']) {
+      await choose(locale);
+      const en = locale === 'en';
+      await page.evaluate(() => { localStorage.removeItem(BACKUP_STATUS_KEY); renderMain(); });
+      await page.waitForSelector('#backupReminder');
+      assert.equal(await page.locator('#backupReminder p').innerText(), en ? "Records are kept in this browser's storage and are deleted if browser data is cleared. No full backup has been saved yet. Download a backup file." : '病歷暫存在此瀏覽器，清除瀏覽器資料會一併刪除。尚未另存完整備份，請下載一份備份檔。');
+      if (en) await checkEnglish('#backupReminder');
+      await page.evaluate(() => { updateDeviceBackupStatus({ startedAt: new Date(Date.now() - 15 * BACKUP_DAY).toISOString() }); renderMain(); });
+      assert.equal(await page.locator('#backupReminder p').innerText(), en ? "Records are kept in this browser's storage and are deleted if browser data is cleared. The last full backup is more than 14 days old. Download a new backup file." : '病歷暫存在此瀏覽器，清除瀏覽器資料會一併刪除。上次完整備份已超過 14 天，請再下載一份備份檔。');
+      if (en) await checkEnglish('#backupReminder');
+    }
+    console.log('PASS: Folder reminders name the record folder and browser-storage reminders explain data clearing, with both backup states bilingual');
     assert.deepEqual(errors, []);
     console.log('PASS: Both languages fit 320/360/768/1280px without browser errors');
 
