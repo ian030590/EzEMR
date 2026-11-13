@@ -152,12 +152,19 @@ async function main() {
         await page.locator('[data-workflow-clear="tx-summary-ocular"]').click(); await page.locator('#askYes').click();
         assert.equal(await page.evaluate(() => collectSession().training.ocular), undefined);
         await page.locator('[data-action="cancel-edit"]:visible').first().click(); await page.locator('#askYes').click();
-        await page.locator('#importFile').setInputFiles({ name: 'TEST-TRAINING_eye-training-fixation-20261113-100000.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({
+        // Import on the preceding local day so it cannot join the saved 81% session.
+        const fixture = await page.evaluate(date => {
+          const ended = new Date(`${date}T10:00:00`);
+          ended.setDate(ended.getDate() - 1);
+          return { day: localDate(ended).replace(/-/g, ''), endedAt: ended.toISOString() };
+        }, roundtrip.session.date);
+        await page.locator('#importFile').setInputFiles({ name: `TEST-TRAINING_eye-training-fixation-${fixture.day}-100000.json`, mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({
           subject_id: 'TEST-TRAINING', session_id: 'synthetic-import-run', module: 'fixation', mode: 'random', end_reason: 'duration_complete', accuracy_rate: 64.5,
-          calibration: { viewingDistanceCm: 60 }, settings: { mode: 'random', holdSec: 2 }, completed_targets: 16, actual_duration_ms: 30000, gaze_path: '[]', ended_at: '2026-11-13T02:00:00.000Z'
+          calibration: { viewingDistanceCm: 60 }, settings: { mode: 'random', holdSec: 2 }, completed_targets: 16, actual_duration_ms: 30000, gaze_path: '[]', ended_at: fixture.endedAt
         })) });
         await page.waitForSelector('#scoreImport'); await page.locator('#score-dest-0').selectOption('training'); await page.locator('#scoreImport').click(); await page.locator('#importReportClose').click();
         const imported = await page.evaluate(() => sessions.find(s => s.sourceRecords?.some(r => r.fields?.subject_id === 'TEST-TRAINING')));
+        assert.notEqual(imported.id, roundtrip.session.id, 'The import has its own session');
         await page.locator(`[data-action="open-session"][data-id="${imported.id}"]`).click(); await openTraining(page, 'ocular');
         assert.equal(await page.locator('.run input').first().inputValue(), '64.5'); assert.equal(await page.locator('#tx-ocular-s1').inputValue(), '64.5%');
         await completeTraining(page);
