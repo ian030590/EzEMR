@@ -1,0 +1,71 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/index.html"
+        ],
+        "createdAt": "2026-11-15T10:56:05.247Z",
+        "reason": "Agent: detector follows pinned Metro CSS and flags its unused .gradient-text utility. Source search and bilingual rendered-screen checks confirm no use."
+      },
+      {
+        "rule": "organic-clip-path",
+        "value": "*",
+        "files": [
+          "src/index.html"
+        ],
+        "createdAt": "2026-11-15T10:56:05.385Z",
+        "reason": "Agent: this is pinned Metro .shape-decagon geometry, not organic artwork. Source search and rendered-screen checks confirm the utility is unused."
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "src/index.html"
+        ],
+        "createdAt": "2026-11-15T10:56:05.539Z",
+        "reason": "Agent: pinned Metro .ani-pass and .ani-hover-pass utilities are unused. Source search and bilingual rendered-screen checks confirm no applied marquee."
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "src/index.html"
+        ],
+        "createdAt": "2026-11-15T10:56:05.673Z",
+        "reason": "Agent: detector flags pinned Metro primary-focus and drag-avatar styles. Those utility selectors are unused in the source and checked rendered screens."
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "src/index.html"
+        ],
+        "createdAt": "2026-11-15T10:56:05.809Z",
+        "reason": "Agent: detector flags the pinned Metro progress-bar loading token. EzEMR does not use that widget in source or checked rendered screens."
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "src/index.html"
+        ],
+        "createdAt": "2026-11-15T10:56:05.944Z",
+        "reason": "Agent: detector flags pinned Metro bg-pattern utilities. Source search and bilingual rendered-screen checks confirm those decorative utilities are unused."
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "src/index.html"
+        ],
+        "createdAt": "2026-11-15T10:56:06.088Z",
+        "reason": "Agent: detector flags pinned Metro bg-pattern utilities. Source search and bilingual rendered-screen checks confirm no decorative grid utility is used."
+      }
+    ]
+  }
+}

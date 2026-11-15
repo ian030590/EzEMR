@@ -1,0 +1,941 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T12:53:13.302Z",
+  "title": "Design System: EzEMR",
+  "extensions": {
+    "colorMeta": {
+      "clinic-teal": {
+        "role": "primary",
+        "displayName": "Clinic Teal",
+        "canonical": "#176b65",
+        "oklch": "oklch(47.9% 0.076 187.7)",
+        "cssVariable": "--accent",
+        "theme": "light",
+        "tonalRamp": [
+          "#000f0d",
+          "#012c29",
+          "#044d48",
+          "#1d6f69",
+          "#45918b",
+          "#72b3ad",
+          "#a8d3ce",
+          "#e3f2f0"
+        ]
+      },
+      "on-teal": {
+        "role": "primary",
+        "displayName": "On Teal",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "cssVariable": "--accent-ink",
+        "theme": "light",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "teal-wash": {
+        "role": "primary",
+        "displayName": "Teal Wash",
+        "canonical": "#e8f3f1",
+        "oklch": "oklch(95.5% 0.012 184.1)",
+        "cssVariable": "--accent-soft",
+        "theme": "light",
+        "tonalRamp": [
+          "#080c0b",
+          "#202726",
+          "#3b4443",
+          "#5a6462",
+          "#7b8583",
+          "#9ea7a6",
+          "#c4cbc9",
+          "#edefee"
+        ]
+      },
+      "baseline-ochre": {
+        "role": "secondary",
+        "displayName": "Baseline Ochre",
+        "canonical": "#806122",
+        "oklch": "oklch(51.2% 0.089 81.8)",
+        "cssVariable": "--pre",
+        "theme": "light",
+        "tonalRamp": [
+          "#120900",
+          "#322200",
+          "#563d02",
+          "#7a5c1b",
+          "#9d7d40",
+          "#bea16b",
+          "#dbc6a2",
+          "#f5eee1"
+        ]
+      },
+      "ochre-wash": {
+        "role": "secondary",
+        "displayName": "Ochre Wash",
+        "canonical": "#f6efdf",
+        "oklch": "oklch(95.3% 0.022 87.2)",
+        "cssVariable": "--pre-soft",
+        "theme": "light",
+        "tonalRamp": [
+          "#0d0b06",
+          "#29251a",
+          "#474134",
+          "#676153",
+          "#888273",
+          "#aaa597",
+          "#cdc9bf",
+          "#f0eeeb"
+        ]
+      },
+      "signal-green": {
+        "role": "tertiary",
+        "displayName": "Signal Green",
+        "canonical": "#1d7448",
+        "oklch": "oklch(49.7% 0.107 156.3)",
+        "cssVariable": "--good",
+        "theme": "light",
+        "tonalRamp": [
+          "#000f05",
+          "#002e17",
+          "#00502d",
+          "#1b7347",
+          "#449567",
+          "#71b78c",
+          "#a7d6b8",
+          "#e3f3e8"
+        ]
+      },
+      "green-wash": {
+        "role": "tertiary",
+        "displayName": "Green Wash",
+        "canonical": "#e1f2e8",
+        "oklch": "oklch(94.6% 0.022 160.2)",
+        "cssVariable": "--good-soft",
+        "theme": "light",
+        "tonalRamp": [
+          "#070d09",
+          "#1d2822",
+          "#38463e",
+          "#57655d",
+          "#77877e",
+          "#9ba9a1",
+          "#c2ccc6",
+          "#ecefed"
+        ]
+      },
+      "alert-red": {
+        "role": "tertiary",
+        "displayName": "Alert Red",
+        "canonical": "#b3261e",
+        "oklch": "oklch(50.1% 0.178 28.7)",
+        "cssVariable": "--bad",
+        "theme": "light",
+        "tonalRamp": [
+          "#1f0000",
+          "#4d0001",
+          "#810103",
+          "#b0221b",
+          "#d84c3f",
+          "#f87a6a",
+          "#feb3a8",
+          "#fee9e6"
+        ]
+      },
+      "red-wash": {
+        "role": "tertiary",
+        "displayName": "Red Wash",
+        "canonical": "#fbe6e4",
+        "oklch": "oklch(94.1% 0.023 24.1)",
+        "cssVariable": "--bad-soft",
+        "theme": "light",
+        "tonalRamp": [
+          "#100909",
+          "#2e2120",
+          "#4e3d3c",
+          "#6e5c5b",
+          "#907d7c",
+          "#b2a09f",
+          "#d2c6c5",
+          "#f2eded"
+        ]
+      },
+      "caution-amber": {
+        "role": "tertiary",
+        "displayName": "Caution Amber",
+        "canonical": "#9a5a06",
+        "oklch": "oklch(52.9% 0.118 63.6)",
+        "cssVariable": "--warn",
+        "theme": "light",
+        "tonalRamp": [
+          "#150800",
+          "#391e01",
+          "#613600",
+          "#8c5104",
+          "#b3712a",
+          "#d3965d",
+          "#ebc099",
+          "#fbebde"
+        ]
+      },
+      "amber-wash": {
+        "role": "tertiary",
+        "displayName": "Amber Wash",
+        "canonical": "#fbf0dc",
+        "oklch": "oklch(95.8% 0.029 82.6)",
+        "cssVariable": "--warn-soft",
+        "theme": "light",
+        "tonalRamp": [
+          "#0f0b04",
+          "#2b2417",
+          "#4a4130",
+          "#69604f",
+          "#8b816f",
+          "#ada493",
+          "#cfc8bd",
+          "#f0eeea"
+        ]
+      },
+      "chart-ink": {
+        "role": "neutral",
+        "displayName": "Chart Ink",
+        "canonical": "#203337",
+        "oklch": "oklch(30.7% 0.026 212.2)",
+        "cssVariable": "--ink",
+        "theme": "light",
+        "tonalRamp": [
+          "#050d0f",
+          "#18282b",
+          "#32464a",
+          "#51656a",
+          "#71878b",
+          "#96a9ad",
+          "#becccf",
+          "#ebeff0"
+        ]
+      },
+      "label-slate": {
+        "role": "neutral",
+        "displayName": "Label Slate",
+        "canonical": "#586d72",
+        "oklch": "oklch(52.0% 0.026 213.8)",
+        "cssVariable": "--muted",
+        "theme": "light",
+        "tonalRamp": [
+          "#050d0f",
+          "#18282c",
+          "#32464a",
+          "#51656a",
+          "#71878c",
+          "#95a9ae",
+          "#becccf",
+          "#ebeff1"
+        ]
+      },
+      "field-outline": {
+        "role": "neutral",
+        "displayName": "Field Outline",
+        "canonical": "#809397",
+        "oklch": "oklch(65.0% 0.023 211.8)",
+        "cssVariable": "--control-line",
+        "theme": "light",
+        "tonalRamp": [
+          "#060d0e",
+          "#1a282a",
+          "#344549",
+          "#536569",
+          "#73868a",
+          "#98a9ac",
+          "#c0ccce",
+          "#ebeff0"
+        ]
+      },
+      "rule-line": {
+        "role": "neutral",
+        "displayName": "Rule Line",
+        "canonical": "#dce5e6",
+        "oklch": "oklch(91.5% 0.010 204.9)",
+        "cssVariable": "--line",
+        "theme": "light",
+        "tonalRamp": [
+          "#090c0c",
+          "#212627",
+          "#3c4444",
+          "#5b6364",
+          "#7c8485",
+          "#9fa7a7",
+          "#c5cacb",
+          "#edefef"
+        ]
+      },
+      "form-white": {
+        "role": "neutral",
+        "displayName": "Form White",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "cssVariable": "--surface",
+        "theme": "light",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "well-grey": {
+        "role": "neutral",
+        "displayName": "Well Grey",
+        "canonical": "#f6f8f8",
+        "oklch": "oklch(97.8% 0.002 197.1)",
+        "cssVariable": "--sunk",
+        "theme": "light",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242525",
+          "#414242",
+          "#606161",
+          "#818383",
+          "#a4a5a5",
+          "#c8c9c9",
+          "#eeeeee"
+        ]
+      },
+      "mist-ground": {
+        "role": "neutral",
+        "displayName": "Mist Ground",
+        "canonical": "#f3f6f6",
+        "oklch": "oklch(97.1% 0.003 197.1)",
+        "cssVariable": "--bg",
+        "theme": "light",
+        "tonalRamp": [
+          "#0a0b0b",
+          "#242525",
+          "#404242",
+          "#5f6262",
+          "#808383",
+          "#a3a5a5",
+          "#c8c9c9",
+          "#eeeeee"
+        ]
+      },
+      "clinic-teal-dark": {
+        "role": "primary",
+        "displayName": "Clinic Teal (dark)",
+        "canonical": "#7dd4c5",
+        "oklch": "oklch(81.1% 0.087 181.7)",
+        "cssVariable": "--accent",
+        "theme": "dark",
+        "tonalRamp": [
+          "#000f0c",
+          "#012c27",
+          "#014d44",
+          "#047165",
+          "#3a9386",
+          "#6bb5a8",
+          "#a4d5cb",
+          "#e2f3ef"
+        ]
+      },
+      "on-teal-dark": {
+        "role": "primary",
+        "displayName": "On Teal (dark)",
+        "canonical": "#102b26",
+        "oklch": "oklch(26.6% 0.034 179.8)",
+        "cssVariable": "--accent-ink",
+        "theme": "dark",
+        "tonalRamp": [
+          "#030e0b",
+          "#142a25",
+          "#2d4843",
+          "#4c6862",
+          "#6c8983",
+          "#91aca6",
+          "#bbcec9",
+          "#eaf0ee"
+        ]
+      },
+      "teal-wash-dark": {
+        "role": "primary",
+        "displayName": "Teal Wash (dark)",
+        "canonical": "#1c3532",
+        "oklch": "oklch(30.8% 0.032 185.9)",
+        "cssVariable": "--accent-soft",
+        "theme": "dark",
+        "tonalRamp": [
+          "#030e0c",
+          "#152927",
+          "#2e4844",
+          "#4d6764",
+          "#6e8985",
+          "#92aba7",
+          "#bccdcb",
+          "#eaf0ef"
+        ]
+      },
+      "baseline-ochre-dark": {
+        "role": "secondary",
+        "displayName": "Baseline Ochre (dark)",
+        "canonical": "#d9b56a",
+        "oklch": "oklch(78.9% 0.103 84.4)",
+        "cssVariable": "--pre",
+        "theme": "dark",
+        "tonalRamp": [
+          "#110a00",
+          "#312200",
+          "#553e01",
+          "#7c5b01",
+          "#9f7d30",
+          "#c0a160",
+          "#dcc79b",
+          "#f5eedf"
+        ]
+      },
+      "ochre-wash-dark": {
+        "role": "secondary",
+        "displayName": "Ochre Wash (dark)",
+        "canonical": "#2a2416",
+        "oklch": "oklch(26.3% 0.026 87.4)",
+        "cssVariable": "--pre-soft",
+        "theme": "dark",
+        "tonalRamp": [
+          "#0e0b05",
+          "#2a2419",
+          "#484132",
+          "#676151",
+          "#898271",
+          "#aba495",
+          "#cdc9be",
+          "#f0eeea"
+        ]
+      },
+      "signal-green-dark": {
+        "role": "tertiary",
+        "displayName": "Signal Green (dark)",
+        "canonical": "#63c992",
+        "oklch": "oklch(76.0% 0.125 157.9)",
+        "cssVariable": "--good",
+        "theme": "dark",
+        "tonalRamp": [
+          "#000f06",
+          "#012e19",
+          "#034f2f",
+          "#007447",
+          "#2c9864",
+          "#63ba8a",
+          "#a0d9b6",
+          "#e1f4e8"
+        ]
+      },
+      "green-wash-dark": {
+        "role": "tertiary",
+        "displayName": "Green Wash (dark)",
+        "canonical": "#15291f",
+        "oklch": "oklch(26.0% 0.032 161.3)",
+        "cssVariable": "--good-soft",
+        "theme": "dark",
+        "tonalRamp": [
+          "#050e09",
+          "#192921",
+          "#33483c",
+          "#51675b",
+          "#72897c",
+          "#96ab9f",
+          "#bfcdc5",
+          "#ebf0ed"
+        ]
+      },
+      "alert-red-dark": {
+        "role": "tertiary",
+        "displayName": "Alert Red (dark)",
+        "canonical": "#f08a80",
+        "oklch": "oklch(74.0% 0.126 26.5)",
+        "cssVariable": "--bad",
+        "theme": "dark",
+        "tonalRamp": [
+          "#1f0001",
+          "#4d0004",
+          "#771c1a",
+          "#9c3f39",
+          "#c26159",
+          "#e28980",
+          "#f7b7af",
+          "#ffe9e6"
+        ]
+      },
+      "red-wash-dark": {
+        "role": "tertiary",
+        "displayName": "Red Wash (dark)",
+        "canonical": "#33191a",
+        "oklch": "oklch(25.0% 0.042 18.0)",
+        "cssVariable": "--bad-soft",
+        "theme": "dark",
+        "tonalRamp": [
+          "#140708",
+          "#341e1e",
+          "#56393a",
+          "#775858",
+          "#9a7979",
+          "#bb9c9c",
+          "#d9c3c3",
+          "#f4ecec"
+        ]
+      },
+      "caution-amber-dark": {
+        "role": "tertiary",
+        "displayName": "Caution Amber (dark)",
+        "canonical": "#f0b05e",
+        "oklch": "oklch(80.1% 0.124 71.2)",
+        "cssVariable": "--warn",
+        "theme": "dark",
+        "tonalRamp": [
+          "#140800",
+          "#362001",
+          "#5c3902",
+          "#865500",
+          "#b07416",
+          "#d09953",
+          "#e8c294",
+          "#faecdc"
+        ]
+      },
+      "amber-wash-dark": {
+        "role": "tertiary",
+        "displayName": "Amber Wash (dark)",
+        "canonical": "#2f2412",
+        "oklch": "oklch(26.8% 0.034 78.8)",
+        "cssVariable": "--warn-soft",
+        "theme": "dark",
+        "tonalRamp": [
+          "#100a03",
+          "#2d2314",
+          "#4c402d",
+          "#6c5f4b",
+          "#8e806c",
+          "#afa390",
+          "#d1c8bb",
+          "#f1eee9"
+        ]
+      },
+      "chart-ink-dark": {
+        "role": "neutral",
+        "displayName": "Chart Ink (dark)",
+        "canonical": "#e2e9ed",
+        "oklch": "oklch(93.0% 0.009 232.4)",
+        "cssVariable": "--ink",
+        "theme": "dark",
+        "tonalRamp": [
+          "#090c0d",
+          "#212628",
+          "#3d4346",
+          "#5c6266",
+          "#7d8387",
+          "#a0a6a9",
+          "#c6cacc",
+          "#edefef"
+        ]
+      },
+      "label-slate-dark": {
+        "role": "neutral",
+        "displayName": "Label Slate (dark)",
+        "canonical": "#95a6b0",
+        "oklch": "oklch(71.5% 0.024 233.5)",
+        "cssVariable": "--muted",
+        "theme": "dark",
+        "tonalRamp": [
+          "#060c10",
+          "#1b272e",
+          "#36444d",
+          "#54646d",
+          "#75858f",
+          "#99a8b0",
+          "#c0cbd1",
+          "#ebeff1"
+        ]
+      },
+      "field-outline-dark": {
+        "role": "neutral",
+        "displayName": "Field Outline (dark)",
+        "canonical": "#718591",
+        "oklch": "oklch(60.5% 0.030 234.3)",
+        "cssVariable": "--control-line",
+        "theme": "dark",
+        "tonalRamp": [
+          "#050c11",
+          "#192730",
+          "#334550",
+          "#516470",
+          "#728692",
+          "#96a8b3",
+          "#becbd3",
+          "#ebeff2"
+        ]
+      },
+      "rule-line-dark": {
+        "role": "neutral",
+        "displayName": "Rule Line (dark)",
+        "canonical": "#29363f",
+        "oklch": "oklch(32.5% 0.024 238.7)",
+        "cssVariable": "--line",
+        "theme": "dark",
+        "tonalRamp": [
+          "#060c10",
+          "#1c272e",
+          "#37444d",
+          "#55636d",
+          "#76858f",
+          "#9aa7b1",
+          "#c1cbd2",
+          "#eceff1"
+        ]
+      },
+      "form-white-dark": {
+        "role": "neutral",
+        "displayName": "Form White (dark)",
+        "canonical": "#161f25",
+        "oklch": "oklch(23.3% 0.017 237.7)",
+        "cssVariable": "--surface",
+        "theme": "dark",
+        "tonalRamp": [
+          "#080c0f",
+          "#1e262c",
+          "#3a444a",
+          "#58636a",
+          "#79848c",
+          "#9ca7ae",
+          "#c3cacf",
+          "#eceff1"
+        ]
+      },
+      "well-grey-dark": {
+        "role": "neutral",
+        "displayName": "Well Grey (dark)",
+        "canonical": "#121a1f",
+        "oklch": "oklch(21.2% 0.015 235.9)",
+        "cssVariable": "--sunk",
+        "theme": "dark",
+        "tonalRamp": [
+          "#080c0e",
+          "#1f262b",
+          "#3a4349",
+          "#596369",
+          "#7a848a",
+          "#9da7ad",
+          "#c4cace",
+          "#eceff0"
+        ]
+      },
+      "mist-ground-dark": {
+        "role": "neutral",
+        "displayName": "Mist Ground (dark)",
+        "canonical": "#0e1418",
+        "oklch": "oklch(18.7% 0.012 237.5)",
+        "cssVariable": "--bg",
+        "theme": "dark",
+        "tonalRamp": [
+          "#090c0e",
+          "#20262a",
+          "#3c4348",
+          "#5b6267",
+          "#7c8489",
+          "#9fa6ab",
+          "#c5cacd",
+          "#edeff0"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Welcome-screen title only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Screen titles: connect screen, editor heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section titles inside panels; SOAP section headings."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Dashboard headings, record dates, brand mark, clinical-map symptoms."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Notes, clinical text, descriptions; 1.4 line height in English."
+      },
+      "table": {
+        "displayName": "Table",
+        "purpose": "Symptom and outcome tables with tabular figures."
+      },
+      "control": {
+        "displayName": "Control",
+        "purpose": "Buttons, tabs, menu items (600); field text uses 400."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, captions, table headers in Label Slate."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 12px 36px rgba(20, 46, 49, .14)",
+        "purpose": "Menus, client search popup, help tooltips and dialogs only."
+      },
+      {
+        "name": "scrim",
+        "value": "rgba(10, 18, 24, .45)",
+        "purpose": "Overlay behind a dialog (background, not box-shadow)."
+      },
+      {
+        "name": "edge-bar",
+        "value": "inset 3px 0 0 <stage color>",
+        "purpose": "Not elevation: marks a stage row or the active workflow item."
+      }
+    ],
+    "focus": [
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid var(--accent); outline-offset: 2px",
+        "purpose": "Every focusable element."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-change",
+        "value": "border-color .15s, background .15s",
+        "purpose": "Buttons, client rows and activity tiles; only within prefers-reduced-motion: no-preference. Application-bar buttons have no transition."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "350",
+        "value": "350px"
+      },
+      {
+        "name": "450",
+        "value": "450px"
+      },
+      {
+        "name": "480",
+        "value": "480px"
+      },
+      {
+        "name": "560",
+        "value": "560px"
+      },
+      {
+        "name": "600",
+        "value": "600px"
+      },
+      {
+        "name": "700",
+        "value": "700px"
+      },
+      {
+        "name": "760",
+        "value": "760px"
+      },
+      {
+        "name": "860",
+        "value": "860px"
+      },
+      {
+        "name": "1100",
+        "value": "1100px"
+      },
+      {
+        "name": "1200",
+        "value": "1200px"
+      }
+    ],
+    "layout": [
+      {
+        "name": "chrome-height",
+        "value": "61px",
+        "purpose": "Sticky application bar height on desktop (one row at 1200px and wider)."
+      },
+      {
+        "name": "control-height",
+        "value": "44px",
+        "purpose": "Minimum target for every interactive control."
+      },
+      {
+        "name": "control-gap",
+        "value": "8px",
+        "purpose": "Standard gap between adjacent controls."
+      },
+      {
+        "name": "dialog-width",
+        "value": "520px / 900px",
+        "purpose": "Default dialogs / assessment and training entry dialogs."
+      }
+    ],
+    "platform": {
+      "baseLibrary": "Metro UI 5.1.20 (vendor/metroui), variables mapped to these tokens in src/styles.css",
+      "delivery": "Single offline HTML file; strict CSP forbids remote fonts, scripts and styles."
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one solid action of an area: New record, Done, Add assessment.",
+      "html": "<button class=\"ds-btn ds-btn-primary\" type=\"button\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M8 2v12M2 8h12\"/></svg>New record</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 44px; padding: 2px 10px; font: 600 .875rem/1.5 var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); border-radius: 6px; cursor: pointer; transition: border-color .15s, background .15s; } .ds-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: square; } .ds-btn-primary { background: var(--accent, #176b65); color: var(--accent-ink, #ffffff); border: 1px solid var(--accent, #176b65); } .ds-btn-primary:hover { filter: brightness(.94); } .ds-btn:focus-visible { outline: 2px solid var(--accent, #176b65); outline-offset: 2px; }"
+    },
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Quiet secondary action; reads as bold text at rest and gains an outline on hover.",
+      "html": "<button class=\"ds-btn-default\" type=\"button\">Edit details</button>",
+      "css": ".ds-btn-default { min-width: 44px; min-height: 44px; padding: 2px 10px; font: 600 .875rem/1.5 var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); color: var(--ink, #203337); background: var(--surface, #ffffff); border: 1px solid var(--surface, #ffffff); border-radius: 6px; cursor: pointer; transition: border-color .15s, background .15s; } .ds-btn-default:hover { border-color: var(--accent, #176b65); background: var(--sunk, #f6f8f8); } .ds-btn-default:focus-visible { outline: 2px solid var(--accent, #176b65); outline-offset: 2px; }"
+    },
+    {
+      "name": "Toolbar Save",
+      "kind": "button",
+      "refersTo": "toolbar-save",
+      "description": "Icon-and-label Save in the sticky toolbar while a record is being edited.",
+      "html": "<button class=\"ds-tool-save\" type=\"button\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 3h13l3 3v15H4z M8 3v6h8V3 M8 21v-8h8v8\"/></svg>Save</button>",
+      "css": ".ds-tool-save { display: inline-flex; align-items: center; gap: 5px; min-width: 44px; min-height: 44px; padding: 2px 10px; font: 600 .875rem/1.5 var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); background: var(--accent, #176b65); color: var(--accent-ink, #ffffff); border: 0; border-radius: 6px; cursor: pointer; } .ds-tool-save svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: square; stroke-linejoin: miter; } .ds-tool-save:hover { filter: brightness(.94); } .ds-tool-save:focus-visible { outline: 2px solid var(--accent, #176b65); outline-offset: 2px; }"
+    },
+    {
+      "name": "Labelled Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Label above an outlined 44px field, as on a printed form.",
+      "html": "<label class=\"ds-field\"><span>Session duration (min)</span><input type=\"number\" value=\"60\"></label>",
+      "css": ".ds-field { display: grid; gap: 4px; font: 600 .875rem/1.45 var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); color: var(--muted, #586d72); max-width: 240px; } .ds-field input { min-height: 44px; padding: 2px 10px; font: 400 .875rem/1.5 var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); color: var(--ink, #203337); background: var(--surface, #ffffff); border: 1px solid var(--control-line, #809397); border-radius: 6px; font-variant-numeric: tabular-nums; } .ds-field input:focus-visible { border-color: var(--accent, #176b65); outline: 2px solid var(--accent, #176b65); outline-offset: 2px; }"
+    },
+    {
+      "name": "Pick Tiles",
+      "kind": "chip",
+      "refersTo": "pick-tile",
+      "description": "Checkbox tiles for choosing assessments and rehabilitation items; selected tiles take the teal wash.",
+      "html": "<div class=\"ds-picks\"><label class=\"ds-pick\"><input type=\"checkbox\" checked>Near point of convergence (NPC)</label><label class=\"ds-pick\"><input type=\"checkbox\">Reading speed</label></div>",
+      "css": ".ds-picks { display: flex; flex-wrap: wrap; gap: 8px; } .ds-pick { display: inline-flex; gap: 6px; align-items: center; min-height: 44px; padding: 6px 8px; font: 500 .875rem/1.5 var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); color: var(--ink, #203337); background: var(--surface, #ffffff); border: 1px solid var(--control-line, #809397); border-radius: 6px; cursor: pointer; } .ds-pick input { width: 17px; height: 17px; accent-color: var(--accent, #176b65); } .ds-pick:has(input:checked) { background: var(--accent-soft, #e8f3f1); border-color: var(--accent, #176b65); color: var(--accent, #176b65); font-weight: 600; } .ds-pick:has(input:focus-visible) { outline: 2px solid var(--accent, #176b65); outline-offset: 2px; }"
+    },
+    {
+      "name": "Record Tabs",
+      "kind": "nav",
+      "refersTo": "tab",
+      "description": "Client view tabs: Patient dashboard, Rehabilitation records, Progress tracking, Item settings.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button class=\"ds-tab\" role=\"tab\" aria-selected=\"true\">Patient dashboard</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">Rehabilitation records (4)</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">Progress tracking</button></div>",
+      "css": ".ds-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--line, #dce5e6); } .ds-tab { min-height: 44px; padding: 6px 10px; font: 600 .875rem/1.5 var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); color: var(--muted, #586d72); background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; } .ds-tab[aria-selected=\"true\"] { color: var(--accent, #176b65); border-bottom-color: var(--accent, #176b65); } .ds-tab:hover { color: var(--accent, #176b65); } .ds-tab:focus-visible { outline: 2px solid var(--accent, #176b65); outline-offset: 2px; }"
+    },
+    {
+      "name": "Stage Chips",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Labels for measurement stages and change direction; never interactive.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chip ds-chip-pre\">Before session</span><span class=\"ds-chip ds-chip-end\">After session</span><span class=\"ds-chip ds-chip-good\">−2</span><span class=\"ds-chip ds-chip-bad\">+1</span><span class=\"ds-chip\">Not rated</span></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 8px; } .ds-chip { display: inline-flex; align-items: center; padding: 3px 7px; font: 400 .875rem/1.5 var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); border-radius: 2px; background: var(--sunk, #f6f8f8); color: var(--ink, #203337); font-variant-numeric: tabular-nums; } .ds-chip-pre { background: var(--pre-soft, #f6efdf); color: var(--pre, #806122); } .ds-chip-end { background: var(--accent-soft, #e8f3f1); color: var(--accent, #176b65); } .ds-chip-good { background: var(--good-soft, #e1f2e8); color: var(--good, #1d7448); } .ds-chip-bad { background: var(--bad-soft, #fbe6e4); color: var(--bad, #b3261e); }"
+    },
+    {
+      "name": "SOAP Section Letter",
+      "kind": "custom",
+      "refersTo": "soap-letter",
+      "description": "Signature badge that anchors each S/O/A/P section like a printed section code.",
+      "html": "<div class=\"ds-soap\"><span class=\"ds-letter\" aria-hidden=\"true\">S</span><div><h3>Subjective</h3><p>Symptoms, change since last session, daily activities</p></div></div>",
+      "css": ".ds-soap { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; font-family: var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); color: var(--ink, #203337); } .ds-letter { display: grid; place-items: center; width: 44px; min-height: 44px; font-size: 1.25rem; font-weight: 600; color: var(--accent, #176b65); background: var(--accent-soft, #e8f3f1); border-radius: 8px; } .ds-soap h3 { margin: 0; font-size: 1.25rem; font-weight: 700; line-height: 1.25; } .ds-soap p { margin: 4px 0 0; font-size: .875rem; color: var(--muted, #586d72); }"
+    },
+    {
+      "name": "Symptom Score Tiles",
+      "kind": "custom",
+      "refersTo": "score-tile",
+      "description": "Before → after values with an explicit signed change; color marks direction only.",
+      "html": "<dl class=\"ds-scores\"><div><dt>Eye fatigue</dt><dd>1 → 2 <span class=\"ds-up\">+1</span></dd></div><div><dt>Headache</dt><dd>3 → 1 <span class=\"ds-down\">−2</span></dd></div><div><dt>Nausea</dt><dd>0 → 0 <span>0</span></dd></div></dl>",
+      "css": ".ds-scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 0; font-family: var(--f-body, \"Noto Sans TC\", \"Microsoft JhengHei\", \"PingFang TC\", system-ui, sans-serif); } .ds-scores > div { padding: 8px 10px; background: var(--sunk, #f6f8f8); border-radius: 4px; } .ds-scores dt { font-size: .875rem; color: var(--muted, #586d72); } .ds-scores dd { margin: 2px 0 0; display: flex; gap: 8px; align-items: baseline; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink, #203337); } .ds-scores dd span { font-size: .875rem; } .ds-up { color: var(--bad, #b3261e); } .ds-down { color: var(--good, #1d7448); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Ruled Clinical Form",
+    "overview": "**Creative North Star: \"The Ruled Clinical Form\"**\n\nEzEMR looks like a well-kept outpatient form. Sections are printed boxes on a pale ground. Hairline rules separate them. Every field has a label above it and a plain outlined box below it. Values sit in tabular figures, so columns of scores line up the way handwritten numbers do on a ruled sheet. The structure does the work: a therapist recognises S, O, A and P, the stage of a measurement and the current client without reading any decoration.\n\nIt should feel precise, quiet and trustworthy. Precise: numbers align, signed changes show their sign, and every stage has a fixed color. Quiet: one teal accent, flat surfaces, no ornament, and emphasis spent only where something is selected, current or needs attention. Trustworthy: the screen states what it knows and nothing more. Change colors show direction without implying a verdict, warnings stay visible, and the same control looks the same everywhere.\n\nThe density is that of a working clinical tool. Desktop forms run edge to edge in fluid grids, and sticky chrome keeps the client and the current place in view while long records scroll. Nothing animates beyond a 150ms border or background change. The system is built on Metro UI 5.1.20, whose variables are mapped onto these tokens. Everything is embedded in a single offline HTML file.",
+    "keyCharacteristics": [
+      "One family (Noto Sans TC with CJK system fallbacks), with weight and size carrying the hierarchy.",
+      "One accent (Clinic Teal), plus a fixed vocabulary of state colors.",
+      "Flat white panels on a mist ground, separated by 1px rules. Shadows appear only on floating layers.",
+      "A 44px minimum target on every interactive control, at every width.",
+      "Tabular figures for every score, measurement and date column.",
+      "Light and dark appearances that share one hierarchy."
+    ],
+    "rules": [
+      {
+        "name": "The One Teal Rule",
+        "body": "Clinic Teal is the only accent hue. A solid teal fill marks the single primary action of an area. Elsewhere teal appears only as text, an outline or a wash, to show what is selected, focused or current.",
+        "section": "colors"
+      },
+      {
+        "name": "The Stage Color Rule",
+        "body": "Before-session is Baseline Ochre, end-of-session is Clinic Teal, and recovery is Signal Green. A stage keeps its color in score tiles, table row bars, chart lines and legends.",
+        "section": "colors"
+      },
+      {
+        "name": "The Direction-Not-Verdict Rule",
+        "body": "Green and red mark only the direction of a comparable signed change, and always appear next to the number and its explicit sign (`+1`, `−2`). When the compared sets differ, the change is suppressed and no color is shown.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Numbers Rule",
+        "body": "Scores, measurements, counts and date columns use `font-variant-numeric: tabular-nums`, so values align down a column.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fourteen-Pixel Floor",
+        "body": "No running text goes below .875rem (14px). Help tooltips, chips, labels and captions all sit at that floor.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Remote-Font Rule",
+        "body": "Fonts come only from the local install or embedded data URIs. The offline Content Security Policy forbids any other source.",
+        "section": "typography"
+      },
+      {
+        "name": "The 44px Target Rule",
+        "body": "Every interactive control (buttons, inputs, selects, tabs, pick tiles, menu items, summaries) keeps a minimum 44px target at every width. Small help triggers extend an invisible 44px hit area.",
+        "section": "layout"
+      },
+      {
+        "name": "The Sticky Context Rule",
+        "body": "On long forms, where the user is stays visible. The application bar and the editor's workflow bar stick to the top, so client, visit and current section are never lost while scrolling. On narrow screens the workflow bar alone carries this context, so the sticky area stays small.",
+        "section": "layout"
+      },
+      {
+        "name": "The Float-Only Shadow Rule",
+        "body": "A shadow means \"this layer floats above the page\". Content at rest never carries one.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** define every new color as a custom property in all three theme blocks in `src/styles.css`: the light `:root`, the `prefers-color-scheme: dark` block and `[data-theme=\"dark\"]`.",
+      "**Do** keep every interactive control at least 44px tall and wide, including at 560px and below.",
+      "**Do** separate content with 1px Rule Line borders and tonal fills (Form White, Well Grey, Mist Ground) rather than shadows.",
+      "**Do** reserve the 3–4px colored left edge for measurement-stage rows and failure or warning callouts.",
+      "**Do** set scores, measurements and date columns in tabular figures, and write signed changes with an explicit sign.",
+      "**Do** keep the 2px solid Clinic Teal focus ring with a 2px offset on every focusable element.",
+      "**Do** limit motion to 150ms border-color and background transitions inside `prefers-reduced-motion: no-preference`."
+    ],
+    "donts": [
+      "**Don't** load fonts, icons, images or stylesheets from a network source. Embed them in the build.",
+      "**Don't** put a shadow on panels, cards or tiles at rest. Shadows belong only to menus, popups, tooltips and dialogs.",
+      "**Don't** introduce a second accent hue, or use Signal Green, Alert Red, Caution Amber or Baseline Ochre for decoration.",
+      "**Don't** signal the direction of a change with color alone. Show the number and its sign.",
+      "**Don't** set running text below .875rem (14px).",
+      "**Don't** use more than one solid Clinic Teal action in the same area.",
+      "**Don't** put a colored edge stripe on loading states, references, navigation bars or badges."
+    ]
+  }
+}
