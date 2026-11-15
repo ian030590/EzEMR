@@ -112,6 +112,7 @@ async function main() {
         assert.equal(await page.evaluate(() => collectSession().training.ocular.notes), committed.ocular.notes);
         assert.doesNotMatch(await page.evaluate(() => noteText(cur(), collectSession())), /Committed 原文/);
         await openTraining(page, 'ocular'); assert.equal(await page.locator('#tx-ocular-notes').inputValue(), committed.ocular.notes); await completeTraining(page);
+        if (await page.locator('#workflowSections').isVisible() && await page.locator('#workflowSections').getAttribute('aria-expanded') === 'false') await page.locator('#workflowSections').click();
         await page.locator('[data-workflow-go="activity"]').click(); assert.equal(await page.locator('#trainingResultForm').isVisible(), true); await completeTraining(page);
         for (const theme of ['light', 'dark']) for (const width of [320, 640, 768, 1280]) {
           await page.setViewportSize({ width, height: 900 }); await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);

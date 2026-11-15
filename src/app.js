@@ -145,6 +145,8 @@ const UI_EN = {
   "clients.csv 個案總表；每位個案的復健紀錄以 CSV、PDF 與 TXT 儲存。": "clients.csv client roster; each client's rehabilitation records are saved as CSV, PDF and TXT.",
   "儲存 CSV、PDF 與 TXT（Ctrl+S／⌘S）": "Save CSV, PDF and TXT (Ctrl+S / Cmd+S)",
   "沿用主訴建立問題": "Create a problem from the subjective note",
+  "跳到其他區段後，可用這個按鈕回到原本填寫的位置。": "After you jump to another section, use this to return to where you were.",
+  "區段": "Sections",
   "改為自行填寫問題": "Enter the problem manually",
   "先填寫主觀描述，再建立問題連結。": "Enter the subjective note before creating a problem link.",
   "問題由主觀描述建立；後續推理與處置在此填寫，不需另抄到整體補充。": "Problem created from the subjective note. Record its reasoning and intervention here; general notes do not need a duplicate.",
@@ -369,6 +371,7 @@ const UI_EN = {
   "此症狀的處置內容與目標": "Intervention details and goals for this symptom",
   "記錄實際處置、劑量、居家安排或待確認的計畫": "Record treatment, dose, home practice or plans awaiting confirmation",
   "已選 {0} 項": "{0} selected",
+  "已選 {0}/{1}": "{0} of {1} selected",
   "尚未建立症狀連結。新增一項，記錄它的推理與處置。": "No symptom links yet. Add one to document its reasoning and interventions.",
   "尚未填寫推理": "Reasoning not documented",
   "尚未連結評估依據": "No assessment evidence linked",
@@ -1210,6 +1213,9 @@ const UI_EN = {
   "請分別匯入 Excel、CSV 或 JSON 備份。": "Import Excel, CSV and JSON backups separately.",
   "測驗設定（已填 {0} 項）": "Test settings ({0} filled)",
   "測驗設定": "Test settings",
+  "測驗設定（就診次數：{0}）": "Test settings (visits: {0})",
+  "{0}：{1}變化趨勢": "{0}: {1} trend",
+  "趨勢圖表可左右捲動。": "Scroll the trend chart horizontally.",
   "；": "; ",
   "測驗紀錄（每次測驗一筆，各自記錄設定）": "Test records (one per test run, each with its own settings)",
   "尚無測驗紀錄。可匯入 OcuTrain 或周邊視野訓練的分數檔，或在下方新增。": "No test records yet. Import score files from OcuTrain or the peripheral field training program, or add one below.",
@@ -1748,6 +1754,8 @@ const LABELS = {
 };
 const labelText = text => language === 'zh-TW' && Object.hasOwn(LABELS, text) ? LABELS[text] : Object.hasOwn(TRAIN_TITLES, text) ? TRAIN_TITLES[text] : text || '';
 const ADD_ICON = '<svg class="add-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v12M2 8h12"/></svg>';
+const COPY_ICON = '<svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 8h13v13H8z M16 8V3H3v13h5"/></svg>';
+const SAVE_ICON = '<svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 3h13l3 3v15H4z M8 3v6h8V3 M8 21v-8h8v8"/></svg>';
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -2679,8 +2687,10 @@ function renderConnect() {
     <div class="connect-options">
       <h3>選擇適合您的儲存方式</h3>
       ${pendingHandle ? ui`<button class="btn app-primary" data-action="reconnect">重新連接「${esc(pendingHandle.name)}」</button>` : ''}
-      <div><button class="btn ${pendingHandle ? '' : 'app-primary'}" data-action="pick-folder" aria-describedby="existingFolderHint">我已經有病歷資料夾</button><p class="note" id="existingFolderHint">選擇原有資料夾，繼續使用裡面的個案與紀錄。</p></div>
-      <div><button class="btn" data-action="use-default" aria-describedby="newFolderHint">第一次使用，幫我建立</button><p class="note" id="newFolderHint">新增個案並儲存時，再選擇要建立病歷資料夾的位置。</p></div>
+      <div class="connect-choice-grid">
+        <div><button class="btn connect-choice" data-action="pick-folder" aria-describedby="existingFolderHint">我已經有病歷資料夾</button><p class="note" id="existingFolderHint">選擇原有資料夾，繼續使用裡面的個案與紀錄。</p></div>
+        <div><button class="btn connect-choice" data-action="use-default" aria-describedby="newFolderHint">第一次使用，幫我建立</button><p class="note" id="newFolderHint">新增個案並儲存時，再選擇要建立病歷資料夾的位置。</p></div>
+      </div>
     </div>
     <div class="connect-notes">
       <p>每次開啟都要先連接病歷資料夾，才能讀取和儲存病歷。</p>
@@ -3090,6 +3100,7 @@ function renderCommands() {
   renderBackupStatus();
   if (!savingSession) {
     $('#toolbarSave [data-label]').textContent = ui('儲存');
+    if ($('#workflowSave [data-label]')) $('#workflowSave [data-label]').textContent = ui('儲存');
     $('#fileMenu [data-action="save-session"] [data-label]').textContent = ui('儲存紀錄');
   }
   const c = cur(), draft = !!c && view === 'edit' && !!editing;
@@ -3730,7 +3741,7 @@ function renderDashboard() {
   let map;
   if (s.clinicalLinks?.length) {
     map = s.clinicalLinks.map(link => row(
-      `<span class="eyebrow">${esc(assessmentCategoryLabel(link.category))}</span><p class="clinical-symptom clinical-note">${esc(link.symptom)}</p>`,
+      `<p class="clinical-symptom clinical-note">${esc(link.symptom)}</p><p class="clinical-category">${esc(assessmentCategoryLabel(link.category))}</p>`,
       text(link.reasoning, ui('尚未填寫推理')) + (link.peo.length ? `<p class="clinical-domains">${ui('相關面向：')}${link.peo.map(key => esc(peoLabel(key))).join(' / ')}</p>` : '') +
         `<div class="clinical-evidence"><h5>${ui('評估依據')}</h5>${link.evidence.length ? ul(clinicalEvidenceText(c, s, link.evidence, true)) : link.evidenceNotes ? '' : text('', ui('尚未連結評估依據'))}${link.evidenceNotes ? text(link.evidenceNotes) : ''}</div>`,
       (link.interventions.length ? ul(link.interventions.map(id => clinicalInterventionLabel(id, s))) : link.interventionNotes ? '' : text('', ui('尚未記錄介入處置'))) + (link.interventionNotes ? text(link.interventionNotes) : ''), link.id)).join('');
@@ -3809,7 +3820,6 @@ function renderMain() {
   const c = cur();
   if (!c) {
     main.innerHTML = ui`<section class="panel welcome">
-      <span class="eyebrow">病歷工作區</span>
       <h2>從這裡開始記錄復健歷程。</h2>
       <p>新增個案後，即可填寫 SOAP 病歷、記錄症狀評分、評估與訓練結果，並追蹤每次復健的變化。</p>
       ${store?.kind === 'local' ? ui`<p class="browser-save-guidance">這個瀏覽器無法直接存入資料夾，每次儲存會下載一份檔案，請自行保存；建議在桌上型或筆記型電腦使用 Chrome 或 Edge。</p>` : ''}
@@ -3987,7 +3997,81 @@ function chartSVG(list) {
   return ui`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="每次復健的首次與復健後症狀評分">${g}${line('pre', 'var(--pre)')}${line('end', 'var(--accent)')}</svg>`;
 }
 
+const outcomeHasValue = value => value != null && !/^[\s–-]*$/.test(String(value));
+function outcomeNumber(value) {
+  if (typeof value !== 'number' && typeof value !== 'string') return null;
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(String(value).trim())) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+function primaryOutcomeField(fields, values) {
+  return fields.find(f => f.group !== 'setting' && !sourceNameMatches(f.label, 'Measurement time / equivalent form') &&
+    (f.type === 'number' || values.some(v => outcomeNumber(v?.[f.id]) != null)));
+}
+function outcomeTableHTML(columns, rows) {
+  const shown = columns.filter(col => col.keep || rows.some(row => outcomeHasValue(col.value(row))));
+  return `<div class="scroll"><table class="out"><thead><tr>${shown.map(col => `<th scope="col">${esc(col.label)}</th>`).join('')}</tr></thead><tbody>${rows.map(row =>
+    `<tr>${shown.map(col => `<td${col.text ? ' class="outcome-text"' : ''}>${esc(col.value(row) ?? '-')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function outcomeSettingsHTML(rows) {
+  const filled = rows.filter(row => outcomeHasValue(row.summary));
+  if (!filled.length) return '';
+  const count = new Set(filled.map(row => row.s)).size;
+  return `<details class="short-notes outcome-settings"><summary>${ui('測驗設定（就診次數：{0}）', count)}</summary><ul>${filled.map(({ s, context, summary }) =>
+    `<li>${esc(fmtDate(s.date))} · ${esc(context)} · ${esc(summary)}</li>`).join('')}</ul></details>`;
+}
+function outcomeTrendHTML(item, field, rows, series) {
+  if (!field) return '';
+  const points = [...rows].filter(row => /^\d{4}-\d{2}-\d{2}$/.test(row.s.date || ''))
+    .sort((a, b) => a.s.date.localeCompare(b.s.date) || (a.time || '').localeCompare(b.time || ''))
+    .map(row => ({ ...row, values: series.map(line => outcomeNumber(line.value(row))) }));
+  const dated = points.filter(p => p.values.some(v => v != null));
+  if (new Set(dated.map(p => p.s.date)).size < 2) return '';
+  const values = dated.flatMap(p => p.values).filter(v => v != null);
+  const format = value => String(Number(value.toPrecision(12)));
+  const measure = fieldLabel({ ...field, phase: undefined });
+  const unit = field.unit || measure.match(/[（(]([^（）()]+)[）)]$/)?.[1] || '';
+  const label = ui('{0}：{1}變化趨勢', labelText(item.name), measure);
+  const H = 152, T = 14, B = 32;
+  const low = Math.min(...values), high = Math.max(...values), pad = (high - low || Math.max(Math.abs(high) * .1, 1)) * .15;
+  const min = low - pad, max = high + pad;
+  const dates = [...new Set(points.map(p => p.s.date))];
+  const x = p => (4 + dates.indexOf(p.s.date) * 92 / (dates.length - 1)) + '%';
+  const y = value => T + (H - T - B) * (max - value) / (max - min);
+  const ticks = [low, (low + high) / 2, high].filter((v, i, all) => all.indexOf(v) === i);
+  const grid = ticks.map(value => `<line x1="4%" x2="96%" y1="${y(value)}" y2="${y(value)}" stroke="var(--line)"/>`).join('');
+  const axis = `<div class="outcome-axis" aria-hidden="true">${ticks.map(value => `<span style="top:${y(value) - 8}px">${Number(value.toPrecision(3))}</span>`).join('')}</div>`;
+  const lines = series.map((line, index) => {
+    let previous = null;
+    const segments = points.map(p => {
+      if (p.values[index] == null) { previous = null; return ''; }
+      const segment = previous ? `<line x1="${x(previous)}" x2="${x(p)}" y1="${y(previous.values[index])}" y2="${y(p.values[index])}"/>` : '';
+      previous = p; return segment;
+    }).join(' ');
+    return `<g class="outcome-series" fill="none" stroke="${line.color}" stroke-width="2"${index === 0 && series.length > 1 ? ' stroke-dasharray="5 3"' : ''}>${segments}</g>` + points.filter(p => p.values[index] != null).map(p =>
+      `<circle cx="${x(p)}" cy="${y(p.values[index])}" r="4" fill="${line.color}" stroke="var(--surface)" stroke-width="1.5"><title>${esc([fmtDate(p.s.date), visitLabel(p.s.visit), p.time, line.label, format(p.values[index]) + (unit ? ' ' + unit : '')].filter(Boolean).join(' · '))}</title></circle>`).join('');
+  }).join('');
+  const changes = series.map((line, index) => {
+    const measured = points.filter(p => p.values[index] != null);
+    if (!measured.length) return '';
+    const first = measured[0].values[index], last = measured.at(-1).values[index], delta = last - first;
+    const comparison = new Set(measured.map(p => p.s.date)).size >= 2 ? `${format(first)} → ${format(last)} (${delta < 0 ? '' : '+'}${format(delta)})` : format(first);
+    return `<p class="outcome-change">${line.label ? `<span class="outcome-stage" style="color:${line.color}">${esc(line.label)}</span>` : ''}<span>${esc(comparison)}${unit ? ' ' + esc(unit) : ''}</span></p>`;
+  }).join('');
+  return `<figure class="outcome-trend"><figcaption><div class="outcome-measure">${esc(measure)}</div>${changes}</figcaption><div class="chart-plot" tabindex="0" role="region" aria-label="${esc(label + '. ' + ui('趨勢圖表可左右捲動。'))}"><div class="outcome-plot">${axis}<svg width="100%" height="${H}" role="img" aria-label="${esc(label)}">${grid}<text x="4%" y="${H - 6}" text-anchor="start">${esc(fmtDate(dates[0]))}</text><text x="96%" y="${H - 6}" text-anchor="end">${esc(fmtDate(dates.at(-1)))}</text>${lines}</svg></div></div></figure>`;
+}
 function stagedOutcomesHTML(item, rows, definition) {
+  const fields = [...new Map(rows.flatMap(s => fieldsFor(definition(s))).map(f => [f.id, f])).values()];
+  const metricValue = (s, metric, phase) => {
+    const field = fieldsFor(definition(s)).find(f => f.phase === phase && f.label === metric?.label && (f.unit || '') === (metric?.unit || ''));
+    return s.assess[item.id].values?.[field?.id];
+  };
+  const primary = fields.find(f => f.phase === 'pre' && f.group !== 'setting' && !sourceNameMatches(f.label, 'Measurement time / equivalent form') &&
+    rows.some(s => ['pre', 'post'].some(phase => outcomeNumber(metricValue(s, f, phase)) != null)));
+  const trend = outcomeTrendHTML(item, primary, rows.map(s => ({ s })), ['pre', 'post'].map(phase => ({
+    label: phaseLabel(phase), color: phase === 'pre' ? 'var(--pre)' : 'var(--accent)',
+    value: ({ s }) => metricValue(s, primary, phase)
+  })));
   const recordHTML = rows.map(s => {
     const current = definition(s), fields = fieldsFor(current), a = s.assess[item.id], values = a.values || {};
     const isContext = f => f.label === 'Measurement time / equivalent form' || f.label === LABELS['Measurement time / equivalent form'];
@@ -4013,19 +4097,21 @@ function stagedOutcomesHTML(item, rows, definition) {
     const notes = facts ? fields.some(f => f.phase) ? ui`<details class="short-notes"><summary>測驗條件與備註</summary>${facts}</details>` : facts : '';
     return `<article class="short-record"><h4>${fmtDate(s.date)} · ${esc(visitLabel(s.visit))}</h4>${table}${notes}</article>`;
   }).join('');
-  return `<section class="panel short-outcomes" data-item-id="${esc(item.id)}"><h3>${esc(labelText(item.name))}</h3><p class="note">${esc(labelText(item.domain))}</p>${recordHTML}</section>`;
+  return `<section class="panel short-outcomes" data-item-id="${esc(item.id)}"><h3>${esc(labelText(item.name))}</h3><p class="note">${esc(labelText(item.domain))}</p>${trend}${recordHTML}</section>`;
 }
 function renderOutcomes() {
   const c = cur(), asc = byDate(filteredSessions());
+  const body = $('#tabBody'); body.classList.add('progress-view');
   const parts = [];
   // Symptoms summary
   const symRows = asc.filter(s => (s.sym || []).some(r => rowTotal(r) != null || r.kind === 'rec' && r.recMin != null));
   if (symRows.length) {
+    const recovery = symRows.some(s => findRow(s, 'rec'));
     parts.push(ui`<section class="panel"><h3 aria-label="症狀評分（0 至 10）">症狀評分（0 至 10）${helpHTML(ui('症狀評分（0 至 10）'), ui('復健前 → 復健後；有記錄時另顯示恢復時間。'))}</h3>
-      <div class="scroll"><table class="out"><thead><tr><th>日期</th>${SYMS.map(s => `<th>${language === 'en' ? s.en : s.zh}</th>`).join('')}<th>總分</th><th>恢復時間</th></tr></thead><tbody>
+      <div class="scroll"><table class="out"><thead><tr><th>日期</th>${SYMS.map(s => `<th>${language === 'en' ? s.en : s.zh}</th>`).join('')}<th>總分</th>${recovery ? ui('<th>恢復時間</th>') : ''}</tr></thead><tbody>
       ${symRows.map(s => { const p = firstRated(s.sym), e = findRow(s, 'end') || lastRated(s.sym), r = findRow(s, 'rec');
         const cell = k => { const a = symVal(p, k), b = symVal(e, k); return `${esc(a ?? '–')} → ${esc(b ?? '–')}`; };
-        return `<tr><td>${fmtDate(s.date)}</td>${SK.map(k => `<td>${cell(k)}</td>`).join('')}<td><b>${esc(symptomRatingText(p))} → ${esc(symptomRatingText(e))}</b>${rowTotal(p) != null && rowTotal(e) != null && !sameSymptomSet(p, e) ? `<br><span class="note">${ui('評分項目不同，未計算合計差異。')}</span>` : ''}</td><td>${r ? (r.recMin != null ? esc(r.recMin) + ui(' 分鐘') : ui('已記錄')) : '-'}</td></tr>`; }).join('')}
+        return `<tr><td>${fmtDate(s.date)}</td>${SK.map(k => `<td>${cell(k)}</td>`).join('')}<td><b>${esc(symptomRatingText(p))} → ${esc(symptomRatingText(e))}</b>${rowTotal(p) != null && rowTotal(e) != null && !sameSymptomSet(p, e) ? `<br><span class="note">${ui('評分項目不同，未計算合計差異。')}</span>` : ''}</td>${recovery ? `<td>${r ? (r.recMin != null ? esc(r.recMin) + ui(' 分鐘') : ui('已記錄')) : '-'}</td>` : ''}</tr>`; }).join('')}
       </tbody></table></div></section>`);
   }
   const allAssessments = new Map([...c.plan, ...asc.flatMap(s => assessmentItems(c, s))].map(item => [item.id, item]));
@@ -4048,11 +4134,13 @@ function renderOutcomes() {
       const def = s => assessmentItems(c, s).find(p => p.id === item.id) || item;
       if (rows.some(s => fieldsFor(def(s)).some(f => f.phase))) { parts.push(stagedOutcomesHTML(item, rows, def)); continue; }
       const fields = [...new Map(rows.flatMap(s => fieldsFor(def(s))).map(f => [f.id, f])).values()].filter(f => f.group !== 'setting');
-      const settings = rows.some(s => settingSummary(def(s), s.assess[item.id].values));
-      parts.push(ui`<section class="panel"><h3>${esc(labelText(item.name))}</h3><p class="note" style="margin:4px 0 10px">${esc(labelText(item.domain))}</p>
-        <div class="scroll"><table class="out"><thead><tr><th>日期</th><th>紀錄類型</th>${fields.map(f => `<th>${esc(fieldLabel(f))}</th>`).join('')}${settings ? ui('<th>測驗設定</th>') : ''}<th>備註</th></tr></thead><tbody>
-        ${rows.map(s => { const a = s.assess[item.id]; return `<tr><td>${fmtDate(s.date)}</td><td>${visitLabel(s.visit)}</td>${fields.map(f => `<td>${esc(shownValue(f, a.values?.[f.id]))}</td>`).join('')}${settings ? `<td style="text-align:left;font-family:var(--f-body)">${esc(settingSummary(def(s), a.values))}</td>` : ''}<td style="text-align:left;font-family:var(--f-body)">${esc(clinicalAssessmentNotes(a, s))}</td></tr>`; }).join('')}
-        </tbody></table></div></section>`);
+      const primary = primaryOutcomeField(fields, rows.map(s => s.assess[item.id].values));
+      const trend = outcomeTrendHTML(item, primary, rows.map(s => ({ s })), [{ color: 'var(--accent)', value: ({ s }) => s.assess[item.id].values?.[primary?.id] }]);
+      const columns = [{ label: ui('日期'), keep: true, value: s => fmtDate(s.date) }, { label: ui('紀錄類型'), keep: true, value: s => visitLabel(s.visit) },
+        ...fields.map(f => ({ label: fieldLabel(f), value: s => shownValue(f, s.assess[item.id].values?.[f.id]) })),
+        { label: ui('備註'), text: true, value: s => clinicalAssessmentNotes(s.assess[item.id], s) }];
+      const settings = outcomeSettingsHTML(rows.map(s => ({ s, context: visitLabel(s.visit), summary: settingSummary(def(s), s.assess[item.id].values) })));
+      parts.push(`<section class="panel" data-outcome-kind="assessment" data-item-id="${esc(item.id)}"><h3>${esc(labelText(item.name))}</h3><p class="note" style="margin:4px 0 10px">${esc(labelText(item.domain))}</p>${trend}${outcomeTableHTML(columns, rows)}${settings}</section>`);
     }
   }
   }
@@ -4063,31 +4151,38 @@ function renderOutcomes() {
     // One column per activity, so each activity's score can be followed across visits.
     const acts = [...new Set(rows.flatMap(s => (s.training[item.k].acts || []).map(labelText)))];
     const actCell = (d, label) => { const a = (d.acts || []).find(x => labelText(x) === label); return a == null ? '-' : d.actScores?.[a] ?? '✓'; };
-    const perf = rows.some(s => s.training[item.k].perf);
-    parts.push(ui`<section class="panel"><h3>${esc(labelText(item.label))}${acts.length ? helpHTML(labelText(item.label), ui('活動欄顯示該次的分數；✓ 表示有做但未填分數。')) : ''}</h3><div class="scroll" style="margin-top:10px"><table class="out"><thead><tr><th>日期</th>${acts.map(a => `<th>${esc(a)}</th>`).join('')}<th>設備／程式</th><th>時間（分鐘）</th><th>設定</th>${perf ? ui('<th>表現</th>') : ''}<th>難度</th>${fields.map(f => `<th>${esc(fieldLabel(f))}</th>`).join('')}<th>觀察</th></tr></thead><tbody>
-      ${rows.map(s => { const d = s.training[item.k]; return `<tr><td>${fmtDate(s.date)}</td>${acts.map(a => `<td>${esc(actCell(d, a))}</td>`).join('')}<td>${esc(d.program)}</td><td>${esc(d.dur ?? '-')}</td><td>${esc(d.level)}</td>${perf ? `<td>${esc(d.perf)}</td>` : ''}<td>${esc(d.diff ?? '-')}</td>${fields.map(f => `<td>${esc(d.values?.[f.id] ?? '-')}</td>`).join('')}<td>${esc(d.notes)}</td></tr>`; }).join('')}</tbody></table></div></section>`);
+    const columns = [{ label: ui('日期'), keep: true, value: s => fmtDate(s.date) },
+      ...acts.map(a => ({ label: a, value: s => actCell(s.training[item.k], a) })),
+      ...[['program', ui('設備／程式')], ['dur', ui('時間（分鐘）')], ['level', ui('設定')], ['perf', ui('表現')], ['diff', ui('難度')]]
+        .map(([key, label]) => ({ label, value: s => s.training[item.k][key] })),
+      ...fields.map(f => ({ label: fieldLabel(f), value: s => s.training[item.k].values?.[f.id] })),
+      { label: ui('觀察'), text: true, value: s => s.training[item.k].notes }];
+    parts.push(`<section class="panel" data-outcome-kind="training" data-item-id="${esc(item.k)}"><h3>${esc(labelText(item.label))}${acts.length ? helpHTML(labelText(item.label), ui('活動欄顯示該次的分數；✓ 表示有做但未填分數。')) : ''}</h3>${outcomeTableHTML(columns, rows)}</section>`);
   }
   const runRows = asc.flatMap(s => Object.values(s.training || {}).flatMap(d => d?.on ? (d.runs || []).map(r => ({ s, r })) : []));
   for (const id of new Set(runRows.map(x => x.r.item))) {
     const item = deviceItem(id); if (!item) continue;
     const list = runRows.filter(x => x.r.item === id);
-    const fields = fieldsFor(item).filter(f => f.group !== 'setting' && list.some(x => hasValue(x.r.values?.[f.id])));
-    parts.push(ui`<section class="panel"><h3>${esc(labelText(item.name))}（復健測驗紀錄）${helpHTML(labelText(item.name), ui('復健時的每次測驗，各自顯示當次設定。'))}</h3>
-      <div class="scroll"><table class="out"><thead><tr><th>日期</th><th>時間</th>${fields.map(f => `<th>${esc(fieldLabel(f))}</th>`).join('')}<th>測驗設定</th></tr></thead><tbody>
-      ${list.map(({ s, r }) => `<tr><td>${fmtDate(s.date)}</td><td>${esc(r.time || '-')}</td>${fields.map(f => `<td>${esc(shownValue(f, r.values?.[f.id]))}</td>`).join('')}<td style="text-align:left;font-family:var(--f-body)">${esc(settingSummary(item, r.values))}</td></tr>`).join('')}
-      </tbody></table></div></section>`);
+    const fields = fieldsFor(item).filter(f => f.group !== 'setting');
+    const primary = primaryOutcomeField(fields, list.map(({ r }) => r.values));
+    const trend = outcomeTrendHTML(item, primary, list.map(row => ({ ...row, time: row.r.time })), [{ color: 'var(--accent)', value: ({ r }) => r.values?.[primary?.id] }]);
+    const columns = [{ label: ui('日期'), keep: true, value: ({ s }) => fmtDate(s.date) }, { label: ui('時間'), value: ({ r }) => r.time },
+      ...fields.map(f => ({ label: fieldLabel(f), value: ({ r }) => shownValue(f, r.values?.[f.id]) }))];
+    const settings = outcomeSettingsHTML(list.map(({ s, r }) => ({ s, context: r.time || '-', summary: settingSummary(item, r.values) })));
+    parts.push(ui`<section class="panel" data-outcome-kind="run" data-item-id="${esc(item.id)}"><h3>${esc(labelText(item.name))}（復健測驗紀錄）${helpHTML(labelText(item.name), ui('復健時的每次測驗，各自顯示當次設定。'))}</h3>${trend}${outcomeTableHTML(columns, list)}${settings}</section>`);
   }
   const edRows = asc.flatMap(s => s.training?.ocular?.on ? (s.training.ocular.eyedot || []).map(r => ({ s, r })) : []);
   if (edRows.length) {
-    parts.push(ui`<section class="panel"><h3>EyeDot Trainer 訓練紀錄${helpHTML(ui('EyeDot Trainer 訓練紀錄'), ui('按日期顯示眼球運動訓練中的每筆紀錄。'))}</h3>
-      <div class="scroll"><table class="out"><thead><tr><th>日期</th><th>模式</th><th>速度</th><th>時間</th><th>設定</th><th>次數</th><th>最佳表現</th><th>備註</th></tr></thead><tbody>
-      ${edRows.map(({ s, r }) => `<tr><td>${fmtDate(s.date)}</td><td>${esc(labelText(r.mode))}</td><td>${esc(edSpeedLabel(r.mode, r.speed) || '')}</td><td>${esc(labelText(r.dur))}</td>
-        <td>${esc([labelText(r.dir), r.trail ? ui('軌跡') + ui('：') + labelText(r.trail) : null, labelText(r.dot), r.full === 'Yes' ? ui('全螢幕') : null].filter(Boolean).join(ui('、')))}</td>
-        <td>${r.count != null ? esc(r.count) + ' ' + edCountLabel(r.mode) : '–'}</td><td>${esc(r.best || '–')}</td><td style="text-align:left;font-family:var(--f-body)">${esc(r.notes || '')}</td></tr>`).join('')}
-      </tbody></table></div></section>`);
+    const columns = [{ label: ui('日期'), keep: true, value: ({ s }) => fmtDate(s.date) },
+      { label: ui('模式'), value: ({ r }) => labelText(r.mode) }, { label: ui('速度'), value: ({ r }) => edSpeedLabel(r.mode, r.speed) },
+      { label: ui('時間'), value: ({ r }) => labelText(r.dur) },
+      { label: ui('設定'), value: ({ r }) => [labelText(r.dir), r.trail ? ui('軌跡') + ui('：') + labelText(r.trail) : null, labelText(r.dot), r.full === 'Yes' ? ui('全螢幕') : null].filter(Boolean).join(ui('、')) },
+      { label: ui('次數'), value: ({ r }) => r.count != null ? r.count + ' ' + edCountLabel(r.mode) : '–' },
+      { label: ui('最佳表現'), value: ({ r }) => r.best }, { label: ui('備註'), text: true, value: ({ r }) => r.notes }];
+    parts.push(ui`<section class="panel" data-outcome-kind="eyedot"><h3>EyeDot Trainer 訓練紀錄${helpHTML(ui('EyeDot Trainer 訓練紀錄'), ui('按日期顯示眼球運動訓練中的每筆紀錄。'))}</h3>${outcomeTableHTML(columns, edRows)}</section>`);
   }
-  $('#tabBody').innerHTML = parts.join('') || ui`<section class="panel empty"><h3>尚無追蹤結果</h3><p>在復健紀錄中填寫症狀評分、評估或復健結果並儲存後，即可在此比較。</p></section>`;
-  for (const region of $('#tabBody').querySelectorAll('.scroll')) {
+  body.innerHTML = parts.join('') || ui`<section class="panel empty"><h3>尚無追蹤結果</h3><p>在復健紀錄中填寫症狀評分、評估或復健結果並儲存後，即可在此比較。</p></section>`;
+  for (const region of body.querySelectorAll('.scroll')) {
     region.tabIndex = 0; region.setAttribute('role', 'region');
     const hint = ui('表格可左右捲動，或聚焦後使用左右方向鍵。');
     const heading = region.closest('section').querySelector('h3'), title = heading.cloneNode(true);
@@ -4114,11 +4209,33 @@ function renderPlan() {
     }).join('') || ui('<p class="note">尚無項目，請按新增項目，選擇現有模板或建立空白模板。</p>')}</div></section>`;
   const selectable = c.plan.filter(p => !['src_other', 'func'].includes(assessmentSourceId(p)));
   const initialItems = selectable.filter(p => p.active !== false);
+  const initialMembers = new Map();
+  for (const item of initialItems) {
+    const key = assessmentGroupKey(item);
+    if (!initialMembers.has(key)) initialMembers.set(key, []);
+    initialMembers.get(key).push(item);
+  }
+  const initialGroups = ['short', 'long'].map(period => {
+    const groups = ASSESSMENT_FUNCTIONS.map(category => {
+      const items = assessmentChoices(c, { visit: 'baseline', assess: {} }, category, period).flatMap(group => initialMembers.get(group.key) || []);
+      const heading = 'initial-' + period + '-' + category + '-h';
+      return items.length ? `<section class="initial-function" data-initial-function="${category}" aria-labelledby="${heading}"><div class="initial-group-heading"><h5 id="${heading}">${esc(assessmentFunctionLabel(category))}</h5><span class="initial-count" data-initial-count role="status" aria-atomic="true">${ui('已選 {0}/{1}', items.filter(isInitial).length, items.length)}</span></div><div class="pick-group" role="group" aria-labelledby="${heading}">${items.map(p => `<label class="pick"><input type="checkbox" data-initial="${p.id}" ${isInitial(p) ? 'checked' : ''}>${esc(assessmentTemplateLabel(p))}</label>`).join('')}</div></section>` : '';
+    }).join('');
+    return groups ? `<section class="initial-period" data-initial-period="${period}" aria-labelledby="initial-${period}-h"><h4 id="initial-${period}-h">${period === 'short' ? ui('短期成效') : ui('長期評估')}</h4>${groups}</section>` : '';
+  }).join('');
   const initialPanel = ui`<section class="panel" aria-labelledby="initialHeading"><h3 id="initialHeading" aria-label="初次評估項目">初次評估項目${helpHTML(ui('初次評估項目'), ui('勾選初次評估（基準評估）要施測的項目。填寫基準評估時，這些項目列在最前面；療程後與追蹤評估只列出其中依評估時機應再評估的項目。實際施測後，再於病歷中勾選並填寫。'))}</h3>
-    ${initialItems.length ? `<div class="pick-group" id="initialPicks" role="group" aria-labelledby="initialHeading" style="margin-top:12px">${initialItems.map(p => `<label class="pick"><input type="checkbox" data-initial="${p.id}" ${isInitial(p) ? 'checked' : ''}>${esc(assessmentTemplateLabel(p))}</label>`).join('')}</div>` : ui('<p class="note">尚無啟用的評估項目。</p>')}</section>`;
+    ${initialItems.length ? `<div class="initial-picks" id="initialPicks" role="group" aria-labelledby="initialHeading">${initialGroups}</div>` : ui('<p class="note">尚無啟用的評估項目。</p>')}</section>`;
   $('#tabBody').innerHTML = ui`<div class="plan-edit"><div><h3>評估與復健項目設定${helpHTML(ui('評估與復健項目設定'), ui('從既有模板開始，或建立空白項目。停用項目仍保留歷史結果；新增個案時可複用這份設定。'))}</h3><p class="note">${esc(clientLabel(c))}</p></div>
     ${initialPanel}${section('assessment', ui('評估項目'), selectable)}${section('training', ui('復健項目'), trainingPlan(c))}</div>`;
-  $('#initialPicks')?.addEventListener('change', e => setInitial(e.target));
+  const updateInitialCounts = () => document.querySelectorAll('#initialPicks .initial-function').forEach(group => {
+    const items = [...group.querySelectorAll('[data-initial]')], count = group.querySelector('[data-initial-count]');
+    const text = ui('已選 {0}/{1}', items.filter(item => item.checked).length, items.length);
+    if (count.textContent !== text) count.textContent = text;
+  });
+  $('#initialPicks')?.addEventListener('change', async e => {
+    const saved = setInitial(e.target);
+    updateInitialCounts(); await saved; updateInitialCounts();
+  });
 }
 // Saves one item's place in the initial assessment right away, like enabling or disabling an item.
 async function setInitial(box) {
@@ -4306,9 +4423,13 @@ function carryContextForm() {
 let editorWorkflow = null, workflowEvents = null, workflowResize = null;
 const workflowKey = () => curId + '/' + (editing?.id || 'new');
 function editorWorkflowHTML(c, s) {
+  const identity = [clientLabel(c), c.ref || c.id, fmtDate(s.date), visitLabel(s.visit)].join(' · ');
   return ui`<nav class="workflow-bar" id="editorWorkflow" aria-label="病歷填寫導覽">
-    <div class="workflow-identity"><strong>${esc(clientLabel(c))}</strong><span>${esc(c.ref || c.id)}</span><span id="workflowVisit">${esc(s.date)} · ${visitLabel(s.visit)}</span><span id="workflowDirty" role="status">${esc(draftStatus())}</span></div>
-    <div class="workflow-controls" ${s.visit === 'absent' ? 'hidden' : ''}><div class="workflow-steps">
+    <div class="workflow-identity" title="${esc(identity)}"><span class="workflow-full-identity"><strong>${esc(clientLabel(c))}</strong><span>${esc(c.ref || c.id)}</span><span id="workflowVisit">${esc(s.date)} · ${visitLabel(s.visit)}</span></span><span class="workflow-summary" id="workflowSummary">${esc(identity)}</span></div>
+    <span id="workflowDirty" role="status">${esc(draftStatus())}</span>
+    <div class="workflow-controls" ${s.visit === 'absent' ? 'hidden' : ''}>
+    <button type="button" class="btn small workflow-sections-toggle" id="workflowSections" aria-expanded="false" aria-controls="workflowSteps">區段</button>
+    <div class="workflow-steps" id="workflowSteps">
       <button type="button" class="btn small" data-workflow-go="interview">訪談與目標</button>
       ${COPM_VISITS.includes(s.visit) ? '<button type="button" class="btn small" data-workflow-go="copm">COPM</button>' : ''}
       <button type="button" class="btn small" data-workflow-go="pre">施測前</button>
@@ -4318,9 +4439,36 @@ function editorWorkflowHTML(c, s) {
       <button type="button" class="btn small" data-workflow-go="reasoning">判斷與計畫</button>
       <button type="button" class="btn small" data-workflow-go="plan">後續計畫</button>
     </div><label class="workflow-picker" for="workflowAssessment"><span>本次已選項目</span><select id="workflowAssessment"><option value="">選擇定位項目</option></select></label>
-    <button type="button" class="btn small" id="workflowBack" disabled>回到剛才填寫處</button></div>
+    <button type="button" class="btn small" id="workflowBack" aria-describedby="workflowBackHint" title="${ui('跳到其他區段後，可用這個按鈕回到原本填寫的位置。')}" disabled>回到剛才填寫處</button></div>
+    <span class="sr-only" id="workflowBackHint">跳到其他區段後，可用這個按鈕回到原本填寫的位置。</span>
     <p id="workflowPath" class="workflow-path" aria-live="polite"></p><p id="workflowNotice" class="note" role="status" hidden></p>
+    <button type="button" class="btn app-primary workflow-save" id="workflowSave" data-action="save-session" data-needs="draft" aria-describedby="workflowDirty" title="${esc(saveRecordHint())}" ${savingSession || savingItems || !patientReady ? 'disabled' : ''}>${SAVE_ICON}<span data-label>儲存</span></button>
   </nav>`;
+}
+function refreshWorkflowGeometry() {
+  const bar = $('#editorWorkflow');
+  if (!bar) return;
+  const height = bar.getBoundingClientRect().height;
+  document.documentElement.style.setProperty('--workflow-height', height + 'px');
+}
+function setWorkflowSections(open) {
+  const bar = $('#editorWorkflow'); if (!bar) return;
+  bar.classList.toggle('sections-open', open); $('#workflowSections').setAttribute('aria-expanded', String(open));
+  refreshWorkflowGeometry();
+}
+function setWorkflowCompact(compact) {
+  const bar = $('#editorWorkflow'); if (!bar) return;
+  const wasCompact = bar.classList.contains('is-compact');
+  bar.classList.toggle('is-compact', compact);
+  if (!compact) setWorkflowSections(false);
+  else if (!wasCompact && $('#workflowSteps').contains(document.activeElement)) setWorkflowSections(true);
+  refreshWorkflowGeometry();
+}
+function refreshWorkflowBack() {
+  const button = $('#workflowBack'), disabled = !editorWorkflow.back;
+  button.disabled = disabled; $('#workflowBackHint').hidden = !disabled;
+  if (disabled) { button.setAttribute('aria-describedby', 'workflowBackHint'); button.title = ui('跳到其他區段後，可用這個按鈕回到原本填寫的位置。'); }
+  else { button.removeAttribute('aria-describedby'); button.removeAttribute('title'); }
 }
 function captureEditorPosition() {
   if (trainingDialog && document.activeElement?.closest('#trainingResultForm')) return { id: document.activeElement.id, training: trainingDialog.item.k };
@@ -4335,7 +4483,8 @@ function revealEditorTarget(element) {
   }
 }
 function workflowTop() {
-  return ($('#applicationBar')?.getBoundingClientRect().bottom || 0) + ($('#editorWorkflow')?.getBoundingClientRect().height || 0) + 12;
+  const bar = $('#editorWorkflow');
+  return (bar ? parseFloat(getComputedStyle(bar).top) || 0 : 0) + (bar?.getBoundingClientRect().height || 0) + 12;
 }
 function updateWorkflowPath(element) {
   if (!$('#workflowPath') || !element) return;
@@ -4349,6 +4498,7 @@ function updateWorkflowPath(element) {
   if (run) parts.push(run.querySelector('.run-head h5')?.textContent || '');
   if (link) parts.push(link.querySelector('legend')?.textContent || '');
   $('#workflowPath').textContent = parts.filter(Boolean).join(' › ');
+  $('#workflowPath').title = $('#workflowPath').textContent;
   document.querySelectorAll('#soapForm .workflow-active').forEach(node => node.classList.remove('workflow-active'));
   (item || section)?.classList.add('workflow-active');
   if (item?.classList.contains('as') && $('#workflowAssessment option[value="' + item.dataset.id + '"]')) {
@@ -4365,7 +4515,7 @@ function updateWorkflowPath(element) {
 }
 function navigateEditor(element, remember = true) {
   if (!element) return;
-  if (remember) { editorWorkflow.back = captureEditorPosition() || { scroll: scrollY }; $('#workflowBack').disabled = false; }
+  if (remember) { editorWorkflow.back = captureEditorPosition() || { scroll: scrollY }; refreshWorkflowBack(); }
   if (element.matches('.tx') && !trainingDialog) { trainingResultForm(element.dataset.id); return; }
   if (element.closest('#trainingResultForm')) {
     revealEditorTarget(element); element.scrollIntoView({ block: 'center' });
@@ -4373,10 +4523,12 @@ function navigateEditor(element, remember = true) {
     focus?.focus({ preventScroll: true }); updateWorkflowPath(focus || element); return;
   }
   revealEditorTarget(element);
+  setWorkflowCompact(true); setWorkflowSections(false);
   const anchor = element.matches('input, select, textarea') ? element.closest('label') || element : element;
   window.scrollTo({ top: Math.max(0, scrollY + anchor.getBoundingClientRect().top - workflowTop()), behavior: 'instant' });
-  const focus = element.matches('input, select, textarea, button') ? element : element.querySelector('input:not(:disabled), select:not(:disabled), textarea:not(:disabled)');
-  focus?.focus({ preventScroll: true }); updateWorkflowPath(focus || element);
+  const focus = element.matches('input, select, textarea, button') ? element : element.querySelector('input:not(:disabled), select:not(:disabled), textarea:not(:disabled)') || element;
+  if (focus === element && !focus.matches('input, select, textarea, button') && !focus.hasAttribute('tabindex')) focus.tabIndex = -1;
+  focus.focus({ preventScroll: true }); updateWorkflowPath(focus);
 }
 function updateWorkflowItems() {
   const select = $('#workflowAssessment'); if (!select || !cur() || !editing) return;
@@ -4393,6 +4545,29 @@ function setupEditorWorkflow(position) {
   for (const group of assessmentEditorGroups(cur(), editing)) editorWorkflow.assessmentPrimaries.set(group.key, group.primary.id);
   const events = workflowEvents = new AbortController(), form = $('#soapForm'), bar = $('#editorWorkflow');
   const options = { signal: events.signal };
+  let measuredWidth = 0;
+  const measureExpanded = () => {
+    if (!bar.isConnected) return;
+    measuredWidth = bar.getBoundingClientRect().width;
+    const measure = bar.cloneNode(true);
+    measure.classList.remove('is-compact', 'sections-open');
+    measure.setAttribute('inert', ''); measure.setAttribute('aria-hidden', 'true');
+    measure.style.cssText = `position:absolute;top:0;visibility:hidden;pointer-events:none;width:${measuredWidth}px;height:auto`;
+    bar.parentElement.append(measure); bar.style.setProperty('--workflow-expanded-height', measure.getBoundingClientRect().height + 'px'); measure.remove();
+  };
+  const syncCompact = () => {
+    if (!bar.isConnected) return;
+    let previous = bar.previousElementSibling;
+    while (previous && !previous.getClientRects().length) previous = previous.previousElementSibling;
+    const origin = previous ? previous.getBoundingClientRect().bottom + scrollY + parseFloat(getComputedStyle(bar.parentElement).rowGap) : bar.offsetTop;
+    const threshold = origin - (parseFloat(getComputedStyle(bar).top) || 0);
+    if (scrollY > threshold + 8) setWorkflowCompact(true);
+    else if (scrollY < threshold - 16) setWorkflowCompact(false);
+    refreshWorkflowGeometry();
+  };
+  $('#workflowSections').addEventListener('click', () => setWorkflowSections(!bar.classList.contains('sections-open')), options);
+  $('#workflowSteps').addEventListener('focusin', () => { if (bar.classList.contains('is-compact')) setWorkflowSections(true); }, options);
+  window.addEventListener('resize', () => { measureExpanded(); syncCompact(); }, { ...options, passive: true });
   let pointerFocus = false;
   form.addEventListener('pointerdown', () => { pointerFocus = true; }, { ...options, capture: true });
   form.addEventListener('keydown', () => { pointerFocus = false; }, { ...options, capture: true });
@@ -4401,6 +4576,8 @@ function setupEditorWorkflow(position) {
     if (!bar.isConnected) return;
     refreshDraftStatus();
     $('#workflowVisit').textContent = $('#s-date').value + ' · ' + visitLabel($('#s-visit').value);
+    const identity = [clientLabel(cur()), cur().ref || cur().id, fmtDate($('#s-date').value), visitLabel($('#s-visit').value)].join(' · ');
+    $('#workflowSummary').textContent = identity; $('.workflow-identity').title = identity;
   };
   form.addEventListener('input', refreshStatus, options);
   form.addEventListener('change', () => { refreshStatus(); updateWorkflowItems(); }, options);
@@ -4415,7 +4592,7 @@ function setupEditorWorkflow(position) {
   $('#workflowAssessment').addEventListener('change', event => {
     editorWorkflow.assessment = event.target.value; navigateEditor($('#as-' + event.target.value));
   }, options);
-  $('#workflowBack').disabled = !editorWorkflow.back;
+  refreshWorkflowBack();
   $('#workflowBack').addEventListener('click', () => {
     const previous = editorWorkflow.back;
     if (previous?.training) { trainingResultForm(previous.training, { focusId: previous.id }); return; }
@@ -4431,7 +4608,7 @@ function setupEditorWorkflow(position) {
     if (go === 'pre' || go === 'post') {
       const item = $('#as-' + editorWorkflow.assessment), phase = go === 'pre' ? 'pre' : 'post';
       if (item) {
-        editorWorkflow.back = captureEditorPosition() || { scroll: scrollY }; $('#workflowBack').disabled = false;
+        editorWorkflow.back = captureEditorPosition() || { scroll: scrollY }; refreshWorkflowBack();
         navigateEditor(item, false); assessmentResultForm(editorWorkflow.assessment, { phase }); return;
       } else target = $('#assessList');
     }
@@ -4484,6 +4661,7 @@ function setupEditorWorkflow(position) {
     if (frame) return;
     frame = requestAnimationFrame(() => {
       frame = null; if (!bar.isConnected) return;
+      syncCompact();
       const line = workflowTop() + 20;
       const nodes = [...form.querySelectorAll('.soap-sec, .as:not([hidden]), .tx:not([hidden]), .short-stage, .run, .clinical-link')].filter(node => {
         const rect = node.getBoundingClientRect(); return rect.top <= line && rect.bottom > line && node.getClientRects().length;
@@ -4496,10 +4674,13 @@ function setupEditorWorkflow(position) {
     });
   }, { ...options, passive: true });
   workflowResize = new ResizeObserver(() => {
-    if (bar.isConnected) document.documentElement.style.setProperty('--workflow-height', bar.getBoundingClientRect().height + 'px');
+    if (!bar.isConnected) return;
+    if (bar.getBoundingClientRect().width !== measuredWidth || !bar.classList.contains('is-compact')) measureExpanded();
+    refreshWorkflowGeometry();
   });
   workflowResize.observe(bar);
   updateWorkflowPath($('#s-date'));
+  measureExpanded(); syncCompact();
   if (position) requestAnimationFrame(() => {
     if (!bar.isConnected) return;
     const target = document.getElementById(position.id);
@@ -4616,7 +4797,7 @@ function assessHTML(c, s, category, period) {
     return `${mirror}<section class="as" id="as-${p.id}" data-id="${p.id}" aria-labelledby="as-${p.id}-h" ${a.done ? '' : 'hidden'}>
       <div class="as-head"><b id="as-${p.id}-h">${esc(title)}</b>${detail ? `<span>${esc(detail)}</span>` : ''}<div class="item-workflow-controls">
         <button type="button" class="btn small" data-action="assessment-edit" data-id="${p.id}" aria-label="${esc(ui('編輯 {0} 的結果', assessmentTemplateLabel(p)))}">${ui('編輯結果')}</button>
-        <button type="button" class="btn small" data-needs="draft" data-workflow-clear="as-${p.id}">${ui('清除結果')}</button></div></div>
+        <button type="button" class="btn small danger" data-needs="draft" data-workflow-clear="as-${p.id}">${ui('清除結果')}</button></div></div>
       <div class="as-body">${assessmentResultHTML(c, s, p)}</div></section>`;
   })).join('') + '</div>';
 }
@@ -4945,7 +5126,7 @@ function trainingSummaryHTML(t, s) {
   return `<section class="tx" id="tx-summary-${t.k}" data-id="${t.k}" aria-labelledby="tx-summary-${t.k}-h" ${d.on ? '' : 'hidden'}>
     <div class="as-head"><b class="tx-head" id="tx-summary-${t.k}-h">${esc(trainingHeadingText(t, d))}</b><div class="item-workflow-controls">
       <button type="button" class="btn small" data-action="training-edit" data-id="${t.k}" aria-label="${esc(ui('編輯 {0} 的結果', labelText(t.label)))}">${ui('編輯')}</button>
-      <button type="button" class="btn small" data-needs="draft" data-workflow-clear="tx-summary-${t.k}">${ui('清除結果')}</button></div></div>
+      <button type="button" class="btn small danger" data-needs="draft" data-workflow-clear="tx-summary-${t.k}">${ui('清除結果')}</button></div></div>
     ${lines.length || d.dur != null ? `<div class="training-results">${esc(lines.join('\n'))}</div>` : `<p class="note assessment-empty">${ui('尚未填寫結果，可選擇「編輯」補填。')}</p>`}</section>`;
 }
 function readTrainingEntry(t, s) {
@@ -5039,7 +5220,7 @@ function renderEditor() {
 
   $('#main').innerHTML = ui`
     <div class="editor-head">
-      <div class="spread"><div class="client-identity"><span class="eyebrow">${s.id ? ui('編輯復健紀錄') : ui('新增復健紀錄')}</span><h2>${esc(clientLabel(c))}</h2></div><span class="chip acc">編輯中</span></div>
+      <h2>${s.id ? ui('編輯復健紀錄') : ui('新增復健紀錄')}</h2>
       <p class="note save-hint">${store.kind === 'folder' ? ui('儲存到：') + esc(storageName()) + ' / ' + esc(store.folderOf?.(c.id) || safeName(c.ref || c.name || c.id)) + ui('。本次紀錄使用同名的 CSV、PDF 與 TXT。') : ui('瀏覽器模式：儲存後會下載 ZIP，內含個案資料夾與本次 CSV、PDF。若要直接寫入固定資料夾，請使用支援資料夾存取的 Chrome／Edge。')}</p>
     </div>
     ${carryForwardHTML()}
@@ -5121,7 +5302,7 @@ function renderEditor() {
         <div class="grid"><label class="f" for="s-next">下次復健日期<input type="date" id="s-next" value="${val(s.nextDate)}"></label></div>
       </div></section>
       </div>
-      <div class="row" style="justify-content:flex-end"><button type="button" class="btn editor-copy-action" data-action="copy-editing">複製病歷</button><button type="button" class="btn" data-action="cancel-edit">取消</button><button type="button" class="btn app-primary" data-action="save-session" title="${esc(saveRecordHint())}">儲存紀錄</button></div>
+      <div class="row" style="justify-content:flex-end"><button type="button" class="btn editor-copy-action" data-action="copy-editing">${COPY_ICON}複製病歷</button><button type="button" class="btn" data-action="cancel-edit">取消</button><button type="button" class="btn app-primary" data-action="save-session" title="${esc(saveRecordHint())}">儲存紀錄</button></div>
     </form>`;
 
   const form = $('#soapForm');

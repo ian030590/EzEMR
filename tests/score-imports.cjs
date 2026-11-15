@@ -311,15 +311,18 @@ const diplopiaOnly = file('TEST-SCORES_manual-1.json', JSON.stringify({ record_t
       await page.locator('.failure-message [data-failure-dismiss]').last().focus(); await page.keyboard.press('Enter');
     }
 
-    // Progress tracking: one table per item with result columns and a settings column; a table for training runs.
+    // Progress tracking keeps result columns in the table and folds settings beneath it.
     await page.locator('#tab-outcomes').click();
     const pursuitPanel = page.locator('#tabBody section.panel', { hasText: '平滑追視（OcuTrain PURSUIT）' }).first();
     const heads = await pursuitPanel.locator('thead th').allInnerTexts();
-    assert.equal(heads[2], '注視正確率（%）'); assert.ok(heads.includes('測驗設定')); assert.ok(!heads.includes('刺激大小（arcmin）'));
-    assert.match(await pursuitPanel.locator('tbody').innerText(), /76\.4[\s\S]*評估 · 白圈紅心/);
+    assert.equal(heads[2], '注視正確率（%）'); assert.ok(!heads.includes('測驗設定')); assert.ok(!heads.includes('刺激大小（arcmin）'));
+    assert.match(await pursuitPanel.locator('tbody').innerText(), /76\.4/);
+    assert.equal(await pursuitPanel.locator('details.outcome-settings').evaluate(node => node.open), false);
+    await pursuitPanel.locator('details.outcome-settings > summary').click();
+    assert.match(await pursuitPanel.locator('details.outcome-settings').innerText(), /評估 · 白圈紅心/);
     const runPanel = page.locator('#tabBody section.panel', { hasText: '跳視（OcuTrain SACCADE）（復健測驗紀錄）' });
     assert.match(await runPanel.locator('tbody').innerText(), /14:05:09\s+58\.5\s+312/);
-    check('Progress tracking shows result columns with one settings column per item, and a separate table of training test runs');
+    check('Progress tracking shows result columns with folded settings per item, and a separate table of training test runs');
 
     // English interface: preview, editor, runs and progress tables.
     await page.locator('#languageSelect').selectOption('en');

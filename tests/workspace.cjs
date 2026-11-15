@@ -215,12 +215,17 @@ const output = path.join(root, '.tmp', 'verification');
           await fits(`${theme} ${width} editor`);
           await page.locator('#s-subj').fill('Offline workspace test draft');
           await page.locator('#s-subj').scrollIntoViewIfNeeded();
-          const searchBox = await page.locator('#clientSearch').boundingBox();
-          assert.ok(searchBox.y >= 0 && searchBox.y + searchBox.height <= 1000, 'Patient search remains available while scrolling');
-          // Narrow layouts let the toolbar scroll with the page; wider layouts keep Save in view.
           if (width > 860) {
+            const searchBox = await page.locator('#clientSearch').boundingBox();
+            assert.ok(searchBox.y >= 0 && searchBox.y + searchBox.height <= 1000, 'Desktop patient search remains available while scrolling');
             const save = await page.locator('#toolbarSave').boundingBox();
             assert.ok(save.y >= 0 && save.y + save.height <= 1000, `${locale} ${theme} ${width}px: Save stays visible (${JSON.stringify(save)})`);
+          } else {
+            assert.equal(await page.locator('#applicationBar').evaluate(node => getComputedStyle(node).position), 'static', 'The phone editor releases the application bar');
+            await page.evaluate(() => { const bar = document.getElementById('editorWorkflow'); window.scrollTo(0, Math.max(scrollY, scrollY + bar.getBoundingClientRect().top + 20)); });
+            await page.waitForFunction(() => document.getElementById('editorWorkflow').classList.contains('is-compact'));
+            const save = await page.locator('#workflowSave').boundingBox();
+            assert.ok(save.y >= 0 && save.y + save.height <= 1000, 'The compact phone workflow keeps Save in view');
           }
           await page.locator('#s-subj').fill('');
           await page.evaluate(() => { dirty = false; });

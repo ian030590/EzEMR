@@ -140,7 +140,10 @@ const output = path.join(root, '.tmp', 'verification', 'clinical-samples', proce
       await fs.writeFile(path.join(output, 'observations.json'), JSON.stringify(evidence, null, 2));
       const symptomPanel = page.locator('#tabBody > .panel').filter({ has: page.getByRole('heading', { name: '症狀評分（0 至 10）', exact: true }) });
       if (['sci', 'orthopedic'].includes(sample.key)) assert.equal(await symptomPanel.count(), 0, 'Unrated vision symptoms must not produce an empty table');
-      else assert.deepEqual(await symptomPanel.locator('thead th').allTextContents(), ['日期', '眼睛疲勞', '視線模糊', '頭暈', '頭痛', '噁心', '總分', '恢復時間']);
+      else {
+        const hasRecovery = await page.evaluate(() => sessions.some(s => (s.sym || []).some(row => row.kind === 'rec')));
+        assert.deepEqual(await symptomPanel.locator('thead th').allTextContents(), ['日期', '眼睛疲勞', '視線模糊', '頭暈', '頭痛', '噁心', '總分', ...(hasRecovery ? ['恢復時間'] : [])]);
+      }
       const compact = page.locator('.short-outcomes');
       assert.ok(await compact.count());
       for (const panel of await compact.all()) {

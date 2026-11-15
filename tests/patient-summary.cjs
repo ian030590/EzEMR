@@ -43,7 +43,7 @@ const output = path.resolve(__dirname, '../.tmp/verification/patient-summary');
         width: origin.width, stats: box(panel.querySelector('.client-stats')), identity: box(panel.querySelector('.client-identity')), demographics: box(panel.querySelector('.client-demographics')),
         details: [...panel.querySelectorAll('.patient-details > details')].map(node => ({ ...box(node), summary: box(node.querySelector('summary')) })),
         labels: labels.map(style), text: text.map(style),
-        paragraphs: nodes('.patient-details .body > p').map(node => ({ ...box(node), topMargin: getComputedStyle(node).marginTop, bottomMargin: getComputedStyle(node).marginBottom })),
+        paragraphs: nodes('.patient-details .body > p').map(node => ({ ...box(node), columnX: box(node.closest('details')).x, topMargin: getComputedStyle(node).marginTop, bottomMargin: getComputedStyle(node).marginBottom })),
         contrast: text.map(node => { const ink = lum(getComputedStyle(node).color); return (Math.max(ink, background) + .05) / (Math.min(ink, background) + .05); }),
         overflow: document.documentElement.scrollWidth > innerWidth
       };
@@ -75,16 +75,22 @@ const output = path.resolve(__dirname, '../.tmp/verification/patient-summary');
             baseline ||= layout;
             assert.ok(layout.stats.bottom <= layout.details[0].summary.y, `${tag}: history starts below the statistics`);
             for (const [index, detail] of layout.details.entries()) {
-              assert.ok(Math.abs(detail.summary.x - layout.stats.x) < 1, `${tag}: every disclosure shares the statistics' left edge`);
+              if (width < 700 || !index) assert.ok(Math.abs(detail.summary.x - layout.stats.x) < 1, `${tag}: the disclosure column shares the statistics' left edge`);
               assert.ok(detail.summary.height >= 44, `${tag}: disclosures retain a usable target`);
               assert.ok(detail.right <= layout.width, `${tag}: expanded content stays inside the panel`);
-              if (index) assert.ok(detail.summary.y >= layout.details[index - 1].bottom - 1, `${tag}: medical history follows the background vertically`);
+              if (index) {
+                const previous = layout.details[index - 1];
+                if (width >= 700) {
+                  assert.ok(Math.abs(detail.summary.y - previous.summary.y) < 1 && Math.abs(detail.width - previous.width) < 1, `${tag}: disclosures use two equal columns aligned at the top`);
+                  assert.ok(detail.x >= previous.right, `${tag}: the disclosure columns do not overlap`);
+                } else assert.ok(detail.summary.y >= previous.bottom - 1, `${tag}: medical history follows the background vertically`);
+              }
             }
             assert.ok(Math.abs(layout.stats.y - baseline.stats.y) < 1, `${tag}: opening history does not move the statistics`);
             assert.ok(Math.abs(layout.details[0].summary.y - baseline.details[0].summary.y) < 1, `${tag}: the first disclosure stays in place`);
             assert.ok(layout.text.every(text => text.font === layout.text[0].font && text.size === layout.text[0].size && text.lineHeight === layout.text[0].lineHeight), `${tag}: diagnosis, facts and medical history share one body type style: ${JSON.stringify(layout.text)}`);
             assert.ok(layout.labels.every(label => label.color === layout.labels[0].color && label.weight === layout.labels[0].weight), `${tag}: field and disclosure labels share one color and weight`);
-            assert.ok(layout.paragraphs.every(p => p.topMargin === '0px' && p.bottomMargin === '0px' && Math.abs(p.x - layout.stats.x) < 1), `${tag}: medical paragraphs use the same left edge and controlled spacing`);
+            assert.ok(layout.paragraphs.every(p => p.topMargin === '0px' && p.bottomMargin === '0px' && Math.abs(p.x - p.columnX) < 1), `${tag}: medical paragraphs align within their disclosure column with controlled spacing`);
             assert.ok(layout.contrast.every(ratio => ratio >= 4.5), `${tag}: all summary text passes AA contrast`);
             assert.equal(layout.overflow, false, `${tag}: no horizontal overflow`);
           }
@@ -117,7 +123,10 @@ const output = path.resolve(__dirname, '../.tmp/verification/patient-summary');
         const layout = await inspect();
         assert.equal(layout.details.length, 2, 'Raw roster metadata does not create a disclosure');
         assert.ok(layout.text.every(text => text.size === layout.text[0].size && text.font === layout.text[0].font), 'Clinical profile fields share the summary body style');
-        assert.ok(layout.details.every((detail, i, all) => Math.abs(detail.x - layout.stats.x) < 1 && (!i || detail.y >= all[i - 1].bottom - 1)), 'Clinical disclosures form one aligned vertical stack');
+        if (width >= 700) {
+          assert.ok(Math.abs(layout.details[0].x - layout.stats.x) < 1);
+          assert.ok(Math.abs(layout.details[0].y - layout.details[1].y) < 1 && Math.abs(layout.details[0].width - layout.details[1].width) < 1 && layout.details[1].x >= layout.details[0].right, 'Clinical disclosures form two equal columns aligned at the top');
+        } else assert.ok(layout.details.every((detail, i, all) => Math.abs(detail.x - layout.stats.x) < 1 && (!i || detail.y >= all[i - 1].bottom - 1)), 'Clinical disclosures form one aligned vertical stack');
         assert.equal(layout.overflow, false);
         assert.equal(await page.locator('.profile-facts dd').last().innerText(), 'Synthetic 職業');
         assert.equal(await page.locator('.client-summary').getByText('Synthetic 原始值', { exact: true }).count(), 0);
@@ -128,6 +137,6 @@ const output = path.resolve(__dirname, '../.tmp/verification/patient-summary');
     assert.deepEqual(errors, []);
     assert.deepEqual(requests, []);
     await context.close();
-    console.log('PASS: Bilingual patient summary: stable vertical alignment, consistent type, all disclosure states, keyboard, light/dark contrast and offline data preservation at 320–1920px, including a 640px zoom-equivalent viewport');
+    console.log('PASS: Bilingual patient summary: responsive disclosure columns, consistent type, all disclosure states, keyboard, light/dark contrast and offline data preservation at 320–1920px, including a 640px zoom-equivalent viewport');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

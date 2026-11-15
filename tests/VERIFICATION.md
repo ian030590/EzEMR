@@ -1,5 +1,126 @@
 # 驗證紀錄
 
+## 2026-11-15：初次評估分組與精簡個案摘要（任務 4）
+
+將 `border-accent-on-rounded` 的整份樣式表忽略縮為方形步驟的單行註解；其餘七筆忽略不變，六個時點／警告色條及兩個探針仍可偵測。
+
+依指定的 antislop During 與既有病歷表單方向，維持 ENERGY 1／RHYTHM 1／MOTION 1。先將桌面精簡導覽的個案欄由 220px 上限改為依內容取用剩餘空間。`editor-compact.cjs` 新增繁中／英文、明暗主題的檢查：1440px 的示範個案完整顯示；900px 維持單列且不超過 64px，長姓名仍以省略號與完整標題提供備援。手機的欄位設定未修改，既有 106px 固定區、儲存與定位檢查仍通過。
+
+`renderPlan()` 的初次評估清單改為「短期成效 → 長期評估」，各期依編輯器的功能順序分組。重用 `assessmentGroupKey()`、`ASSESSMENT_FUNCTIONS`、`assessmentChoices()` 與既有標籤，不重寫分類或排序規則；同一模板的不同項目仍各保留原本的勾選方塊、識別碼及標籤，匯入測試的 42 個項目也全部保留。只有有項目的期程與功能組才出現，外層 `#initialPicks` 的可及群組名稱不變。
+
+每期使用 `h4`、每個功能組使用次要文字色及 600 字重的 `h5`，後接雙語「已選／總數」即時狀態。數字依目前勾選狀態更新，不重建清單；寫入中拒絕其他變更或寫入失敗還原時，也同步還原計數。原有 `setInitial()` 的儲存與錯誤處理未修改。間距為項目 8px、組標題至項目 12px、功能組 20px、期程之間 32px，第一期上方 24px；不增加分組外框或陰影。勾選時維持項目位置與焦點，重開清單後依已儲存選擇重新套用編輯器順序。
+
+新增 `initial-groups.cjs`，使用隔離 OPFS 資料夾與示範個案，比對實際編輯器的期程、功能與項目順序，確認舊清單每項恰好出現一次、無空組、勾選與取消後即時計數及重開保存、忙碌／失敗還原、臨床值與評估定義不變。兩種語言、明暗主題及 390／1440px 的間距、字級、對比與頁面溢出均通過；沒有頁面錯誤或對外請求。既有測試斷言沒有刪除或改寫，僅在 `editor-compact.cjs` 增加上述檢查與 900px 案例。
+
+下列命令以 `PLAYWRIGHT_MODULE=C:\Users\ian\Projects\EzEMR\.tmp\test-tools\node_modules\playwright` 執行，均通過：
+
+- `node tests/check_i18n.cjs`（1,217 個翻譯片段）、`node tests/language.cjs`、`node tests/initial-groups.cjs`。
+- `node tests/assessment-picks.cjs`、`node tests/assessment-groups.cjs`、`node tests/imports.cjs`、`node tests/templates.cjs`。
+- `node tests/button-affordance.cjs`、`node tests/editor-compact.cjs`、`node tests/progress-trends.cjs`。
+- 隔離建置 `node scripts/build.cjs --output .tmp/verification/initial-groups/EzEMR.html` 與 `git diff --check`。
+
+證據位於 `.tmp/verification/initial-groups/`；已實際檢視英文亮色桌面及繁中深色手機。新測試由既有 `run-ci.cjs` 自動探索，pre-push hook 會呼叫該 runner；本次未執行完整 runner 或發布 hook。設計偵測仍只列出六個既有量測時點／警告色條，依設計規則保留；`.impeccable/config.json` 未修改，沒有新增抑制。沒有變更發布檔、第三方資產或示範資料，也未提交或推送。先前任務的工作保留，獨立驗收由主責者執行。
+
+| antislop 交付檢查 | 結果與證據 |
+| --- | --- |
+| 硬性要求 | PASS：雙語、明暗主題、手機配置及可讀性檢查通過；勾選、取消、保存、忙碌及失敗還原均實際操作。 |
+| 技法目的 | PASS：使用既有表單、勾選項目與功能名稱；計數來自實際狀態，沒有新增裝飾、資產或動畫。 |
+| 視覺方向 | PASS：維持 1／1／1 設定，以期程與功能標題組織臨床選項；畫面證據已檢視。 |
+| 完整性 | PASS：原有儲存與資料保留契約、鍵盤焦點及窄螢幕備援仍通過，所有指定命令最終成功。 |
+
+## 2026-11-15：精簡病歷導覽與總覽頂端（任務 3）
+
+沿用指定的 antislop During、病歷表單方向及 ENERGY 1／RHYTHM 1／MOTION 1。先恢復說明按鈕原有的 1px `--control-line` 圓框。進度趨勢改用百分比水平座標、固定垂直座標與 SVG 外的數值軸，不使用 `viewBox` 縮放，也不再因視窗寬度改變而重建頁籤。保留 14px 文字、圓形資料點、在地日期、點標題、施測前虛線與時點色彩；360px 起完整顯示圖表，較窄時才捲動。1440→390→420→480→768→390→1440 的檢查確認設定展開狀態、表格焦點、面板物件及可保留的橫向捲動位置不變。
+
+編輯器上方的步驟全部換行顯示；導覽固定後改為精簡列，以「區段」或鍵盤聚焦展開步驟。個案摘要及目前路徑以省略號節省空間，`title` 保留完整文字。先建立路徑再量測展開高度，並追蹤展開時的高度變動；高度不小於精簡列，缺席表單亦保留原位。以展開高度減去精簡高度的下邊距保留表單位置，並以不同收合／展開門檻避免來回切換；編輯期間停用瀏覽器捲動錨定，避免重複補償高度。導覽本身的控制項扣回內容跳轉預留空間，聚焦或開啟「區段」不會把頁面拉回頂端。`--workflow-height`、捲動留白與 `workflowTop()` 使用目前實際高度；跳轉前先收合，沒有可輸入欄位的目標也能接收程式焦點。860px 以下編輯時應用程式列隨頁面捲走，精簡導覽固定在安全區頂端，並提供共用寫入流程、停用條件與圖示的「儲存」。
+
+個案摘要的病史與醫療史在 700px 起採兩個等寬、頂端對齊的欄位；手機仍為直列。備份提醒改為凹底、1px 細線、6px 圓角的窄列，訊息在左、按鈕在右；另覆蓋該按鈕列繼承的 Metro 容器尺寸限制。1440×900 的備份提醒均為 54px，總覽內容頂端繁中為 393.09px、英文為 391.39px；桌面精簡導覽均為 58px，390×844 的精簡固定區均為 106px，以上明暗主題一致。
+
+新增 `editor-compact.cjs`，實際操作區段展開／收合、鍵盤聚焦、逐步跨越門檻、步驟與項目跳轉、手機儲存及 OPFS 回讀，並驗證 390／768／1440px 無頁面溢出。既有測試修改如下，未刪除資料保留、對比、鍵盤、錯誤或離線斷言：
+
+- `progress-trends.cjs`：原本固定 SVG 座標與寬度相等的檢查改為不使用 `viewBox`、資料點維持 8×8px、所有點與軸標籤可見；路徑改為各段線，保留色彩、虛線與缺值不連線檢查。新增保留 DOM／焦點／展開狀態與捲動位置檢查，視窗調整後以連續穩定動畫影格等待配置，不使用固定延遲。
+- `button-affordance.cjs`：說明按鈕仍排除一般按鈕外框檢查，另斷言 1px 實線及 50% 圓角；導覽步驟操作前先開啟「區段」。
+- `therapist-workflow.cjs`、`training-modal.cjs`：操作收合中的步驟前先開啟「區段」。前者只在精簡列改檢查完整路徑標題及省略號；展開列仍要求路徑不裁切。
+- `workspace.cjs`：桌面仍驗證搜尋及儲存固定可見；窄螢幕改驗證應用程式列不固定，以及捲過導覽原位後精簡列的儲存可見。
+- `patient-summary.cjs`：700px 起改驗證兩個等寬欄位頂端對齊且不重疊；較窄仍驗證原有直列。醫療段落與所在欄位左緣對齊，取代所有內容共用單一左緣的舊斷言。
+
+以下均以 `PLAYWRIGHT_MODULE=C:\Users\ian\Projects\EzEMR\.tmp\test-tools\node_modules\playwright` 執行，最終結果通過：
+
+- `node tests/check_i18n.cjs`（1,213 個翻譯片段）、`node tests/language.cjs`、`node tests/editor-compact.cjs`。
+- `node tests/progress-trends.cjs` 在趨勢修正後連續六次通過（前五次為穩定性檢查，第六次為驗收清單的再次執行）；先前第一部分也曾連續五次通過。
+- `node tests/score-imports.cjs`、`node tests/short-outcomes.cjs`、`node tests/help-tooltips.cjs`、`node tests/therapist-workflow.cjs`、`node tests/clinical-link-sources.cjs`、`node tests/clinical-links-usability.cjs`、`node tests/workflow-entry.cjs`、`node tests/intervention-entry.cjs`。
+- `node tests/toolbar.cjs`、`node tests/metro-ui.cjs`、`node tests/workspace.cjs`、`node tests/ui-usability.cjs`、`node tests/backup-indicator.cjs`、`node tests/patient-dashboard.cjs`、`node tests/patient-summary.cjs`、`node tests/draft-recovery.cjs`、`node tests/button-affordance.cjs`、`node tests/rehab-note.cjs`。
+- 額外執行變更過的 `node tests/training-modal.cjs`、隔離建置 `node scripts/build.cjs --output .tmp/verification/editor-compact/EzEMR.html` 與 `git diff --check`，均通過。
+
+最初的總覽高度、捲動跳動及舊版路徑／固定搜尋／單欄斷言曾失敗，已依上述修正後重跑通過。新測試的量測 JSON 與畫面位於 `.tmp/verification/editor-compact/`，趨勢證據位於 `.tmp/verification/progress-trends/`；已實際檢視英文深色手機、英文亮色桌面及繁中亮色總覽。未發現頁面錯誤或對外請求。手動設計偵測仍列出六個既有量測時點／警告色條，依 DESIGN.md 保留；未新增抑制，`.impeccable/config.json` 雜湊不變。新根目錄 `.cjs` 由 `run-ci.cjs` 自動探索，既有 pre-push hook 會呼叫該 runner；本次未執行完整 runner 或發布 hook，未改動發布檔，也未提交或推送。
+
+| antislop 交付檢查 | 結果與證據 |
+| --- | --- |
+| 硬性要求 | PASS：雙語與明暗主題測試通過；手機無頁面溢出；區段、項目跳轉及 OPFS 儲存均實際操作，未新增宣傳數字或臨床內容。 |
+| 技法目的 | PASS：使用既有病歷表單、青綠操作色、時點色及工具列儲存圖示，沒有新增裝飾、圖片或動畫。 |
+| 視覺方向 | PASS：維持 1／1／1 設定；精簡列保留定位與儲存，表單及總覽內容獲得空間；畫面證據已檢視。 |
+| 完整性 | PASS：保留鍵盤、焦點、停用、寫入中、錯誤及資料保存檢查；所有指定命令最終通過，後續獨立驗收由主責者執行。 |
+
+## 2026-11-15：按鈕辨識、首次選項與畫面整理（任務 2）
+
+依任務指定的 antislop During 與病歷表單方向，維持 ENERGY 1／RHYTHM 1／MOTION 1。先完成任務 1 的三項後續修正：趨勢 SVG 依面板可用寬度在 280–440px 間建立座標，寬度改變時重新繪製，保留 14px 文字及 152px 高度；日期軸改用 `fmtDate()`；前一節改為繁體中文並刪除舊 hook 分類表。360／390×844px 均能直接看到首末點、日期及數值標籤，較窄尺寸才使用圖表捲動備援。
+
+Metro 原本以按鈕背景色畫邊線，改在共用 `.btn` 設定 1px `--control-line` 外框與既有 6px 圓角。連結、關閉、說明、工具列、選單及導覽維持無外框；目前工作流程步驟在滑鼠移入時也保留青綠底與 3px 底線。清除結果按鈕使用危險樣式，原有確認流程不變；複製病歷與取消編輯增加既有筆畫樣式的 SVG。首次連接的兩個選項使用相同外框、字級、尺寸及說明，700px 起並排、699px 以下堆疊。
+
+停用 `.btn` 改用不透明的次要文字、凹底與細線，文字對比達 4.5:1；覆蓋 Metro 強制的淡色文字及停用指標事件，讓原生 `disabled` 保持不可操作，同時可移入查看標題。回到剛才填寫處只在停用時有雙語隱藏說明、`aria-describedby` 與相同 `title`，可返回後一併移除。歡迎與編輯標題上方的眉標及重複「編輯中」標籤移除，編輯標題直接說明新增或編輯；臨床分類移到症狀下方。移除讀取、工作流程、SOAP 字母及引用區的色條；引用區保留凹底、1px 邊框與 6px 圓角，目前項目改以邊線或淺色外框標示。保留量測時點與警告／錯誤色條。個案姓名使用共用 Headline，長姓名可換行；沿用主訴建立問題靠左並使用自然寬度。
+
+新增 `button-affordance.cjs`，檢查兩種語言、明暗主題及 390／1440px 的連接、歡迎、總覽、編輯及進度畫面，另驗證 699／700px 選項排列。涵蓋外框 3:1 對比、停用文字、無外框例外、刪除確認、返回說明切換、目前項目、圖示規格、長姓名、眉標及允許的色條，確認沒有對外請求或頁面錯誤。停用按鈕依需求使用 `--line` 外框，另驗證可讀文字；3:1 外框檢查適用於可操作的外框按鈕。
+
+既有斷言只修改 `progress-trends.cjs` 原本要求手機圖表向右捲動的檢查，改為捲動位置維持 0，因為圖表現在必須完整放入容器；表格的向右捲動斷言保留。另新增所有圖表座標與實際寬度一致、所有點及軸標籤可見、繁中／英文日期格式與 14px 字級檢查。測量使用即時 DOM，並等待既有樣式轉場結束，避免把重新繪製前的節點或收合區內容當成可見控制項。其他原有測試斷言未修改；任務 1 的 `score-imports.cjs` 變更保留。
+
+以下命令均使用 `$env:PLAYWRIGHT_MODULE = 'C:\Users\ian\Projects\EzEMR\.tmp\test-tools\node_modules\playwright'`，最後結果均為退出碼 0：
+
+| 命令 | 結果 |
+| --- | --- |
+| `node tests/check_i18n.cjs` | 通過，1,211 個翻譯片段 |
+| `node tests/language.cjs` | 通過 |
+| `node tests/button-affordance.cjs` | 通過 |
+| `node tests/first-use.cjs` | 通過 |
+| `node tests/workspace.cjs` | 通過 |
+| `node tests/therapist-workflow.cjs` | 通過 |
+| `node tests/clinical-link-sources.cjs` | 通過 |
+| `node tests/clinical-links-usability.cjs` | 通過 |
+| `node tests/assessment-modal.cjs` | 通過 |
+| `node tests/assessment-picks.cjs` | 通過 |
+| `node tests/toolbar.cjs` | 通過 |
+| `node tests/metro-ui.cjs` | 通過 |
+| `node tests/ui-usability.cjs` | 通過 |
+| `node tests/help-tooltips.cjs` | 通過 |
+| `node tests/storage.cjs` | 通過 |
+| `node tests/backup-indicator.cjs` | 通過 |
+| `node tests/progress-trends.cjs` | 通過 |
+| `node tests/rehab-note.cjs` | 通過 |
+
+`node --check` 檢查 `src/app.js` 及兩支介面測試、`git diff --check`、`node scripts/build.cjs --output .tmp/verification/button-affordance/EzEMR.html` 均通過。兩支介面測試符合既有 `run-ci.cjs` 自動探索規則；pre-push 仍呼叫相同 runner 並傳遞失敗狀態。本委派未執行完整 CI／pre-push，未修改發布檔、vendor、Data 或設計／產品文件，沒有提交或推送。原有任務 1 變更及未追蹤的 `.impeccable/design.json`、`DESIGN.md`、`PRODUCT.md` 均保留；兩份 README 的現有描述仍適用。
+
+證據位於 `.tmp/verification/button-affordance/` 與 `.tmp/verification/progress-trends/`。已檢視英文亮色桌面首次選項、英文深色手機編輯畫面及完整手機趨勢圖。後續依 hook 明確要求，使用 `impeccable hooks ignore-value` 新增 `.impeccable/config.json`，僅對 `src/styles.css` 的 `border-accent-on-rounded` 及 `src/index.html` 的七項 Metro 誤報設定規則／檔案例外。工作流程按鈕的實際圓角為 0px；七項誤報是未使用的漸層文字、幾何十邊形、跑馬燈、主色焦點光暈、進度載入背景、重複條紋與網格工具。已補強 `button-affordance.cjs`，在雙語、明暗主題及各檢查畫面驗證圓角與這些工具未使用，重跑通過。沒有使用 `ignore-file`／`ignore-rule`、停用 hook 或修改第三方程式；量測時點及警告／錯誤色條仍保留且未忽略。
+
+| 交付檢查 | 結果與證據 |
+| --- | --- |
+| Hard Gate | PASS：18 項驗收命令、雙語、明暗色、窄螢幕、對比、鍵盤、空資料及離線檢查通過。 |
+| Purpose Gate | PASS：外框辨識可操作項目、兩個首次選項同等顯著，色彩及圖示只承擔既定用途，沒有新增裝飾或陰影。 |
+| Liveliness | PASS：ENERGY 1／RHYTHM 1／MOTION 1；沿用字型與病歷表單層級，標題、選項及量測結果各有清楚重點。 |
+| Craftsmanship | PASS：實際操作確認／取消清除、定位／返回及主題／尺寸切換，已檢視畫面；記錄、原文與導覽行為通過既有回歸。Claude 保留獨立最終驗證。 |
+
+## 2026-11-15：進度追蹤顯示跨次變化（任務 1）
+
+依 `DESIGN.md` 的病歷表單方向，維持 ENERGY 1／RHYTHM 1／MOTION 1。進度追蹤移除面板內捲動框的邊線及圓角，保留固定首欄、鍵盤捲動、說明及青綠焦點。長期評估、復健、設備測驗及 EyeDot 隱藏整欄空白或破折號的欄位；症狀恢復時間依有無紀錄顯示，COPM 固定欄位及短期分時點表格邏輯不變。測驗設定改在表格下方收合，標題計算有設定的就診次數，展開後保留每筆評估及測驗的設定摘要。
+
+具兩個不同日期數值的長期評估、設備測驗及短期結果增加 152px 趨勢圖，附首次至最近值及中性帶正負號差異。短期使用訓練前 1 的赭色虛線及訓練後立即的青綠線。嚴格排除非數值，保留零值與小數；缺值中斷連線，同日多筆測驗不當成多個日期。篩選同時更新表格、圖表及設定，切換語言不改寫臨床原文。
+
+`score-imports.cjs` 僅修改兩項原有預期：設定表頭改為不存在；原先在 `tbody` 核對分數後接設定文字，改為在表內核對相同分數，並確認設定預設收合、展開後保有相同設定文字。原有主要分數、欄位順序及測驗數值斷言保留。
+
+補正 `clinical-samples.cjs` 的症狀表頭斷言，依樣本是否有 `rec` 列決定恢復時間欄，配合任務 1 隱藏全空欄位的行為。
+
+當時驗證均通過（退出碼 0）：`check_i18n.cjs`（1,209 個翻譯片段）、`language.cjs`、`progress-trends.cjs`、`short-outcomes.cjs`、`score-imports.cjs`、`record-search.cjs`、`demo-data.cjs`、`workspace.cjs`、`indicators.cjs`、`templates.cjs`、`ui-usability.cjs`、`assessment-picks.cjs`、`assessment-groups.cjs`、`rehab-note.cjs`、`backup-indicator.cjs`。`templates.cjs` 首次最後一個瀏覽器情境載入本機頁面時出現 `net::ERR_NETWORK_IO_SUSPENDED`，原命令不變重試後通過；沒有修改斷言、啟動參數或權限。
+
+證據位於 `.tmp/verification/progress-trends/`，包含雙語、明暗主題、窄螢幕截圖及 `results.json`；已檢視繁中亮色桌面及英文深色手機的評估與短期結果畫面。語法檢查、`git diff --check` 及輸出至該目錄的隔離建置均通過。新測試由 `run-ci.cjs` 自動探索；本委派未執行完整 CI 或 pre-push，未修改發布檔、提交或推送。Claude 保留獨立最終驗證。手機圖表寬度及日期格式由任務 2 接續修正。
+
 ## 2026-11-12：評估視窗、文字結果與自訂欄位架構
 
 依本次 antislop during 指示及使用者提供的現有畫面，保留 Noto Sans TC、深色文字、青綠操作色與明暗主題，ENERGY 1／RHYTHM 1／MOTION 1。評估勾選開啟獨立草稿視窗，完成後下方顯示文字結果；短期、長期、COPM、視野與自訂評估共用填寫、取消及完成流程。復健項目的原有欄位流程維持既有用途。
