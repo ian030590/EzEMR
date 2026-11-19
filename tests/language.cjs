@@ -532,6 +532,46 @@ const withoutHelp = node => { const label = node.cloneNode(true); label.querySel
       if (locale === 'en') await checkEnglish('#trainingResultForm');
       await page.locator('#tx-ocular-diff').fill('0'); await completeTraining(page);
       if (locale === 'en') await checkEnglish('#tx-summary-ocular');
+      const cards = page.locator('#as-npc, #tx-summary-ocular');
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(theme => { document.documentElement.dataset.theme = theme; }, theme);
+        for (const width of [320, 400, 1280]) {
+          await page.setViewportSize({ width, height: 900 });
+          const summaries = await cards.evaluateAll(nodes => nodes.map(card => {
+            const rect = node => node.getBoundingClientRect();
+            const box = rect(card), heading = rect(card.querySelector('.as-head'));
+            const title = rect(card.querySelector('.as-head b'));
+            const body = rect(card.querySelector('.as-body, .training-results, .assessment-empty'));
+            const buttons = [...card.querySelectorAll('.item-workflow-controls button')].map(rect);
+            const nextLabel = card.closest('#remediation')?.querySelector('label[for="s-otx"]');
+            const centerY = box => (box.top + box.bottom) / 2;
+            return { inset: title.left - box.left, aligned: title.left === body.left,
+              headerGap: body.top - heading.bottom, bottomInset: box.bottom - body.bottom,
+              centered: buttons.every(button => Math.abs(centerY(button) - centerY(title)) < 1),
+              fits: card.scrollWidth <= card.clientWidth && buttons.every(button => button.left >= box.left && button.right <= box.right && button.height >= 44),
+              labelGap: nextLabel && rect(nextLabel).top - box.bottom };
+          }));
+          assert.equal(summaries.length, 2);
+          for (const [index, summary] of summaries.entries()) {
+            const context = `${locale} ${theme} ${width}px ${index === 0 ? 'assessment' : 'training'} summary`;
+            assert.ok(summary.aligned && summary.fits, context);
+            assert.equal(summary.inset, 13, context);
+            assert.equal(summary.bottomInset, summary.inset, context);
+            assert.equal(summary.headerGap, 8, context);
+            if (width === 1280) assert.ok(summary.centered, context);
+            if (summary.labelGap != null) assert.ok(summary.labelGap >= 16, context);
+          }
+          if (width !== 320) for (const card of await cards.all()) {
+            const id = await card.getAttribute('id');
+            await card.screenshot({ path: path.join(output, `language-${locale}-${id}-${theme}-${width}.png`) });
+          }
+        }
+      }
+      await openAssessment(page, 'npc'); await page.keyboard.press('Escape');
+      await openTraining(page, 'ocular'); await page.keyboard.press('Escape');
+      for (const button of await cards.locator('[data-workflow-clear]').all()) {
+        await button.click(); await page.locator('#askNo').click();
+      }
       await page.locator('#s-subj').fill('Synthetic problem source');
       await page.locator('#useSubjectiveProblem').click();
       if (locale === 'en') await checkEnglish('#clinicalLinks');
@@ -560,6 +600,7 @@ const withoutHelp = node => { const label = node.cloneNode(true); label.querySel
       await page.waitForSelector('#soapForm', { state: 'detached' });
     }
     console.log('PASS: Workflow navigation, source references, source-linked problem, context-reuse dialog and its empty-selection state are bilingual');
+    console.log('PASS: Assessment and training summary insets, header spacing, edit and clear controls, and home-program separation in both languages and themes at 320/400/1280px');
 
     for (const locale of ['en', 'zh-TW']) {
       await choose(locale);
@@ -625,6 +666,50 @@ const withoutHelp = node => { const label = node.cloneNode(true); label.querySel
     }
     console.log('PASS: Draft recovery, safety-copy status, persistent alert/guidance/details/reconnect/dismiss and recent clients are bilingual');
 
+    const legacyCsv = await page.evaluate(() => sessionCSV(cur(), {
+      id: 'language-legacy-visit', date: '2026-11-10', visit: 'assessment', num: 2,
+      sym: [], assess: {}, training: {}, subjective: 'Synthetic legacy follow-up note'
+    }).replace(',/visit,string,assessment', ',/visit,string,followup'));
+    await page.locator('#importFile').setInputFiles({ name: 'legacy-followup.csv', mimeType: 'text/csv', buffer: Buffer.from(legacyCsv) });
+    const legacyButton = page.locator('[data-action="open-session"][data-id="language-legacy-visit"]');
+    await legacyButton.waitFor();
+    const legacyFilename = await page.evaluate(async legacyCsv => {
+      const directory = await languageRoot.getDirectoryHandle(cur().ref);
+      const name = store.sessionBase(curId, 'language-legacy-visit') + '.csv';
+      const text = await (await (await directory.getFileHandle(name)).getFile()).text();
+      if (!text.includes(',/visit,string,assessment\r\n')) throw new Error('CSV import did not write the canonical visit');
+      await writeFile(directory, name, legacyCsv);
+      await loadSessions(); renderMain();
+      return name;
+    }, legacyCsv);
+    for (const locale of ['zh-TW', 'en']) {
+      await choose(locale);
+      const en = locale === 'en';
+      const labels = en ? ['Initial Note', 'Daily Note', 'Progress Note', 'Discharge Note', 'Absent'] : ['初評紀錄', '每日紀錄', '進展紀錄', '結案紀錄', '缺席'];
+      const options = ['baseline', 'treatment', 'assessment', 'post', 'absent'].map((key, index) => [key, labels[index]]);
+      const readOptions = selector => page.locator(selector).evaluate(select => [...select.options].map(option => [option.value, option.text]));
+      assert.deepEqual(await readOptions('#filter-visit'), [['', en ? 'All types' : '全部類型'], ...options]);
+      await page.locator('#filter-visit').selectOption('assessment');
+      assert.deepEqual(await page.locator('.sess .session-kind').allTextContents(), [labels[2]]);
+      await legacyButton.click();
+      assert.deepEqual(await readOptions('#s-visit'), options);
+      assert.equal(await page.locator('#s-visit').inputValue(), 'assessment');
+      assert.equal(await page.locator('#s-subj').inputValue(), 'Synthetic legacy follow-up note');
+      await action('cancel-edit').click();
+      await page.waitForSelector('#soapForm', { state: 'detached' });
+      await action('clear-filters').click();
+    }
+    await legacyButton.click();
+    await page.locator('#s-subj').fill('Edited legacy follow-up note');
+    await action('save-session').click(); await legacyButton.waitFor();
+    const savedCsv = await page.evaluate(async name => {
+      const directory = await languageRoot.getDirectoryHandle(cur().ref);
+      return (await (await directory.getFileHandle(name)).getFile()).text();
+    }, legacyFilename);
+    assert.match(savedCsv, /,\/visit,string,assessment\r\n/);
+    assert.match(savedCsv, /,\/subjective,string,Edited legacy follow-up note\r\n/);
+    console.log('PASS: Both visit dropdowns list the five ordered types in both languages; legacy CSV imports and reloads as a filterable, editable Progress Note and saves the canonical key');
+
     for (const locale of ['en', 'zh-TW']) {
       await choose(locale);
       for (const width of [320, 360, 768, 1280]) {
@@ -636,9 +721,11 @@ const withoutHelp = node => { const label = node.cloneNode(true); label.querySel
     await page.evaluate(async () => {
       store = localStore();
       await store.saveClient({ id: 'language-browser-client', name: 'Synthetic browser client', ref: 'TEST-BROWSER-REMINDER', plan: newClientPlan(), trainingPlan: clone(TRAIN) });
-      await store.saveSession('language-browser-client', { id: 'language-browser-session', date: '2026-11-12', visit: 'treatment', num: 1, sym: [], assess: {}, training: {}, subjective: 'Synthetic browser reminder record' });
+      await store.saveSession('language-browser-client', { id: 'language-browser-session', date: '2026-11-12', visit: 'followup', num: 1, sym: [], assess: {}, training: {}, subjective: 'Synthetic browser reminder record' });
+      store = localStore();
       await finishBoot();
     });
+    assert.equal(await page.evaluate(async () => (await store.listSessions('language-browser-client'))[0].visit), 'assessment');
     for (const locale of ['zh-TW', 'en']) {
       await choose(locale);
       const en = locale === 'en';

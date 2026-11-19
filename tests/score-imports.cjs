@@ -175,7 +175,8 @@ const diplopiaOnly = file('TEST-SCORES_manual-1.json', JSON.stringify({ record_t
     assert.match(report, /已匯入 4 筆測驗分數。/);
     assert.match(report, /2026-11-03 10:15:30 · 平滑追視（OcuTrain PURSUIT） 76.4% → 評估/);
     assert.match(report, /2026-11-04 14:05:09 · 跳視（OcuTrain SACCADE） 58.5% → 復健訓練/);
-    assert.match(report, /已新增 2026-11-03 的評估紀錄。/);
+    assert.match(report, /已新增 2026-11-03 的進展紀錄。/);
+    assert.match(report, /已新增 2026-11-04 的每日紀錄。/);
     await page.locator('#importReportClose').click();
     const [assessed, trained] = await stored();
     assert.equal(assessed.date, '2026-11-03'); assert.equal(assessed.visit, 'assessment');

@@ -103,7 +103,7 @@ async function chartsFit(page) {
         assert.ok(titles[0].startsWith(en ? '9/1/2026' : '2026/9/1')); assert.match(titles[0], /71\.2/);
         assert.ok(titles[1].startsWith(en ? '10/6/2026' : '2026/10/6')); assert.match(titles[1], /86\.9/);
         assert.deepEqual((await pursuit.locator('svg > text').allTextContents()).slice(-2), en ? ['9/1/2026', '10/6/2026'] : ['2026/9/1', '2026/10/6']);
-        assert.ok(titles[0].includes(en ? 'Baseline assessment' : '基準評估'));
+        assert.ok(titles[0].includes(en ? 'Initial Note' : '初評紀錄'));
         assert.match(await panel('assessment', 'npc').locator('tbody').innerText(), /x\/12\/6/);
         await noEmptyColumns(page);
 

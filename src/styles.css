@@ -428,14 +428,18 @@ details.script dd { margin: 0; }
 .pick:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 .picked { display: flex; flex-direction: column; gap: 10px; }
 .picked:not(:has(> :not([hidden]))) { display: none; }
+#remediation > .picked { margin-block-end: 4px; }
 .as, .tx { border: 1px solid var(--accent); border-radius: var(--r); min-width: 0; }
-.as-head { display: flex; flex-direction: column; gap: 1px; padding: 10px 12px 4px; }
+#soapForm :is(.as, .tx) { padding: 12px; }
+.as-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-block-end: 8px; }
+.as-head > :first-child { min-width: 0; overflow-wrap: anywhere; }
 .as-head b, .tx-head { font-weight: 700; font-size: 1rem; margin: 0; }
+.as-head b { display: block; }
 .as-head span { font-size: var(--text-small); color: var(--muted); }
 .tx-head { padding: 10px 12px 4px; }
-.as-body, .tx-body { padding: 6px 12px 12px; display: flex; flex-direction: column; gap: 10px; }
+.as-body, .tx-body { display: flex; flex-direction: column; gap: 10px; }
+.tx-body { padding: 6px 12px 12px; }
 .as { border-color: var(--line); }
-#soapForm .as-head { flex-direction: row; justify-content: space-between; align-items: center; }
 .assessment-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 10px 24px; margin: 0; }
 .assessment-results > div { min-width: 0; }
 .assessment-results dt { color: var(--muted); font-size: var(--text-small); }
@@ -632,9 +636,7 @@ table.sym.ed select:disabled { opacity: .45; }
 .is-compact.sections-open { height: var(--workflow-expanded-height); margin-bottom: 0; }
 .is-compact:has(#workflowNotice:not([hidden])) { height: auto; min-height: var(--workflow-expanded-height); margin-bottom: 0; }
 .is-compact.sections-open .workflow-steps { grid-row: 2; }
-.item-workflow-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-left: auto; }
-.tx > .item-workflow-controls { padding: 6px 12px; border-bottom: 1px solid var(--line); background: var(--sunk); }
-#soapForm .as-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.item-workflow-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-inline-start: auto; }
 #soapForm :is(.as, .tx).workflow-active { border-color: var(--accent); }
 #soapForm .workflow-active:not(.as):not(.tx) { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
 #soapForm .soap-sec { border-top: 2px solid var(--line); padding-top: 16px; }

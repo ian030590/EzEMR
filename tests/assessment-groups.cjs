@@ -67,7 +67,7 @@ const ordered = (text, terms) => {
       const periodOf = p => p.outcomePeriod || (p.id.startsWith('st_') ? 'short' : 'long');
       const verifyGroups = async (plan, visit) => {
         assert.deepEqual(await page.locator('.assessment-period > .spread > h3').allTextContents(), en ? ['Short-term outcomes', 'Long-term assessments'] : ['短期成效', '長期評估']);
-        const due = p => visit === 'baseline' ? p.initial !== false : (p.timing === 'session' || p.timing === 'assessment' && ['assessment', 'post', 'followup'].includes(visit) || p.timing === 'bp' && visit === 'post' || p.timing === 'milestone' && ['post', 'followup'].includes(visit)) && (visit === 'treatment' || p.initial !== false);
+        const due = p => visit === 'baseline' ? p.initial !== false : (p.timing === 'session' || ['assessment', 'milestone'].includes(p.timing) && ['assessment', 'post'].includes(visit) || p.timing === 'bp' && visit === 'post') && (visit === 'treatment' || p.initial !== false);
         for (const period of ['short', 'long']) for (const category of ['visual', 'functional', 'motor', 'daily', 'cognitive']) {
           const items = plan.filter(p => functionOf(p) === category && periodOf(p) === period && (p.id !== 'copm' || ['baseline', 'post'].includes(visit)));
           const group = page.locator(`#assess-${period} [data-function="${category}"]`);
@@ -111,7 +111,7 @@ const ordered = (text, terms) => {
         assert.deepEqual(await page.evaluate(async () => (await store.listClients())[0].plan), plan);
         await action('new-session').click();
         assert.equal(await page.locator('#s-visit').inputValue(), 'baseline');
-        for (const visit of ['baseline', 'post', 'followup', 'treatment']) {
+        for (const visit of ['baseline', 'treatment', 'assessment', 'post']) {
           await page.locator('#s-visit').selectOption(visit);
           await verifyGroups(plan, visit);
           assert.equal(await page.locator('[id^="assessPlanned-"]').count(), visit === 'treatment' ? 4 : 0, `${visit}: only nonempty planned headings`);
@@ -177,8 +177,12 @@ const ordered = (text, terms) => {
         assert.equal(await remediation.evaluate(node => getComputedStyle(node).borderTopWidth), '0px');
         await page.locator('#s-visit').selectOption('post');
         await verifyGroups(await page.evaluate(() => cur().plan), 'post');
-        await page.locator('#s-visit').selectOption('followup'); assert.equal(await page.locator('#ac-copm').count(), 0);
+        await page.locator('#s-visit').selectOption('assessment');
+        await verifyGroups(await page.evaluate(() => cur().plan), 'assessment');
+        assert.equal(await page.locator('#ac-self_report').getAttribute('data-planned'), 'true');
+        assert.equal(await page.locator('#ac-copm').count(), 0);
         await page.locator('#s-visit').selectOption('treatment'); assert.equal(await page.locator('[id^="assessPlanned-"]').count(), 4);
+        assert.equal(await page.locator('#ac-self_report').getAttribute('data-planned'), 'false');
         assert.equal(await page.locator('#ac-copm').count(), 0);
         await page.locator('#s-visit').selectOption('baseline');
         check(`${locale}: canonical categories, fields, timing and initial choices survive function/period grouping; short-term symptom placement and visit rules hold; remediation has no top border`);

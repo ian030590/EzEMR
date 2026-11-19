@@ -65,6 +65,15 @@
         ],
         "createdAt": "2026-11-15T10:56:06.088Z",
         "reason": "Agent: detector flags pinned Metro bg-pattern utilities. Source search and bilingual rendered-screen checks confirm no decorative grid utility is used."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles.css"
+        ],
+        "createdAt": "2026-11-19T12:00:44.293Z",
+        "reason": "Agent: DESIGN.md reserves 3–4px colored edges for measurement-stage, warning, and failure cues. All six matches implement those cues, and all six declarations predate the summary-card spacing change."
       }
     ]
   }

@@ -1576,14 +1576,18 @@ details.script dd { margin: 0; }
 .pick:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 .picked { display: flex; flex-direction: column; gap: 10px; }
 .picked:not(:has(> :not([hidden]))) { display: none; }
+#remediation > .picked { margin-block-end: 4px; }
 .as, .tx { border: 1px solid var(--accent); border-radius: var(--r); min-width: 0; }
-.as-head { display: flex; flex-direction: column; gap: 1px; padding: 10px 12px 4px; }
+#soapForm :is(.as, .tx) { padding: 12px; }
+.as-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-block-end: 8px; }
+.as-head > :first-child { min-width: 0; overflow-wrap: anywhere; }
 .as-head b, .tx-head { font-weight: 700; font-size: 1rem; margin: 0; }
+.as-head b { display: block; }
 .as-head span { font-size: var(--text-small); color: var(--muted); }
 .tx-head { padding: 10px 12px 4px; }
-.as-body, .tx-body { padding: 6px 12px 12px; display: flex; flex-direction: column; gap: 10px; }
+.as-body, .tx-body { display: flex; flex-direction: column; gap: 10px; }
+.tx-body { padding: 6px 12px 12px; }
 .as { border-color: var(--line); }
-#soapForm .as-head { flex-direction: row; justify-content: space-between; align-items: center; }
 .assessment-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 10px 24px; margin: 0; }
 .assessment-results > div { min-width: 0; }
 .assessment-results dt { color: var(--muted); font-size: var(--text-small); }
@@ -1780,9 +1784,7 @@ table.sym.ed select:disabled { opacity: .45; }
 .is-compact.sections-open { height: var(--workflow-expanded-height); margin-bottom: 0; }
 .is-compact:has(#workflowNotice:not([hidden])) { height: auto; min-height: var(--workflow-expanded-height); margin-bottom: 0; }
 .is-compact.sections-open .workflow-steps { grid-row: 2; }
-.item-workflow-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-left: auto; }
-.tx > .item-workflow-controls { padding: 6px 12px; border-bottom: 1px solid var(--line); background: var(--sunk); }
-#soapForm .as-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.item-workflow-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-inline-start: auto; }
 #soapForm :is(.as, .tx).workflow-active { border-color: var(--accent); }
 #soapForm .workflow-active:not(.as):not(.tx) { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
 #soapForm .soap-sec { border-top: 2px solid var(--line); padding-top: 16px; }
@@ -2252,7 +2254,7 @@ const UI_EN = {
   "基準日期": "Baseline date",
   "已評表現 {0} 項，滿意度 {1} 項": "Performance rated: {0}; satisfaction rated: {1}",
   "活動或評分項目不一致，未計算基準差異。": "Activities or rated items differ; baseline change was not calculated.",
-  "尚無可比較的基準評估。": "No comparable baseline assessment is available.",
+  "尚無可比較的初評紀錄。": "No comparable Initial Note is available.",
   "基準／本次活動核對": "Compare baseline and current activities",
   "{0}：總漏答 {1} 與左右合計 {2} 不一致，請核對計分規則。": "{0}: total omissions ({1}) differ from left plus right ({2}). Check the scoring rules.",
   "缺席原因為未通知，通知狀態不能填已通知。": "The absence reason says no notice was given; notification cannot be marked as received.",
@@ -2553,7 +2555,7 @@ const UI_EN = {
   "。從既有模板開始，或建立空白項目。停用項目仍保留歷史結果；新增個案時可複用這份設定。": ". Start with an existing template or create a blank item. Disabled items retain their historical results. New clients can reuse these settings.",
   "。編輯、重新命名及刪除也會套用至副本。": ". Edits, renames, and deletions also apply to the copy.",
   "· 缺席": "- Absent",
-  "· 基準與療程後評估；療程後分數與先前基準比較。": "- Baseline and post-rehabilitation assessments; post-rehabilitation scores are compared with the earlier baseline.",
+  "· 初評紀錄與結案紀錄。結案分數與先前初評分數比較。": "- Initial and Discharge Notes. Discharge scores are compared with earlier initial scores.",
   "· 第": "- Session ",
   "· 編輯復健紀錄": "- Editing rehabilitation record",
   "（副本）": " (copy)",
@@ -2650,7 +2652,7 @@ const UI_EN = {
   "未通知": "No notification",
   "未通知、未出席（no-show）": "No notice, did not attend (no-show)",
   "本次未出席，不填寫 SOAP 或症狀評分。": "This appointment was missed. SOAP notes and symptom ratings are not required.",
-  "本次沒有可填寫的評估項目，可按「新增評估項目」建立。COPM 僅在基準與療程後評估顯示。": "No assessments are available for this visit. Use Add assessment to create one. COPM appears only for baseline and post-rehabilitation assessments.",
+  "本次沒有可填寫的評估項目，可按「新增評估項目」建立。COPM 僅在初評紀錄與結案紀錄顯示。": "No assessments are available for this visit. Use Add assessment to create one. COPM appears only in Initial and Discharge Notes.",
   "本次應評估": "Due this visit",
   "正在連接資料夾…": "Connecting to folder...",
   "正在載入個案…": "Loading clients...",
@@ -2764,7 +2766,7 @@ const UI_EN = {
   "勾選本次施測的項目，展開對應的紀錄欄位；未勾選的項目不會存入紀錄。初次評估項目可在「項目設定」調整。": "Tick the items tested this visit to open their fields. Unticked items are not saved. Change the initial assessment items under Item settings.",
   "勾選本次進行的項目，再勾選做過的活動，每個活動填一個分數。": "Tick the items done this visit, then tick each activity performed and enter one score for it.",
   "活動欄顯示該次的分數；✓ 表示有做但未填分數。": "Activity columns show that visit's score; ✓ means the activity was done but no score was entered.",
-  "勾選初次評估（基準評估）要施測的項目。填寫基準評估時，這些項目列在最前面；療程後與追蹤評估只列出其中依評估時機應再評估的項目。實際施測後，再於病歷中勾選並填寫。": "Tick the items to test at the initial (baseline) assessment. Baseline records list these items first; post-rehabilitation and follow-up assessments list only those due again by their timing. Once an item has been tested, tick it in the record and fill it in.",
+  "勾選初評紀錄要施測的項目。這些項目會列在初評紀錄最前面。進展紀錄與結案紀錄會依評估時機標示本次應再評估的項目。施測後，再於紀錄中勾選項目並填寫結果。": "Select the items to test in the Initial Note. These items appear first in the Initial Note. The Progress and Discharge Notes show which items are due again based on their timing. After testing, select the item in the note and enter the results.",
   "尚無啟用的評估項目。": "No assessments are enabled.",
   "已列入初次評估項目。": "Added to the initial assessment items.",
   "已移出初次評估項目。": "Removed from the initial assessment items.",
@@ -2874,9 +2876,9 @@ const UI_EN = {
   "圈數／": "Laps /",
   "基本視覺功能": "Basic visual function",
   "基本視覺功能：輻輳": "Basic visual function: convergence",
-  "基準、療程後與追蹤": "Baseline, post-rehabilitation, and follow-up",
+  "初評、進展及結案紀錄": "Initial, Progress, and Discharge Notes",
   "基準評估": "Baseline assessment",
-  "基準與療程後": "Baseline and post-rehabilitation",
+  "初評紀錄與結案紀錄": "Initial and Discharge Notes",
   "將 EzEMR.html 放在電腦的本機資料夾，直接用 Chrome 或 Edge 開啟。選擇病歷儲存位置後，個案總表會儲存為 clients.csv，每次紀錄會以 CSV、PDF 與 TXT 存入該個案的資料夾。": "Put EzEMR.html in a local folder on your computer and open it in Chrome or Edge. After you choose where records are stored, the client roster is saved as clients.csv and each record is saved to the client's folder as CSV, PDF and TXT.",
   "將每筆紀錄複製到另一個本機資料夾": "Copy every record to another local folder",
   "常用工具": "Common tools",
@@ -3143,6 +3145,10 @@ const UI_EN = {
   "檢視": "View",
   "療程後／下一項測驗前：": "After session / before next test: ",
   "療程後評估": "Post-rehabilitation assessment",
+  "初評紀錄": "Initial Note",
+  "每日紀錄": "Daily Note",
+  "進展紀錄": "Progress Note",
+  "結案紀錄": "Discharge Note",
   "總分": "Total",
   "總分（0 至 50）": "Total (0 to 50)",
   "翼狀贅肉切除": "Pterygium excision",
@@ -3184,7 +3190,7 @@ const UI_EN = {
   "clients.csv 欄位格式不正確": "Invalid clients.csv columns",
   "clients.csv 欄位數量不正確": "Incorrect number of columns in clients.csv",
   "Contact / follow-up 聯絡紀錄": "Contact / follow-up",
-  "COPM 保留專用的職能活動、表現與滿意度表格，以及基準比較。評估時機固定為基準與療程後。": "COPM retains its dedicated occupation, performance, and satisfaction table and baseline comparison. Assessment timing is fixed to baseline and post-rehabilitation.",
+  "COPM 保留專用的職能活動、表現與滿意度表格，以及初評分數比較。評估時機固定為初評紀錄與結案紀錄。": "COPM has a dedicated table for occupations, performance, and satisfaction. Record it in the Initial and Discharge Notes to compare scores.",
   "COPM：最多 5 項職能活動，表現與滿意度 1 至 10 分": "COPM: up to 5 occupations; performance and satisfaction from 1 to 10",
   "CSV 上層欄位格式錯誤": "Invalid parent field in CSV",
   "CSV 引號格式錯誤": "Invalid CSV quotation format",
@@ -3317,7 +3323,7 @@ const UI_EN = {
   "測驗未完成（{0}），預設不匯入。": "Test not completed ({0}); set to not import.",
   "不是正式紀錄（{0}），預設不匯入。": "Not a formal run ({0}); set to not import.",
   "沒有匯入任何測驗分數。": "No test scores were imported.",
-  "已新增 {0} 的{1}紀錄。": "Added a new record on {0} ({1}).",
+  "已新增 {0} 的{1}。": "Added a new record on {0} ({1}).",
   "{0} {1}：已有不同的結果，未覆蓋（{2}）。": "{0} {1}: different results are already recorded and were not overwritten ({2}).",
   "已匯入 {0} 筆測驗分數。": "Imported {0} test scores.",
   "測驗分數檔請與 EzEMR 的 CSV 或 JSON 備份分開匯入。": "Import test score files separately from EzEMR CSV files and JSON backups.",
@@ -3417,7 +3423,7 @@ const SK = SYMS.map(s => s.k);
 const TP_LABEL = { pre: '復健前', end: '復健後', rec: '恢復後' };
 // Assessment visits: rate before each eye-tracking subtest, in this order.
 const SUBTESTS = [{ k: 'pursuit', en: 'Pursuit', zh: '追視' }, { k: 'fixation', en: 'Fixation', zh: '凝視' }, { k: 'saccade', en: 'Saccade', zh: '跳視' }];
-const isAssessVisit = v => ['assessment', 'baseline', 'post', 'followup'].includes(v);
+const isAssessVisit = v => ['baseline', 'assessment', 'post'].includes(v);
 const ABSENCE_REASONS = ['未通知、未出席（no-show）', '事先請假', '當天臨時取消', '身體不適', '工作因素', '交通因素', '天候', '其他'];
 const NOTIFIED = ['是，事先通知', '當天通知', '未通知', '不確定'];
 const absenceLabel = (value, options) => options.includes(value) ? ui(value) : value || '';
@@ -3448,22 +3454,24 @@ function shapeSym(rows, visit) {
 const TIMING = {
   session: '每次復健',
   assessment: '每次評估',
-  bp: '基準與療程後',
-  milestone: '基準、療程後與追蹤'
+  bp: '初評紀錄與結案紀錄',
+  milestone: '初評、進展及結案紀錄'
 };
 const VISITS = [
-  { k: 'treatment', label: '復健' },
-  { k: 'assessment', label: '評估' },
-  { k: 'baseline', label: '基準評估' },
-  { k: 'post', label: '療程後評估' },
-  { k: 'followup', label: '追蹤評估' },
+  { k: 'baseline', label: '初評紀錄' },
+  { k: 'treatment', label: '每日紀錄' },
+  { k: 'assessment', label: '進展紀錄' },
+  { k: 'post', label: '結案紀錄' },
   { k: 'absent', label: '缺席' }
 ];
-const visitLabel = k => ui((VISITS.find(v => v.k === k) || VISITS[0]).label);
+const canonicalVisit = visit => visit === 'followup' ? 'assessment' : visit;
+const visitLabel = k => {
+  const visit = VISITS.find(v => v.k === canonicalVisit(k));
+  return visit ? ui(visit.label) : ui('每日紀錄');
+};
 const isDue = (timing, visit) => timing === 'session' ||
-  (timing === 'assessment' && isAssessVisit(visit)) ||
-  (timing === 'bp' && ['baseline', 'post'].includes(visit)) ||
-  (timing === 'milestone' && ['baseline', 'post', 'followup'].includes(visit));
+  ((timing === 'assessment' || timing === 'milestone') && isAssessVisit(visit)) ||
+  (timing === 'bp' && ['baseline', 'post'].includes(visit));
 // OcuTrain modules and UFOV subtests: one item per module or subtest, each with its own settings.
 // Field ids follow the keys in the programs' exported files so imported scores land in the same boxes.
 const numField = (id, label, extra = {}) => ({ id, label, type: 'number', ...extra });
@@ -4071,7 +4079,12 @@ function localStore() {
     async listClients() { return Object.values(mem.clients); },
     async saveClient(c) { persist(m => { m.clients[c.id] = clone(c); }); },
     async deleteClient(cid) { persist(m => { delete m.clients[cid]; delete m.sessions[cid]; }); },
-    async listSessions(cid) { return Object.values(mem.sessions[cid] || {}); },
+    async listSessions(cid) {
+      return Object.values(mem.sessions[cid] || {}).map(s => {
+        const visit = canonicalVisit(s.visit);
+        return visit === s.visit ? s : { ...s, visit };
+      });
+    },
     async saveSession(cid, s) { persist(m => { (m.sessions[cid] = m.sessions[cid] || {})[s.id] = clone(s); }); },
     async deleteSession(cid, sid) { persist(m => { if (m.sessions[cid]) delete m.sessions[cid][sid]; }); }
   };
@@ -4138,7 +4151,7 @@ function sessionCSV(client, session) {
       for (const [key, child] of Object.entries(value)) walk(section, path + '/' + key.replace(/~/g, '~0').replace(/\//g, '~1'), child);
     }
   };
-  walk('client', '', client); walk('session', '', session);
+  walk('client', '', client); walk('session', '', { ...session, visit: canonicalVisit(session.visit) });
   const cell = value => /[",\r\n]/.test(value) ? '"' + value.replace(/"/g, '""') + '"' : value;
   return '\ufeff' + rows.map(row => row.map(cell).join(',')).join('\r\n') + '\r\n';
 }
@@ -4274,8 +4287,10 @@ function validateRecord(c, s) {
   validateItems(c.plan, 'assessment');
   if (c.trainingPlan != null) validateItems(c.trainingPlan, 'training');
   if (c.legacyTemplates != null) { validateItems(c.legacyTemplates.assessment, 'assessment'); validateItems(c.legacyTemplates.training, 'training'); }
+  const visit = canonicalVisit(s?.visit);
   if (!object(s) || !id(s.id) || typeof s.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s.date) ||
-    !VISITS.some(v => v.k === s.visit) || !Array.isArray(s.sym) || !object(s.assess) || !object(s.training)) throw new Error(ui('復健紀錄缺少有效的日期、類型或評估資料'));
+    !VISITS.some(v => v.k === visit) || !Array.isArray(s.sym) || !object(s.assess) || !object(s.training)) throw new Error(ui('復健紀錄缺少有效的日期、類型或評估資料'));
+  s.visit = visit;
   if (s.contextSource !== undefined && (!object(s.contextSource) || !id(s.contextSource.sessionId) || typeof s.contextSource.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s.contextSource.date) ||
     !Array.isArray(s.contextSource.parts) || s.contextSource.parts.some(part => typeof part !== 'string' || !part.trim()))) throw new Error(ui('沿用內容來源格式錯誤'));
   if ([...Object.keys(s.assess), ...Object.keys(s.training)].some(key => !id(key))) throw new Error(ui('評估或復健項目識別碼格式錯誤'));
@@ -4911,7 +4926,7 @@ function validDraftCopy(copy) {
     (copy.recordId === null || id(copy.recordId)) && (copy.baseUpdated === null || typeof copy.baseUpdated === 'string') &&
     typeof copy.copiedAt === 'string' && Number.isFinite(Date.parse(copy.copiedAt)) && object(s) &&
     (s.id === null || id(s.id)) &&
-    typeof s.date === 'string' && VISITS.some(visit => visit.k === s.visit) && copy.date === s.date && copy.visit === s.visit &&
+    typeof s.date === 'string' && VISITS.some(visit => visit.k === canonicalVisit(s.visit)) && copy.date === s.date && copy.visit === s.visit &&
     (!copy.recordId || copy.recordId === s.id) && Array.isArray(s.sym) && object(s.assess) && object(s.training) &&
     s.sym.every(row => object(row) && id(row.id) && typeof row.kind === 'string' && object(row.scores)) &&
     [...Object.keys(s.assess), ...Object.keys(s.training)].every(id) &&
@@ -4941,7 +4956,10 @@ function readDraftCopies() {
   if (data?.version !== 1 || !Array.isArray(data.copies)) { localStorage.removeItem(DRAFT_KEY); return []; }
   const copies = data.copies.filter(validDraftCopy);
   if (copies.length !== data.copies.length) writeDraftCopies(copies);
-  return copies;
+  return copies.map(copy => {
+    const visit = canonicalVisit(copy.visit);
+    return visit === copy.visit ? copy : { ...copy, visit, session: { ...copy.session, visit } };
+  });
 }
 function keepDraftNow() {
   clearTimeout(draftTimer);
@@ -5614,7 +5632,7 @@ function copmAvg(rows) {
   const a = arr => arr.length ? Math.round(arr.reduce((x, y) => x + y, 0) / arr.length * 10) / 10 : null;
   return { perf: a(p), sat: a(s) };
 }
-// COPM is measured at Baseline and Post-rehabilitation only; a post-rehabilitation COPM is compared with the latest earlier baseline COPM.
+// COPM in a Discharge Note is compared with COPM in the latest earlier Initial Note.
 function copmBaseline(excludeId, date, visit, list = sessions) {
   if (visit !== 'post') return null;
   let found = null;
@@ -6194,7 +6212,7 @@ function renderOutcomes() {
     if (item.copm) {
       const copmRows = rows.filter(s => COPM_VISITS.includes(s.visit));
       if (!copmRows.length) continue;
-      parts.push(ui`<section class="panel"><h3>${esc(labelText(item.name))}${helpHTML(labelText(item.name), ui('· 基準與療程後評估；療程後分數與先前基準比較。'))}</h3><p class="note" style="margin:4px 0 10px">${esc(labelText(item.domain))}</p>
+      parts.push(ui`<section class="panel"><h3>${esc(labelText(item.name))}${helpHTML(labelText(item.name), ui('· 初評紀錄與結案紀錄。結案分數與先前初評分數比較。'))}</h3><p class="note" style="margin:4px 0 10px">${esc(labelText(item.domain))}</p>
         <div class="scroll"><table class="out"><thead><tr><th>日期</th><th>紀錄類型</th><th>表現平均</th><th>與基準差異</th><th>滿意度平均</th><th>與基準差異</th></tr></thead><tbody>
         ${copmRows.map(s => { const rows = s.assess[item.id].copm, a = copmAvg(rows), base = copmBaseline(s.id, s.date, s.visit), comparison = copmComparison(rows, base);
           const ch = delta => delta != null ? `<span class="delta ${delta > 0 ? 'down' : delta < 0 ? 'up' : ''}">${signed(delta)}</span>` : '–';
@@ -6293,7 +6311,7 @@ function renderPlan() {
     }).join('');
     return groups ? `<section class="initial-period" data-initial-period="${period}" aria-labelledby="initial-${period}-h"><h4 id="initial-${period}-h">${period === 'short' ? ui('短期成效') : ui('長期評估')}</h4>${groups}</section>` : '';
   }).join('');
-  const initialPanel = ui`<section class="panel" aria-labelledby="initialHeading"><h3 id="initialHeading" aria-label="初次評估項目">初次評估項目${helpHTML(ui('初次評估項目'), ui('勾選初次評估（基準評估）要施測的項目。填寫基準評估時，這些項目列在最前面；療程後與追蹤評估只列出其中依評估時機應再評估的項目。實際施測後，再於病歷中勾選並填寫。'))}</h3>
+  const initialPanel = ui`<section class="panel" aria-labelledby="initialHeading"><h3 id="initialHeading" aria-label="初次評估項目">初次評估項目${helpHTML(ui('初次評估項目'), ui('勾選初評紀錄要施測的項目。這些項目會列在初評紀錄最前面。進展紀錄與結案紀錄會依評估時機標示本次應再評估的項目。施測後，再於紀錄中勾選項目並填寫結果。'))}</h3>
     ${initialItems.length ? `<div class="initial-picks" id="initialPicks" role="group" aria-labelledby="initialHeading">${initialGroups}</div>` : ui('<p class="note">尚無啟用的評估項目。</p>')}</section>`;
   $('#tabBody').innerHTML = ui`<div class="plan-edit"><div><h3>評估與復健項目設定${helpHTML(ui('評估與復健項目設定'), ui('從既有模板開始，或建立空白項目。停用項目仍保留歷史結果；新增個案時可複用這份設定。'))}</h3><p class="note">${esc(clientLabel(c))}</p></div>
     ${initialPanel}${section('assessment', ui('評估項目'), selectable)}${section('training', ui('復健項目'), trainingPlan(c))}</div>`;
@@ -6372,7 +6390,7 @@ function itemForm(kind, key = null, fromEditor = false, duplicate = false, categ
       return entries.length ? `<optgroup label="${esc(assessmentFunctionLabel(category) + ' · ' + assessmentPeriodLabel(period))}">${options(entries)}</optgroup>` : '';
     }).join('')).join('') : options(seeds.map((item, i) => ({ item, i })));
     form.innerHTML = ui`${creating && !duplicate ? ui`<label class="f" for="item-base">從模板開始<select id="item-base"><option value="">空白模板</option>${templateOptions}</select></label>` : ''}
-      <div class="f"><div class="field-label"><label for="item-name">項目名稱</label>${draft.copm ? helpHTML(labelText(draft.name), ui('COPM 保留專用的職能活動、表現與滿意度表格，以及基準比較。評估時機固定為基準與療程後。')) : ''}</div><input type="text" id="item-name" value="${val(assessment && assessmentPeriod(draft) === 'long' ? assessmentTemplateLabel(draft) : labelText(draft.name || draft.label))}" maxlength="180" required></div>
+      <div class="f"><div class="field-label"><label for="item-name">項目名稱</label>${draft.copm ? helpHTML(labelText(draft.name), ui('COPM 保留專用的職能活動、表現與滿意度表格，以及初評分數比較。評估時機固定為初評紀錄與結案紀錄。')) : ''}</div><input type="text" id="item-name" value="${val(assessment && assessmentPeriod(draft) === 'long' ? assessmentTemplateLabel(draft) : labelText(draft.name || draft.label))}" maxlength="180" required></div>
       ${assessment ? ui`<div class="grid"><label class="f" for="item-category">功能分類<select id="item-category" aria-label="功能分類" ${draft.copm ? 'disabled' : ''}>${ASSESSMENT_FUNCTIONS.map(category => `<option value="${category}" ${assessmentFunction(draft) === category ? 'selected' : ''}>${esc(assessmentFunctionLabel(category))}</option>`).join('')}</select></label>
         <label class="f" for="item-period">指標期程<select id="item-period" ${draft.copm ? 'disabled' : ''}>${['short', 'long'].map(period => `<option value="${period}" ${assessmentPeriod(draft) === period ? 'selected' : ''}>${esc(assessmentPeriodLabel(period))}</option>`).join('')}</select></label></div>
         <div class="grid"><label class="f" for="item-domain">評估領域<input type="text" id="item-domain" value="${val(labelText(draft.domain))}"></label>
@@ -6865,7 +6883,7 @@ function assessHTML(c, s, category, period) {
     const mirror = p === group.primary ? '' : `<input type="checkbox" id="ac-${p.id}" data-assessment-parent="${group.primary.id}" hidden ${a.done ? 'checked' : ''}>`;
     const title = p === group.primary ? assessmentTemplateLabel(p) : ui('本次量測');
     return `${mirror}<section class="as" id="as-${p.id}" data-id="${p.id}" aria-labelledby="as-${p.id}-h" ${a.done ? '' : 'hidden'}>
-      <div class="as-head"><b id="as-${p.id}-h">${esc(title)}</b>${detail ? `<span>${esc(detail)}</span>` : ''}<div class="item-workflow-controls">
+      <div class="as-head"><div><b id="as-${p.id}-h">${esc(title)}</b>${detail ? `<span>${esc(detail)}</span>` : ''}</div><div class="item-workflow-controls">
         <button type="button" class="btn small" data-action="assessment-edit" data-id="${p.id}" aria-label="${esc(ui('編輯 {0} 的結果', assessmentTemplateLabel(p)))}">${ui('編輯結果')}</button>
         <button type="button" class="btn small danger" data-needs="draft" data-workflow-clear="as-${p.id}">${ui('清除結果')}</button></div></div>
       <div class="as-body">${assessmentResultHTML(c, s, p)}</div></section>`;
@@ -7081,7 +7099,7 @@ function updateCopm() {
   details.innerHTML = b ? ui`<p class="note">基準日期${ui('：')}${esc(fmtDate(b.date))} · ${esc(ui('已評表現 {0} 項，滿意度 {1} 項', comparison.baseRated.perf, comparison.baseRated.sat))}</p>
     <p class="note">${esc(ui('已評表現 {0} 項，滿意度 {1} 項', comparison.rated.perf, comparison.rated.sat))}</p>
     <div class="scroll"><table class="out" aria-label="基準／本次活動核對"><thead><tr><th>基準活動</th><th>本次活動</th></tr></thead><tbody>${Array.from({ length: Math.max(prior.length, current.length) }, (_, i) => `<tr><td>${esc(prior[i]?.occ || '–')}</td><td>${esc(current[i]?.occ || '–')}</td></tr>`).join('')}</tbody></table></div>
-    ${comparison.warning ? `<p class="clinical-missing" role="status">${esc(comparison.warning)}</p>` : ''}` : `<p class="note">${ui('尚無可比較的基準評估。')}</p>`;
+    ${comparison.warning ? `<p class="clinical-missing" role="status">${esc(comparison.warning)}</p>` : ''}` : `<p class="note">${ui('尚無可比較的初評紀錄。')}</p>`;
 }
 function assessmentConsistencyWarnings(item, values) {
   if (assessmentSourceId(item) !== 'st_neglect') return [];
@@ -7194,7 +7212,7 @@ const trainingHeadingText = (t, d) => labelText(t.label) + (d.dur != null ? '：
 function trainingSummaryHTML(t, s) {
   const d = s.training?.[t.k] || {}, lines = trainingDetailLines(t, d);
   return `<section class="tx" id="tx-summary-${t.k}" data-id="${t.k}" aria-labelledby="tx-summary-${t.k}-h" ${d.on ? '' : 'hidden'}>
-    <div class="as-head"><b class="tx-head" id="tx-summary-${t.k}-h">${esc(trainingHeadingText(t, d))}</b><div class="item-workflow-controls">
+    <div class="as-head"><b id="tx-summary-${t.k}-h">${esc(trainingHeadingText(t, d))}</b><div class="item-workflow-controls">
       <button type="button" class="btn small" data-action="training-edit" data-id="${t.k}" aria-label="${esc(ui('編輯 {0} 的結果', labelText(t.label)))}">${ui('編輯')}</button>
       <button type="button" class="btn small danger" data-needs="draft" data-workflow-clear="tx-summary-${t.k}">${ui('清除結果')}</button></div></div>
     ${lines.length || d.dur != null ? `<div class="training-results">${esc(lines.join('\n'))}</div>` : `<p class="note assessment-empty">${ui('尚未填寫結果，可選擇「編輯」補填。')}</p>`}</section>`;
@@ -8793,7 +8811,7 @@ async function applyScores(c, records) {
       if (!s) {
         s = { id: uid('s'), date: r.date, num: null, visit: assess ? 'assessment' : 'treatment', clinician: '', duration: null, subjective: '', feedback: '',
           sym: [], assess: {}, training: {}, otherTx: '', tolerance: null, assessment: '', plan: '', nextDate: '' };
-        list.push(s); warnings.push(ui('已新增 {0} 的{1}紀錄。', r.date, visitLabel(s.visit)));
+        list.push(s); warnings.push(ui('已新增 {0} 的{1}。', r.date, visitLabel(s.visit)));
       }
       if (assess) {
         const prev = s.assess[r.item];
